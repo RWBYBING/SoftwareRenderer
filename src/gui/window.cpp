@@ -246,7 +246,7 @@ void GLFWWindowManager::UpdateImGuiWindow()
 {
     if (ImGui::Begin("Controller"))
     {
-
+        
     }
     ImGui::End();
 }

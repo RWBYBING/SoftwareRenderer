@@ -56,6 +56,9 @@ set(CORE_SOURCES
 
 set(GUI_SOURCES
 	src/gui/window.cpp
+	src/core/renderer.cpp
+	src/core/math/vector.cpp
+	src/core/math/matrix.cpp
 )
 
 set(SOURCES 
