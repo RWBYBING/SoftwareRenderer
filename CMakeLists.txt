@@ -59,6 +59,7 @@ set(GUI_SOURCES
 	src/core/renderer.cpp
 	src/core/math/vector.cpp
 	src/core/math/matrix.cpp
+	src/core/primitives/vertex.cpp
 )
 
 set(SOURCES 
