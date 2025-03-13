@@ -3,10 +3,10 @@
 using namespace Core::Primitives;
 
 Vertex::Vertex()
-    : color{Core::Math::Vector4()}
-    , pos{Core::Math::Vector4()}
-    , normal{Core::Math::Vector3()}
-    , textcoord{Core::Math::Vector2()}
+    : color{Core::Math::Vector4(1.0, 1.0, 1.0, 1.0)}
+    , pos{Core::Math::Vector4(0.0, 0.0, 0.0, 1.0)}
+    , normal{Core::Math::Vector3(0.0, 0.0, 0.0)}
+    , textcoord{Core::Math::Vector2(0.0, 0.0)}
 {
 
 }
