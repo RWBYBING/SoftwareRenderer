@@ -1,6 +1,7 @@
 #include <gui/window.h>
 
 #include <cstdio>
+#include <iostream>
 
 using namespace GUI;
 
@@ -139,7 +140,7 @@ GLFWWindowManager::GLFWWindowManager()
     // glfwSetWindowAttrib(window, GLFW_DECORATED, GLFW_FALSE);
 
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
 
     if (gl3wInit() != 0) {
         fprintf(stderr, "Failed to initialize OpenGL loader!\n");
@@ -246,7 +247,7 @@ void GLFWWindowManager::UpdateImGuiWindow()
 {
     if (ImGui::Begin("Controller"))
     {
-        ImGui::Text("Frame Rate: {%d}", ImGui::GetIO().Framerate);
+        ImGui::Text("Frame Rate: %f", ImGui::GetIO().Framerate);
     }
     ImGui::End();
 }
