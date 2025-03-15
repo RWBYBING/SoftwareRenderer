@@ -39,6 +39,8 @@ Matrix4x4::Matrix4x4(const double matValue[4][4])
 
 Matrix4x4::~Matrix4x4() = default;
 
+Matrix4x4& Matrix4x4::operator=(const Matrix4x4& other) = default;
+
 Matrix4x4 Matrix4x4::operator+ (const Matrix4x4& mat) const
 {
     Matrix4x4 result = Matrix4x4();

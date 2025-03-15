@@ -33,6 +33,7 @@ namespace Core
             Matrix4x4 operator* (const Matrix4x4& mat) const;                 // Matrix-Matrix Multiply
             Vector4 operator* (const Vector4& vec) const;                     // Matrix-Vector Multiply
             Matrix4x4 operator* (const double k) const;                       // Matrix-Constant Multiply
+            Matrix4x4& operator= (const Matrix4x4& other);
 
             // Get Row/Column Vector
             Vector4 GetRowVector(int i) const;
