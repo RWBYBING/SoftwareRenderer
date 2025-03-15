@@ -27,10 +27,12 @@ void VertexProcessing::SetProjectionMatrix(const Core::Math::Matrix4x4& mat)
     this->projection_matrix = mat;
 }
 
-Core::Primitives::Vertex VertexProcessing::TransformVertex(const Core::Primitives::Vertex& vert)
+Core::Primitives::Vertex VertexProcessing::TransformVertex(const Core::Primitives::Vertex& vert) const
 {
     Core::Primitives::Vertex result = vert;
 
     // Apply MVP transformation
     result.pos = this->projection_matrix * (this->view_matrix * (this->model_matrix * result.pos));
+
+    return result;
 }

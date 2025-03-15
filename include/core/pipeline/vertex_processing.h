@@ -20,7 +20,7 @@ namespace Core
             void SetProjectionMatrix(const Core::Math::Matrix4x4& mat);
 
             // Transform Vertex
-            Core::Primitives::Vertex TransformVertex(const Core::Primitives::Vertex& vert);
+            Core::Primitives::Vertex TransformVertex(const Core::Primitives::Vertex& vert) const;
 
         private:
             Core::Math::Matrix4x4 model_matrix;                 // Transform vertices from model space to world space

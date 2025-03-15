@@ -246,7 +246,7 @@ void GLFWWindowManager::UpdateImGuiWindow()
 {
     if (ImGui::Begin("Controller"))
     {
-        
+        ImGui::Text("Frame Rate: {%d}", ImGui::GetIO().Framerate);
     }
     ImGui::End();
 }
