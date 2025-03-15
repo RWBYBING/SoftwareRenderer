@@ -62,6 +62,7 @@ set(GUI_SOURCES
 	src/core/primitives/vertex.cpp
 	src/core/primitives/fragment.cpp
 	src/core/primitives/triangle.cpp
+	src/core/buffer/framebuffer.cpp
 	src/core/pipeline/vertex_processing.cpp
 	src/core/pipeline/triangle_processing.cpp
 )

@@ -21,10 +21,10 @@ namespace Core
             // Clipping
 
             // Mapping to Screen
-            void MappingToScreenSpace(Core::Primitives::Triangle& triangle, int screenWidth, int screenHeight) const;
+            // void MappingToScreenSpace(Core::Primitives::Triangle& triangle, int screenWidth, int screenHeight) const;
           
         private:
-            bool InsideViewFrustum(const Core::Primitives::Vertex& vert) const;       // Determine if a vertex is inside the view frustum
+            // bool InsideViewFrustum(const Core::Primitives::Vertex& vert) const;       // Determine if a vertex is inside the view frustum
         };
     }
 }
