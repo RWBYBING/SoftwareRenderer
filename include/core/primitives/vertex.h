@@ -20,6 +20,10 @@ namespace Core
             Core::Math::Vector3 normal;
             Core::Math::Vector2 textcoord;
 
+            void SetColor(double r, double g, double b, double a);
+            void SetPos(double x, double y, double z, double w);
+            void SetNormal(double x, double y, double z);
+
         private:
 
         };
