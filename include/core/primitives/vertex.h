@@ -15,11 +15,16 @@ namespace Core
             Vertex(const Vertex& vertex);
             ~Vertex();
 
+            // Vertex attributes
             Core::Math::Vector4 color;                  
             Core::Math::Vector4 pos;
             Core::Math::Vector3 normal;
             Core::Math::Vector2 textcoord;
 
+            // Operator overloading
+            Vertex& operator= (const Vertex& other);
+
+            // Set attributes
             void SetColor(double r, double g, double b, double a);
             void SetPos(double x, double y, double z, double w);
             void SetNormal(double x, double y, double z);

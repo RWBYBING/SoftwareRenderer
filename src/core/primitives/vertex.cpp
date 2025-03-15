@@ -31,6 +31,8 @@ Vertex::Vertex(const Vertex& vertex)
 
 Vertex::~Vertex() = default;
 
+Vertex& Vertex::operator=(const Vertex& other) = default;
+
 void Vertex::SetColor(double r, double g, double b, double a)
 {
     if (

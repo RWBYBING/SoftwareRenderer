@@ -10,6 +10,8 @@ Vector2::Vector2(const Vector2& vec) : x{vec.x}, y{vec.y} {}
 
 Vector2::~Vector2() = default;
 
+Vector2& Vector2::operator=(const Vector2& other) = default;
+
 Vector2 Vector2::operator+(const Vector2& vec) const 
 {
     return Vector2(this->x + vec.x, this->y + vec.y);
@@ -58,6 +60,8 @@ Vector3::Vector3(double x, double y, double z) : x{x}, y{y}, z{z} {}
 Vector3::Vector3(const Vector3& vec) : x{vec.x}, y{vec.y}, z{vec.z} {}
 
 Vector3::~Vector3() = default;
+
+Vector3& Vector3::operator=(const Vector3& other) = default;
 
 Vector3 Vector3::operator+ (const Vector3& vec) const
 {
@@ -125,6 +129,8 @@ Vector4::Vector4(double x, double y, double z, double w) : x{x}, y{y}, z{z}, w{w
 Vector4::Vector4(const Vector4& vec) : x{vec.x}, y{vec.y}, z{vec.z}, w{vec.w} {}
 
 Vector4::~Vector4() = default;
+
+Vector4& Vector4::operator=(const Vector4& other) = default;
 
 Vector4 Vector4::operator+ (const Vector4& vec) const
 {

@@ -23,6 +23,7 @@ namespace Core
             Vector2 operator+ (const Vector2& vec) const;
             Vector2 operator- (const Vector2& vec) const;
             Vector2 operator* (double k) const;
+            Vector2& operator= (const Vector2& other);
 
             // Vector Operation
             double Dot(const Vector2& vec) const;
@@ -55,6 +56,7 @@ namespace Core
             Vector3 operator+ (const Vector3& vec) const;
             Vector3 operator- (const Vector3& vec) const;
             Vector3 operator* (double k) const;
+            Vector3& operator= (const Vector3& other);
 
             // Vector Operation
             double Dot(const Vector3& vec) const;
@@ -90,6 +92,7 @@ namespace Core
             Vector4 operator+ (const Vector4& vec) const;
             Vector4 operator- (const Vector4& vec) const;
             Vector4 operator* (double k) const;
+            Vector4& operator= (const Vector4& other);
 
             // Vector Operation
             double Dot(const Vector4& vec) const;

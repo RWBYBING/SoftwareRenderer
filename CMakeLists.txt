@@ -60,6 +60,8 @@ set(GUI_SOURCES
 	src/core/math/vector.cpp
 	src/core/math/matrix.cpp
 	src/core/primitives/vertex.cpp
+	src/core/primitives/triangle.cpp
+	src/core/pipeline/vertex_processing.cpp
 )
 
 set(SOURCES 
