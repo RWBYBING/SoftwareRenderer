@@ -56,7 +56,7 @@ set(CORE_SOURCES
 
 set(GUI_SOURCES
 	src/gui/window.cpp
-	src/core/renderer.cpp
+	src/core/renderer/renderer.cpp
 	src/core/math/vector.cpp
 	src/core/math/matrix.cpp
 	src/core/primitives/vertex.cpp
@@ -66,6 +66,7 @@ set(GUI_SOURCES
 	src/core/buffer/depthbuffer.cpp
 	src/core/pipeline/vertex_processing.cpp
 	src/core/pipeline/triangle_processing.cpp
+	src/core/pipeline/rasterizer.cpp
 )
 
 set(SOURCES 
