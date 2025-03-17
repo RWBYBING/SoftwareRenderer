@@ -2,12 +2,12 @@
 
 #include <chrono>
 
+#include <utils/timer.h>
+
 using namespace Core::Renderer;
 
 inline std::vector<float> ConvertFrameBuffer2Vector(std::shared_ptr<Core::Buffer::FrameBuffer> buffer)
 {
-    auto start = std::chrono::high_resolution_clock::now();
-
     std::vector<float> result;
     result.reserve(buffer->GetWidth() * buffer->GetHeight() * 4);
 
@@ -23,12 +23,6 @@ inline std::vector<float> ConvertFrameBuffer2Vector(std::shared_ptr<Core::Buffer
         }
     }
 
-    auto end = std::chrono::high_resolution_clock::now();
-
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-
-    std::cout << duration.count() << " ms" << std::endl;
-
     return result;
 }
 
@@ -38,8 +32,8 @@ SoftwareRenderer::SoftwareRenderer()
     , vertex_processing_ptr{std::make_unique<Core::Pipeline::VertexProcessing>()}
     , triangle_processing_ptr{std::make_unique<Core::Pipeline::TriangleProcessing>()}
     , rasterizer_ptr{std::make_unique<Core::Pipeline::Rasterizer>()}
-    , frame_buffer_ptr{std::make_shared<Core::Buffer::FrameBuffer>(1000, 2000)}
-    , depth_buffer_ptr{std::make_shared<Core::Buffer::DepthBuffer>(1000, 2000)}
+    , frame_buffer_ptr{std::make_shared<Core::Buffer::FrameBuffer>(100, 100)}
+    , depth_buffer_ptr{std::make_shared<Core::Buffer::DepthBuffer>(100, 100)}
 {
 
 }
@@ -107,9 +101,12 @@ void SoftwareRenderer::UpdateTexture()
     // Bind Texture
     glBindTexture(GL_TEXTURE_2D, this->texture);
 
+    Utils::GlobalTimer& timer = Utils::GlobalTimer::Instance();
+    timer.Start();
+
     auto buffer = ConvertFrameBuffer2Vector(this->frame_buffer_ptr);
 
-    auto start = std::chrono::high_resolution_clock::now();
+    timer.PrintElapsedTime();
 
     glTexSubImage2D(
         GL_TEXTURE_2D,
@@ -123,11 +120,6 @@ void SoftwareRenderer::UpdateTexture()
         buffer.data()
     );
 
-    auto end = std::chrono::high_resolution_clock::now();
-
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-
-    std::cout << duration.count() << " ms" << std::endl;
 
     // Unbind Texture
     glBindTexture(GL_TEXTURE_2D, 0);

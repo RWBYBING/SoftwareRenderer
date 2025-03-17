@@ -48,6 +48,7 @@ endif()
 include_directories(include)
 include_directories(include/core)
 include_directories(include/gui)
+include_directories(include/utils)
 
 # Source Files
 set(CORE_SOURCES
@@ -56,6 +57,7 @@ set(CORE_SOURCES
 
 set(GUI_SOURCES
 	src/gui/window.cpp
+	src/utils/timer.cpp
 	src/core/math/vector.cpp
 	src/core/math/matrix.cpp
 	src/core/primitives/vertex.cpp
