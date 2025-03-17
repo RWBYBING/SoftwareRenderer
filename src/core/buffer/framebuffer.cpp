@@ -42,3 +42,18 @@ int FrameBuffer::GetHeight() const
 {
     return this->height;
 }
+
+void FrameBuffer::SetWidth(int width)
+{
+    this->width = width;
+}
+
+void FrameBuffer::SetHeight(int height)
+{
+    this->height = height;
+}
+
+void FrameBuffer::ResizeBuffer()
+{
+    this->data.resize(this->width * this->height, Core::Math::Vector4{0.0, 0.0, 0.0, 1.0});
+}

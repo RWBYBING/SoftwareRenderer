@@ -16,7 +16,7 @@ namespace Core
         class Rasterizer
         {
         public:
-            Rasterizer(int width, int height);
+            Rasterizer();
             ~Rasterizer();
 
             // Set Buffer
@@ -30,8 +30,6 @@ namespace Core
 
         
         private:
-            int screen_width;
-            int screen_height;
             std::shared_ptr<Core::Buffer::FrameBuffer> frame_buffer;    // frame buffer
             std::shared_ptr<Core::Buffer::DepthBuffer> depth_buffer;    // depth buffer
 

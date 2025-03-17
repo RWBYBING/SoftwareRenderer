@@ -6,7 +6,7 @@ DepthBuffer::DepthBuffer(int width, int height)
     : width{width}
     , height{height}
 {
-
+    this->data.resize(width * height, 1.0);
 }
 
 DepthBuffer::~DepthBuffer() = default;
@@ -41,4 +41,19 @@ int DepthBuffer::GetWidth() const
 int DepthBuffer::GetHeight() const
 {
     return this->height;
+}
+
+void DepthBuffer::SetWidth(int width)
+{
+    this->width = width;
+}
+
+void DepthBuffer::SetHeight(int height)
+{
+    this->height = height;
+}
+
+void DepthBuffer::ResizeBuffer()
+{
+    this->data.resize(this->width * this->height, 1.0);
 }

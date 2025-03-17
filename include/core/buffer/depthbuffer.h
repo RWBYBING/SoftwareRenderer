@@ -11,6 +11,7 @@ namespace Core
         {
         public:
             DepthBuffer(int width, int height);
+            DepthBuffer() = delete;
             ~DepthBuffer();
 
             double GetDepth(int x, int y) const;                            // Get Depth
@@ -19,6 +20,9 @@ namespace Core
 
             int GetWidth() const;                                           // Get buffer width
             int GetHeight() const;                                          // Get buffer height
+            void SetWidth(int width);                                       // Set buffer width
+            void SetHeight(int height);                                     // Set buffer height
+            void ResizeBuffer();                                            // Resize the buffer memory
 
         private:
             int width;

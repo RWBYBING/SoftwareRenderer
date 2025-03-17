@@ -1,4 +1,4 @@
-#ifndef TRIANGlE_H
+#ifndef TRIANGLE_H
 #define TRIANGLE_H
 
 #include <core/primitives/vertex.h>

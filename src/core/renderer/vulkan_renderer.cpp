@@ -17,7 +17,23 @@ void VulkanRenderer::SetupPipeline()
 
 }
 
-void VulkanRenderer::Render()
+GLuint VulkanRenderer::Render()
 {
-    
+    return 0;
+}
+
+void VulkanRenderer::HandleWindowResize(int width, int height)
+{
+    width++;
+    height++;
+}
+
+int VulkanRenderer::GetTextureWidth()
+{
+    return 0;
+}
+
+int VulkanRenderer::GetTextureHeight()
+{
+    return 0;
 }

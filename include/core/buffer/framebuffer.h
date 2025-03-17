@@ -13,6 +13,7 @@ namespace Core
         {
         public:
             FrameBuffer(int width, int height);
+            FrameBuffer() = delete;
             ~FrameBuffer();
 
             Core::Math::Vector4 GetPixel(int x, int y) const;                           // Get pixel
@@ -23,6 +24,9 @@ namespace Core
             
             int GetWidth() const;                                                       // Get buffer height
             int GetHeight() const;                                                      // Get buffer width
+            void SetWidth(int width);                                                   // Set buffer width
+            void SetHeight(int height);                                                 // Set buffer height
+            void ResizeBuffer();                                                        // Resize the buffer memory
 
         private:
             int width;

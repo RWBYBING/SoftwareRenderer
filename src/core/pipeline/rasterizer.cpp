@@ -4,10 +4,8 @@
 
 using namespace Core::Pipeline;
 
-Rasterizer::Rasterizer(int width, int height)
-    : screen_width{width}
-    , screen_height{height}
-    , frame_buffer{nullptr}
+Rasterizer::Rasterizer()
+    : frame_buffer{nullptr}
     , depth_buffer{nullptr}
 {
 

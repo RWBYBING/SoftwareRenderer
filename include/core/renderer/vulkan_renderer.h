@@ -13,7 +13,11 @@ namespace Core
             VulkanRenderer();
             void Init() override;
             void SetupPipeline() override;
-            void Render() override;
+            GLuint Render() override;
+
+            void HandleWindowResize(int width, int height) override;
+            int GetTextureWidth() override;
+            int GetTextureHeight() override;
         };
     }
 }

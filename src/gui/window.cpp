@@ -3,6 +3,8 @@
 #include <cstdio>
 #include <iostream>
 
+#include <core/renderer/renderer_factory.h>
+
 using namespace GUI;
 
 static const unsigned int SCREEN_WIDTH = 3200;
@@ -106,6 +108,7 @@ void SetupImGuiStyle()
 
 
 GLFWWindowManager::GLFWWindowManager()
+    : renderer{nullptr}
 {
     // Initialize GLFW Pipeline
     glfwSetErrorCallback(glfw_error_callback);
@@ -234,16 +237,18 @@ void GLFWWindowManager::Run()
 
 void GLFWWindowManager::Startup()
 {
-
+    // Init Backend Renderer
+    Core::Renderer::SoftwareRendererFactory software_renderer_factory;
+    this->renderer = software_renderer_factory.CreateRenderer();
 }
 
 void GLFWWindowManager::Update()
 {
-    this->UpdateImGuiWindow();
-    this->UpdateRenderingContext();
+    this->UpdateController();
+    this->UpdateFramebuffer();
 }
 
-void GLFWWindowManager::UpdateImGuiWindow()
+void GLFWWindowManager::UpdateController()
 {
     if (ImGui::Begin("Controller"))
     {
@@ -252,7 +257,26 @@ void GLFWWindowManager::UpdateImGuiWindow()
     ImGui::End();
 }
 
-void GLFWWindowManager::UpdateRenderingContext()
+void GLFWWindowManager::UpdateFramebuffer()
 {
+    if (ImGui::Begin("Result"))
+    {
+        ImVec2 window_size = ImGui::GetContentRegionAvail();
+        // Resize the texture size when window size changed
+        int current_width = static_cast<int>(window_size.x);
+        int current_height = static_cast<int>(window_size.y);
+        int texture_width = this->renderer->GetTextureWidth();
+        int texture_height = this->renderer->GetTextureHeight();
 
+        if (current_width != texture_width || current_height != texture_height)
+        {
+            this->renderer->HandleWindowResize(current_width, current_height);
+            std::cout << "Window Resized: " << current_width << ", " << current_height << std::endl;
+        }
+
+        // render given texture
+        GLuint texture = this->renderer->Render();
+        ImGui::Image((void*)(intptr_t)texture, window_size);
+    }
+    ImGui::End();
 }

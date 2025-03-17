@@ -17,7 +17,23 @@ void OpenGLRenderer::SetupPipeline()
 
 }
 
-void OpenGLRenderer::Render()
+GLuint OpenGLRenderer::Render()
 {
-    
+    return 0;
+}
+
+void OpenGLRenderer::HandleWindowResize(int width, int height)
+{
+    width++;
+    height++;
+}
+
+int OpenGLRenderer::GetTextureWidth()
+{
+    return 0;
+}
+
+int OpenGLRenderer::GetTextureHeight()
+{
+    return 0;
 }
