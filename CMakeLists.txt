@@ -56,7 +56,6 @@ set(CORE_SOURCES
 
 set(GUI_SOURCES
 	src/gui/window.cpp
-	src/core/renderer/renderer.cpp
 	src/core/math/vector.cpp
 	src/core/math/matrix.cpp
 	src/core/primitives/vertex.cpp
@@ -67,6 +66,10 @@ set(GUI_SOURCES
 	src/core/pipeline/vertex_processing.cpp
 	src/core/pipeline/triangle_processing.cpp
 	src/core/pipeline/rasterizer.cpp
+	src/core/renderer/renderer_factory.cpp
+	src/core/renderer/software_renderer.cpp
+	src/core/renderer/opengl_renderer.cpp
+	src/core/renderer/vulkan_renderer.cpp
 )
 
 set(SOURCES 
