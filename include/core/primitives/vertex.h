@@ -25,9 +25,9 @@ namespace Core
             Vertex& operator= (const Vertex& other);
 
             // Set attributes
-            void SetColor(double r, double g, double b, double a);
-            void SetPos(double x, double y, double z, double w);
-            void SetNormal(double x, double y, double z);
+            void SetColor(float r, float g, float b, float a);
+            void SetPos(float x, float y, float z, float w);
+            void SetNormal(float x, float y, float z);
 
         private:
 

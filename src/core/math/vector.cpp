@@ -4,7 +4,7 @@ using namespace Core::Math;
 
 Vector2::Vector2() : x{0}, y{0} {}
 
-Vector2::Vector2(double x, double y) : x{x}, y{y} {}
+Vector2::Vector2(float x, float y) : x{x}, y{y} {}
 
 Vector2::Vector2(const Vector2& vec) : x{vec.x}, y{vec.y} {}
 
@@ -22,12 +22,12 @@ Vector2 Vector2::operator-(const Vector2& vec) const
     return Vector2(this->x - vec.x, this->y - vec.y);
 }
 
-Vector2 Vector2::operator*(double k) const
+Vector2 Vector2::operator*(float k) const
 {
     return Vector2(k * this->x, k * this->y);
 }
 
-double Vector2::Dot(const Vector2& vec) const
+float Vector2::Dot(const Vector2& vec) const
 {
     return this->x * vec.x + this->y * vec.y;
 }
@@ -38,12 +38,12 @@ Vector2 Vector2::Normalize() const
     return Vector2(this->x / mag, this->y / mag);
 }
 
-double Vector2::Magnitude() const
+float Vector2::Magnitude() const
 {
     return std::sqrt(this->x * this->x + this->y * this->y);
 }
 
-double Vector2::Dot(const Vector2& vec1, const Vector2& vec2) 
+float Vector2::Dot(const Vector2& vec1, const Vector2& vec2) 
 {
     return vec1.x * vec2.x + vec1.y * vec2.y;
 }
@@ -55,7 +55,7 @@ void Vector2::PrintVec() const
 
 Vector3::Vector3() : x{0}, y{0}, z{0} {}
 
-Vector3::Vector3(double x, double y, double z) : x{x}, y{y}, z{z} {}
+Vector3::Vector3(float x, float y, float z) : x{x}, y{y}, z{z} {}
 
 Vector3::Vector3(const Vector3& vec) : x{vec.x}, y{vec.y}, z{vec.z} {}
 
@@ -73,12 +73,12 @@ Vector3 Vector3::operator- (const Vector3& vec) const
     return Vector3(this->x - vec.x, this->y - vec.y, this->z - vec.z);
 }
 
-Vector3 Vector3::operator* (double k) const
+Vector3 Vector3::operator* (float k) const
 {
     return Vector3(k * this->x, k * this->y, k * this->z);
 }
 
-double Vector3::Dot(const Vector3& vec) const
+float Vector3::Dot(const Vector3& vec) const
 {
     return this->x * vec.x + this->y * vec.y + this->z * vec.z;
 }
@@ -94,16 +94,16 @@ Vector3 Vector3::Cross(const Vector3& vec) const
 
 Vector3 Vector3::Normalize() const 
 {
-    double mag = this->Magnitude();
+    float mag = this->Magnitude();
     return Vector3(this->x / mag, this->y / mag, this->z / mag);
 }
 
-double Vector3::Magnitude() const 
+float Vector3::Magnitude() const 
 {
     return std::sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
 }
 
-double Vector3::Dot(const Vector3& vec1, const Vector3& vec2) 
+float Vector3::Dot(const Vector3& vec1, const Vector3& vec2) 
 {
     return vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z;
 }
@@ -124,7 +124,7 @@ void Vector3::PrintVec() const
 
 Vector4::Vector4() : x{0}, y{0}, z{0}, w{0} {}
 
-Vector4::Vector4(double x, double y, double z, double w) : x{x}, y{y}, z{z}, w{w} {}
+Vector4::Vector4(float x, float y, float z, float w) : x{x}, y{y}, z{z}, w{w} {}
 
 Vector4::Vector4(const Vector4& vec) : x{vec.x}, y{vec.y}, z{vec.z}, w{vec.w} {}
 
@@ -142,28 +142,28 @@ Vector4 Vector4::operator- (const Vector4& vec) const
     return Vector4(this->x - vec.x, this->y - vec.y, this->z - vec.z, this->w - vec.w);
 }
 
-Vector4 Vector4::operator* (double k) const
+Vector4 Vector4::operator* (float k) const
 {
     return Vector4(k * this->x, k * this->y, k * this->z, k * this->w);
 }
 
-double Vector4::Dot(const Vector4& vec) const
+float Vector4::Dot(const Vector4& vec) const
 {
     return this->x * vec.x + this->y * vec.y + this->z * vec.z + this->w * vec.w;
 }
 
 Vector4 Vector4::Normalize() const 
 {
-    double mag = Magnitude();
+    float mag = Magnitude();
     return Vector4(this->x / mag, this->y / mag, this->z / mag, this->w / mag);
 }
 
-double Vector4::Magnitude() const
+float Vector4::Magnitude() const
 {
     return std::sqrt(this->x * this->x + this->y * this->y + this->z * this->z + this->w * this->w);
 }
 
-double Vector4::Dot(const Vector4& vec1, const Vector4& vec2)
+float Vector4::Dot(const Vector4& vec1, const Vector4& vec2)
 {
     return vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z + vec1.w * vec2.w;
 }

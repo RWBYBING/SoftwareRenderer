@@ -33,7 +33,7 @@ Fragment::~Fragment() = default;
 
 Fragment& Fragment::operator=(const Fragment& other) = default;
 
-void Fragment::SetColor(double r, double g, double b, double a)
+void Fragment::SetColor(float r, float g, float b, float a)
 {
     if (
         (r < 0.0) || (r > 255.0) || 
@@ -48,12 +48,12 @@ void Fragment::SetColor(double r, double g, double b, double a)
     this->color = Core::Math::Vector4(r, g, b, a);
 }
 
-void Fragment::SetPos(double x, double y, double z, double w)
+void Fragment::SetPos(float x, float y, float z, float w)
 {
     this->pos = Core::Math::Vector4(x, y, z, w);
 }
 
-void Fragment::SetNormal(double x, double y, double z)
+void Fragment::SetNormal(float x, float y, float z)
 {
     this->normal = Core::Math::Vector3(x, y, z);
 }

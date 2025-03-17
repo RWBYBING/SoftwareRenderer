@@ -31,10 +31,10 @@ std::vector<Core::Primitives::Fragment> Rasterizer::RasterizeTriangle(const Core
     std::vector<Core::Primitives::Fragment> fragments;
 
     // Calculate the bounding box
-    double min_x = std::min({tri.vertices[0].pos.x, tri.vertices[1].pos.x, tri.vertices[2].pos.x});
-    double max_x = std::max({tri.vertices[0].pos.x, tri.vertices[1].pos.x, tri.vertices[2].pos.x});
-    double min_y = std::min({tri.vertices[0].pos.y, tri.vertices[1].pos.y, tri.vertices[2].pos.y});
-    double max_y = std::max({tri.vertices[0].pos.y, tri.vertices[1].pos.y, tri.vertices[2].pos.y});
+    float min_x = std::min({tri.vertices[0].pos.x, tri.vertices[1].pos.x, tri.vertices[2].pos.x});
+    float max_x = std::max({tri.vertices[0].pos.x, tri.vertices[1].pos.x, tri.vertices[2].pos.x});
+    float min_y = std::min({tri.vertices[0].pos.y, tri.vertices[1].pos.y, tri.vertices[2].pos.y});
+    float max_y = std::max({tri.vertices[0].pos.y, tri.vertices[1].pos.y, tri.vertices[2].pos.y});
 
     // Iterate all the pixels in the bounding box
     for (int y = static_cast<int>(min_y); y <= static_cast<int>(max_y); ++y)
@@ -55,7 +55,7 @@ bool Rasterizer::DepthTest(const Core::Primitives::Fragment& frag) const
         return false;
     }
 
-    double current_depth = this->depth_buffer->GetDepth(static_cast<int>(frag.pos.x), static_cast<int>(frag.pos.y));
+    float current_depth = this->depth_buffer->GetDepth(static_cast<int>(frag.pos.x), static_cast<int>(frag.pos.y));
     if (frag.pos.z < current_depth)
     {
         this->depth_buffer->SetDepth(static_cast<int>(frag.pos.x), static_cast<int>(frag.pos.y), frag.pos.z);

@@ -11,7 +11,7 @@ DepthBuffer::DepthBuffer(int width, int height)
 
 DepthBuffer::~DepthBuffer() = default;
 
-double DepthBuffer::GetDepth(int x, int y) const
+float DepthBuffer::GetDepth(int x, int y) const
 {
     if (x >= 0 && x < this->width && y >= 0 && y < this->height)
     {
@@ -20,7 +20,7 @@ double DepthBuffer::GetDepth(int x, int y) const
     return 1.0;
 }
 
-void DepthBuffer::SetDepth(int x, int y, double depth)
+void DepthBuffer::SetDepth(int x, int y, float depth)
 {
     if (x >= 0 && x < this->width && y >= 0 && y < this->height)
     {
@@ -28,7 +28,7 @@ void DepthBuffer::SetDepth(int x, int y, double depth)
     }
 }
 
-void DepthBuffer::Clear(double default_depth)
+void DepthBuffer::Clear(float default_depth)
 {
     std::fill(this->data.begin(), this->data.end(), default_depth);
 }

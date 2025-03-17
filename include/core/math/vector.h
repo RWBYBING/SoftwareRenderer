@@ -11,26 +11,26 @@ namespace Core
         struct Vector2
         {
         public:
-            double x;
-            double y;
+            float x;
+            float y;
 
             Vector2();
-            Vector2(double x, double y);
+            Vector2(float x, float y);
             Vector2(const Vector2& vec);
             ~Vector2();
 
             // Operator Overloading
             Vector2 operator+ (const Vector2& vec) const;
             Vector2 operator- (const Vector2& vec) const;
-            Vector2 operator* (double k) const;
+            Vector2 operator* (float k) const;
             Vector2& operator= (const Vector2& other);
 
             // Vector Operation
-            double Dot(const Vector2& vec) const;
+            float Dot(const Vector2& vec) const;
             Vector2 Normalize() const;
-            double Magnitude() const;
+            float Magnitude() const;
 
-            static double Dot(const Vector2& vec1, const Vector2& vec2);
+            static float Dot(const Vector2& vec1, const Vector2& vec2);
 
             // Debug Tools
             void PrintVec() const;
@@ -43,28 +43,28 @@ namespace Core
         struct Vector3
         {
         public:
-            double x;
-            double y;
-            double z;
+            float x;
+            float y;
+            float z;
 
             Vector3();
-            Vector3(double x, double y, double z);
+            Vector3(float x, float y, float z);
             Vector3(const Vector3& vec);
             ~Vector3();
 
             // Operator Overloading
             Vector3 operator+ (const Vector3& vec) const;
             Vector3 operator- (const Vector3& vec) const;
-            Vector3 operator* (double k) const;
+            Vector3 operator* (float k) const;
             Vector3& operator= (const Vector3& other);
 
             // Vector Operation
-            double Dot(const Vector3& vec) const;
+            float Dot(const Vector3& vec) const;
             Vector3 Cross(const Vector3& vec) const;
             Vector3 Normalize() const;
-            double Magnitude() const;
+            float Magnitude() const;
 
-            static double Dot(const Vector3& vec1, const Vector3& vec2);
+            static float Dot(const Vector3& vec1, const Vector3& vec2);
             static Vector3 Cross(const Vector3& vec1, const Vector3& vec2);
 
             // Debug Tools
@@ -78,28 +78,28 @@ namespace Core
         struct Vector4
         {
         public:
-            double x;
-            double y;
-            double z;
-            double w;
+            float x;
+            float y;
+            float z;
+            float w;
 
             Vector4();
-            Vector4(double x, double y, double z, double w);
+            Vector4(float x, float y, float z, float w);
             Vector4(const Vector4& vec);
             ~Vector4();
 
             // Operator Overloading
             Vector4 operator+ (const Vector4& vec) const;
             Vector4 operator- (const Vector4& vec) const;
-            Vector4 operator* (double k) const;
+            Vector4 operator* (float k) const;
             Vector4& operator= (const Vector4& other);
 
             // Vector Operation
-            double Dot(const Vector4& vec) const;
+            float Dot(const Vector4& vec) const;
             Vector4 Normalize() const;
-            double Magnitude() const;
+            float Magnitude() const;
 
-            static double Dot(const Vector4& vec1, const Vector4& vec2);
+            static float Dot(const Vector4& vec1, const Vector4& vec2);
 
             // Debug Tool
             void PrintVec() const;

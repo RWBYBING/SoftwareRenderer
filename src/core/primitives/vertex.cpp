@@ -33,7 +33,7 @@ Vertex::~Vertex() = default;
 
 Vertex& Vertex::operator=(const Vertex& other) = default;
 
-void Vertex::SetColor(double r, double g, double b, double a)
+void Vertex::SetColor(float r, float g, float b, float a)
 {
     if (
         (r < 0.0) || (r > 255.0) || 
@@ -48,12 +48,12 @@ void Vertex::SetColor(double r, double g, double b, double a)
     this->color = Core::Math::Vector4(r, g, b, a);
 }
 
-void Vertex::SetPos(double x, double y, double z, double w)
+void Vertex::SetPos(float x, float y, float z, float w)
 {
     this->pos = Core::Math::Vector4(x, y, z, w);
 }
 
-void Vertex::SetNormal(double x, double y, double z)
+void Vertex::SetNormal(float x, float y, float z)
 {
     this->normal = Core::Math::Vector3(x, y, z);
 }
