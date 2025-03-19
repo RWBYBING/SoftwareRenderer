@@ -37,6 +37,9 @@ namespace Core
             int texture_height;
 
         private:
+            
+
+        private:
             std::unique_ptr<Core::Pipeline::VertexProcessing> vertex_processing_ptr;
             std::unique_ptr<Core::Pipeline::TriangleProcessing> triangle_processing_ptr;
             std::unique_ptr<Core::Pipeline::Rasterizer> rasterizer_ptr;

@@ -25,7 +25,7 @@ void SoftwareRenderer::Init()
 
 void SoftwareRenderer::SetupPipeline()
 {
-
+    
 }
 
 GLuint SoftwareRenderer::Render()

@@ -57,3 +57,8 @@ void Vertex::SetNormal(float x, float y, float z)
 {
     this->normal = Core::Math::Vector3(x, y, z);
 }
+
+void Vertex::SetTexture(float u, float v)
+{
+    this->textcoord = Core::Math::Vector2(u, v);
+}

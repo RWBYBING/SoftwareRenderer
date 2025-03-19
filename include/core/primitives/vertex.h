@@ -28,6 +28,7 @@ namespace Core
             void SetColor(float r, float g, float b, float a);
             void SetPos(float x, float y, float z, float w);
             void SetNormal(float x, float y, float z);
+            void SetTexture(float u, float v);
 
         private:
 
