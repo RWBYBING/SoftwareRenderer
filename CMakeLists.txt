@@ -66,10 +66,6 @@ set(GUI_SOURCES
 	src/core/primitives/camera.cpp
 	src/core/buffer/framebuffer.cpp
 	src/core/buffer/depthbuffer.cpp
-	src/core/pipeline/vertex_processing.cpp
-	src/core/pipeline/triangle_processing.cpp
-	src/core/pipeline/rasterizer.cpp
-	src/core/renderer/renderer_factory.cpp
 	src/core/renderer/software_renderer.cpp
 	src/core/renderer/opengl_renderer.cpp
 	src/core/renderer/vulkan_renderer.cpp

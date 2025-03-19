@@ -29,12 +29,10 @@ namespace GUI
 
     private:
         GLFWwindow* window;                                         // GLFWWindow Instance
-        std::unique_ptr<Core::Renderer::Renderer> renderer;         // Renderer
 
     private:
         int render_mode;                                            // Renderer option
     };
 }
-
 
 #endif  // WINDOW_H

@@ -20,7 +20,7 @@ SoftwareRenderer::SoftwareRenderer()
 
 void SoftwareRenderer::Init()
 {
-
+    
 }
 
 void SoftwareRenderer::SetupPipeline()

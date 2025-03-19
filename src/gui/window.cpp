@@ -240,6 +240,8 @@ void GLFWWindowManager::Startup()
     // Init Backend Renderer
     Core::Renderer::SoftwareRendererFactory software_renderer_factory;
     this->renderer = software_renderer_factory.CreateRenderer();
+    this->renderer->Init();
+    this->renderer->SetupPipeline();
 }
 
 void GLFWWindowManager::Update()

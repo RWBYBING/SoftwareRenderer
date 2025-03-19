@@ -3,7 +3,8 @@
 
 #include <memory>
 
-#include <core/renderer/renderer.h>
+#include <GL3W/gl3w.h>
+
 #include <core/pipeline/vertex_processing.h>
 #include <core/pipeline/triangle_processing.h>
 #include <core/pipeline/rasterizer.h>
@@ -12,18 +13,18 @@ namespace Core
 {
     namespace Renderer
     {
-        class SoftwareRenderer : public Renderer
+        class SoftwareRenderer
         {
         public:
             SoftwareRenderer();
 
-            void Init() override;
-            void SetupPipeline() override;
-            GLuint Render() override;
+            void Init();
+            void SetupPipeline();
+            GLuint Render();
 
-            void HandleWindowResize(int width, int height) override;
-            int GetTextureWidth() override;
-            int GetTextureHeight() override;
+            void HandleWindowResize(int width, int height);
+            int GetTextureWidth();
+            int GetTextureHeight();
 
         private:
             void CreateTexture(int width, int height);          // Create the 2D texture for final displaying
