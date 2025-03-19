@@ -19,7 +19,7 @@ namespace GUI
     public:
         GLFWWindowManager();
         ~GLFWWindowManager();
-        void Run();                                     // Start the GLFW window loop
+        void Run();                                                 // Start the GLFW window loop
 
     private:
         void Update();                                              // Update a new frame
@@ -30,6 +30,9 @@ namespace GUI
     private:
         GLFWwindow* window;                                         // GLFWWindow Instance
         std::unique_ptr<Core::Renderer::Renderer> renderer;         // Renderer
+
+    private:
+        int render_mode;                                            // Renderer option
     };
 }
 

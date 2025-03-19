@@ -7,8 +7,8 @@
 
 using namespace GUI;
 
-static const unsigned int SCREEN_WIDTH = 800;
-static const unsigned int SCREEN_HEIGHT = 600;
+static const unsigned int SCREEN_WIDTH = 1400;
+static const unsigned int SCREEN_HEIGHT = 1000;
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -106,9 +106,9 @@ void SetupImGuiStyle()
     style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.196078434586525f, 0.1764705926179886f, 0.5450980663299561f, 0.501960813999176f); 
 }
 
-
 GLFWWindowManager::GLFWWindowManager()
     : renderer{nullptr}
+    , render_mode{0}
 {
     // Initialize GLFW Pipeline
     glfwSetErrorCallback(glfw_error_callback);
@@ -253,6 +253,41 @@ void GLFWWindowManager::UpdateController()
     if (ImGui::Begin("Controller"))
     {
         ImGui::Text("Frame Rate: %f", ImGui::GetIO().Framerate);
+
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("Renderer: ");  ImGui::SameLine();
+        ImGui::RadioButton("Software", &this->render_mode, 0);  ImGui::SameLine();
+        ImGui::BeginDisabled();
+        ImGui::RadioButton("OpenGL", &this->render_mode, 1);    ImGui::SameLine();
+        ImGui::RadioButton("Vulkan", &this->render_mode, 2);
+        ImGui::EndDisabled();
+
+        ImGui::Text("Choose Objects: ");
+
+        if (ImGui::CollapsingHeader("Vertex Processing"))
+        {
+
+        }
+
+        if (ImGui::CollapsingHeader("Triangle Processing"))
+        {
+
+        }
+
+        if (ImGui::CollapsingHeader("Rasterization"))
+        {
+
+        }
+
+        if (ImGui::CollapsingHeader("Fragment Processing"))
+        {
+
+        }
+
+        if (ImGui::CollapsingHeader("FrameBuffer Operation"))
+        {
+
+        }
     }
     ImGui::End();
 }
