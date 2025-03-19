@@ -6,26 +6,6 @@
 
 using namespace Core::Renderer;
 
-inline std::vector<float> ConvertFrameBuffer2Vector(std::shared_ptr<Core::Buffer::FrameBuffer> buffer)
-{
-    std::vector<float> result;
-    result.reserve(buffer->GetWidth() * buffer->GetHeight() * 4);
-
-    for (int i = 0; i < buffer->GetWidth(); ++i)
-    {
-        for (int j = 0; j < buffer->GetHeight(); ++j)
-        {
-            auto color = buffer->GetPixel(i, j);
-            result.push_back(color.x);
-            result.push_back(color.y);
-            result.push_back(color.z);
-            result.push_back(color.w);
-        }
-    }
-
-    return result;
-}
-
 SoftwareRenderer::SoftwareRenderer()
     : texture_width{0}
     , texture_height{0}
@@ -98,15 +78,19 @@ void SoftwareRenderer::CreateTexture(int width, int height)
 
 void SoftwareRenderer::UpdateTexture()
 {
+    if (!this->frame_buffer_ptr)
+    {
+        return;
+    }
+
     // Bind Texture
     glBindTexture(GL_TEXTURE_2D, this->texture);
 
-    Utils::GlobalTimer& timer = Utils::GlobalTimer::Instance();
-    timer.Start();
-
-    auto buffer = ConvertFrameBuffer2Vector(this->frame_buffer_ptr);
-
-    timer.PrintElapsedTime();
+    float* buffer = frame_buffer_ptr->GetBuffer();
+    if (buffer == nullptr) {
+        std::cerr << "Buffer pointer is null!" << std::endl;
+        return;
+    }
 
     glTexSubImage2D(
         GL_TEXTURE_2D,
@@ -117,9 +101,8 @@ void SoftwareRenderer::UpdateTexture()
         this->frame_buffer_ptr->GetHeight(), 
         GL_RGBA, 
         GL_FLOAT, 
-        buffer.data()
+        buffer
     );
-
 
     // Unbind Texture
     glBindTexture(GL_TEXTURE_2D, 0);

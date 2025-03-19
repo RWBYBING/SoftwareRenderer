@@ -10,7 +10,7 @@ Matrix4x4::Matrix4x4()
     {
         for (int j = 0; j < 4; ++j)
         {
-            element[i][j] = 0.0;
+            element[i][j] = 0.0f;
         }
     }
 }
@@ -74,7 +74,7 @@ Matrix4x4 Matrix4x4::operator* (const Matrix4x4& mat) const
     {
         for (int j = 0; j < 4; ++j)
         {
-            float temp = 0.0;
+            float temp = 0.0f;
             for (int k = 0; k < 4; ++k)
             {
                 temp += this->element[i][k] * mat.element[i][k];
@@ -163,7 +163,7 @@ Matrix4x4 Matrix4x4::Scale(const Vector3& vec)
 
 Matrix4x4 Matrix4x4::Rotation(float angle, _3D_Cartesian_Coord axis)
 {
-    float radian = angle * (M_PI / 180.0);
+    float radian = angle * (M_PI / 180.0f);
     Matrix4x4 result = GetIdentity();
     // Rotation around X-axis
     if (axis == _3D_Cartesian_Coord::X)

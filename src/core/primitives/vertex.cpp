@@ -3,10 +3,10 @@
 using namespace Core::Primitives;
 
 Vertex::Vertex()
-    : color{Core::Math::Vector4(1.0, 1.0, 1.0, 1.0)}
-    , pos{Core::Math::Vector4(0.0, 0.0, 0.0, 1.0)}
-    , normal{Core::Math::Vector3(0.0, 0.0, 0.0)}
-    , textcoord{Core::Math::Vector2(0.0, 0.0)}
+    : color{Core::Math::Vector4(1.0f, 1.0f, 1.0f, 1.0f)}
+    , pos{Core::Math::Vector4(0.0f, 0.0f, 0.0f, 1.0f)}
+    , normal{Core::Math::Vector3(0.0f, 0.0f, 0.0f)}
+    , textcoord{Core::Math::Vector2(0.0f, 0.0f)}
 {
 
 }
@@ -36,10 +36,10 @@ Vertex& Vertex::operator=(const Vertex& other) = default;
 void Vertex::SetColor(float r, float g, float b, float a)
 {
     if (
-        (r < 0.0) || (r > 255.0) || 
-        (g < 0.0) || (g > 255.0) || 
-        (b < 0.0) || (b > 255.0) ||
-        (a < 0.0) || (a > 255.0)
+        (r < 0.0f) || (r > 255.0f) || 
+        (g < 0.0f) || (g > 255.0f) || 
+        (b < 0.0f) || (b > 255.0f) ||
+        (a < 0.0f) || (a > 255.0f)
     )
     {
         throw std::runtime_error("Invalid color values");

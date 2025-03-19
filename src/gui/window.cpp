@@ -7,8 +7,8 @@
 
 using namespace GUI;
 
-static const unsigned int SCREEN_WIDTH = 3200;
-static const unsigned int SCREEN_HEIGHT = 2400;
+static const unsigned int SCREEN_WIDTH = 800;
+static const unsigned int SCREEN_HEIGHT = 600;
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -160,7 +160,7 @@ GLFWWindowManager::GLFWWindowManager()
     // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // enable Multi-Viewport
 
     // Set Font Size
-    float baseFontSize = 40.0f;
+    float baseFontSize = 20.0f;
     ImFont* font = io.Fonts->AddFontFromFileTTF("/usr/share/fonts/google-noto/NotoSansMath-Regular.ttf", baseFontSize, nullptr,
         io.Fonts->GetGlyphRangesChineseFull());
     IM_ASSERT(font != nullptr);

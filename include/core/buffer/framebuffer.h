@@ -18,20 +18,19 @@ namespace Core
 
             Core::Math::Vector4 GetPixel(int x, int y) const;                           // Get pixel
             void SetPixel(int x, int y, const Core::Math::Vector4& color);              // Set pixel
-            void Clear(const Core::Math::Vector4& default_color = 
-                       Core::Math::Vector4{0.0, 0.0, 0.0, 1.0});                        // Clear buffer
-            
+            void Clear();                                                               // Clear buffer
             
             int GetWidth() const;                                                       // Get buffer height
             int GetHeight() const;                                                      // Get buffer width
             void SetWidth(int width);                                                   // Set buffer width
             void SetHeight(int height);                                                 // Set buffer height
-            void ResizeBuffer();                                                        // Resize the buffer memory
+            void ResizeBuffer();                                                        // Resize the buffer
+            float* GetBuffer();                                                         // Get the raw data
 
         private:
             int width;
             int height;
-            std::vector<Core::Math::Vector4> data;                                      // Store the value of color
+            std::vector<float> data;
         };
     }
 }
