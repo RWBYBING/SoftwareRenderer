@@ -6,7 +6,7 @@ Vertex::Vertex()
     : color{Core::Math::Vector4(1.0f, 1.0f, 1.0f, 1.0f)}
     , pos{Core::Math::Vector4(0.0f, 0.0f, 0.0f, 1.0f)}
     , normal{Core::Math::Vector3(0.0f, 0.0f, 0.0f)}
-    , textcoord{Core::Math::Vector2(0.0f, 0.0f)}
+    , texcoord{Core::Math::Vector2(0.0f, 0.0f)}
 {
 
 }
@@ -15,7 +15,7 @@ Vertex::Vertex(Core::Math::Vector4 color, Core::Math::Vector4 pos, Core::Math::V
     : color{color}
     , pos{pos}
     , normal{normal}
-    , textcoord{textcoord}
+    , texcoord{textcoord}
 {
 
 }
@@ -24,7 +24,7 @@ Vertex::Vertex(const Vertex& vertex)
     : color{vertex.color}
     , pos{vertex.pos}
     , normal{vertex.normal}
-    , textcoord{vertex.textcoord}
+    , texcoord{vertex.texcoord}
 {
 
 }
@@ -58,7 +58,7 @@ void Vertex::SetNormal(float x, float y, float z)
     this->normal = Core::Math::Vector3(x, y, z);
 }
 
-void Vertex::SetTexture(float u, float v)
+void Vertex::SetTexCoord(float u, float v)
 {
-    this->textcoord = Core::Math::Vector2(u, v);
+    this->texcoord = Core::Math::Vector2(u, v);
 }

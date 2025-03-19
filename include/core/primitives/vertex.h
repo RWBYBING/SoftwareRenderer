@@ -19,7 +19,7 @@ namespace Core
             Core::Math::Vector4 color;                  
             Core::Math::Vector4 pos;
             Core::Math::Vector3 normal;
-            Core::Math::Vector2 textcoord;
+            Core::Math::Vector2 texcoord;
 
             // Operator overloading
             Vertex& operator= (const Vertex& other);
@@ -28,7 +28,7 @@ namespace Core
             void SetColor(float r, float g, float b, float a);
             void SetPos(float x, float y, float z, float w);
             void SetNormal(float x, float y, float z);
-            void SetTexture(float u, float v);
+            void SetTexCoord(float u, float v);
 
         private:
 
