@@ -3,6 +3,7 @@
 #include <chrono>
 
 #include <utils/timer.h>
+#include <core/resources/mesh.h>
 
 using namespace Core::Renderer;
 
@@ -31,6 +32,12 @@ void SoftwareRenderer::SetupPipeline()
 
 GLuint SoftwareRenderer::Render()
 {
+    Core::Primitives::Vertex v0, v1, v2;
+    v0.SetPos(10.0f, 0.0f, -10.0f, 1.0f);
+    v1.SetPos(0.0f, 10.0f, -10.0f, 1.0f);
+    v2.SetPos(-10.0f, 0.0f, 10.0f, 1.0f);
+
+
     this->UpdateTexture();
     return this->texture;
 }
