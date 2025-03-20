@@ -64,6 +64,8 @@ set(GUI_SOURCES
 	src/core/primitives/fragment.cpp
 	src/core/primitives/triangle.cpp
 	src/core/resources/camera.cpp
+	src/core/resources/mesh.cpp
+	src/core/resources/material.cpp
 	src/core/buffer/framebuffer.cpp
 	src/core/buffer/depthbuffer.cpp
 	src/core/pipeline/vertex_processing.cpp
