@@ -10,6 +10,7 @@
 #include <core/pipeline/rasterizer.h>
 
 #include <core/resources/camera.h>
+#include <core/resources/mesh.h>
 
 namespace Core
 {
@@ -28,11 +29,16 @@ namespace Core
             int GetTextureWidth();
             int GetTextureHeight();
 
-            std::shared_ptr<Core::Resources::Camera> GetCamera() const;
+            std::shared_ptr<Core::Resources::PerspectiveCamera> GetPerspectiveCamera() const;
+            std::shared_ptr<Core::Resources::OrthographicCamera> GetOrthographicCamera() const;
+            std::shared_ptr<Core::Resources::Mesh> GetMesh() const;
 
         private:
             void CreateTexture(int width, int height);          // Create the 2D texture for final displaying
             void UpdateTexture();                               // Update the 2D texture for final displaying
+
+        public:
+            int projection_mode;                                // 0: Orthographic, 1: Perspective
 
         private:
             GLuint texture;                                     // OpenGL Texture id(only for displaying the final image)
@@ -43,7 +49,9 @@ namespace Core
 
         // Resources
         private:
-            std::shared_ptr<Core::Resources::Camera> camera_ptr;
+            std::shared_ptr<Core::Resources::Mesh> mesh_ptr;
+            std::shared_ptr<Core::Resources::PerspectiveCamera> perspective_camera_ptr;
+            std::shared_ptr<Core::Resources::OrthographicCamera> orthographic_camera_ptr;
 
         // Buffer
         private:

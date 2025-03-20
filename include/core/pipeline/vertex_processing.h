@@ -1,8 +1,13 @@
 #ifndef VERTEX_PROCESSING_H
 #define VERTEX_PROCESSING_H
 
+#include <memory>
+#include <vector>
+
 #include <core/math/matrix.h>
 #include <core/primitives/vertex.h>
+#include <core/resources/camera.h>
+#include <core/resources/mesh.h>
 
 namespace Core
 {
@@ -14,21 +19,8 @@ namespace Core
             VertexProcessing();
             ~VertexProcessing();
 
-            // Set MVP Matrix
-            void SetModelMatrix(const Core::Math::Matrix4x4& mat);
-            void SetViewMatrix(const Core::Math::Matrix4x4& mat);
-            void SetProjectionMatrix(const Core::Math::Matrix4x4& mat);
-
             // Transform Vertex
-            Core::Primitives::Vertex TransformVertex(const Core::Primitives::Vertex& vert) const;
-
-        public:
-            bool projection_mode;                               // 0: Orthographc, 1: Perspective
-
-        private:
-            Core::Math::Matrix4x4 model_matrix;                 // Transform vertices from model space to world space
-            Core::Math::Matrix4x4 view_matrix;                  // Transform vertices from world space to camera space
-            Core::Math::Matrix4x4 projection_matrix;            // Transform vertices from camera space to clip space
+            std::vector<Core::Primitives::Vertex> TransformMesh() const;
         };
     }
 }

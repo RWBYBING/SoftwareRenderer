@@ -3,14 +3,16 @@
 #include <chrono>
 
 #include <utils/timer.h>
-#include <core/resources/mesh.h>
 
 using namespace Core::Renderer;
 
 SoftwareRenderer::SoftwareRenderer()
-    : texture_width{0}
+    : projection_mode{1}
+    , texture_width{0}
     , texture_height{0}
-    , camera_ptr{std::make_shared<Core::Resources::Camera>()}
+    , mesh_ptr{std::make_shared<Core::Resources::Mesh>()}
+    , perspective_camera_ptr{std::make_shared<Core::Resources::PerspectiveCamera>()}
+    , orthographic_camera_ptr{std::make_shared<Core::Resources::OrthographicCamera>()}
     , frame_buffer_ptr{std::make_shared<Core::Buffer::FrameBuffer>(100, 100)}
     , depth_buffer_ptr{std::make_shared<Core::Buffer::DepthBuffer>(100, 100)}
     , vertex_processing_ptr{std::make_unique<Core::Pipeline::VertexProcessing>()}
@@ -22,23 +24,33 @@ SoftwareRenderer::SoftwareRenderer()
 
 void SoftwareRenderer::Init()
 {
-    
-}
-
-void SoftwareRenderer::SetupPipeline()
-{
-    
-}
-
-GLuint SoftwareRenderer::Render()
-{
     Core::Primitives::Vertex v0, v1, v2;
     v0.SetPos(10.0f, 0.0f, -10.0f, 1.0f);
     v1.SetPos(0.0f, 10.0f, -10.0f, 1.0f);
     v2.SetPos(-10.0f, 0.0f, 10.0f, 1.0f);
 
+    this->mesh_ptr->AddVertex(v0);
+    this->mesh_ptr->AddVertex(v1);
+    this->mesh_ptr->AddVertex(v2);
+    this->mesh_ptr->AddTriangle(0, 1, 2);
 
+}
+
+void SoftwareRenderer::SetupPipeline()
+{
+
+}
+
+GLuint SoftwareRenderer::Render()
+{
+    // Utils::GlobalTimer::Instance().Start();
+    // 1. Vertex Processing
+    this->vertex_processing_ptr->TransformMesh();
+    // Utils::GlobalTimer::Instance().PrintElapsedTime();
+
+    // Utils::GlobalTimer::Instance().Start();
     this->UpdateTexture();
+    // Utils::GlobalTimer::Instance().PrintElapsedTime();
     return this->texture;
 }
 
@@ -61,9 +73,19 @@ int SoftwareRenderer::GetTextureHeight()
     return this->texture_height;
 }
 
-std::shared_ptr<Core::Resources::Camera> SoftwareRenderer::GetCamera() const
+std::shared_ptr<Core::Resources::PerspectiveCamera> SoftwareRenderer::GetPerspectiveCamera() const
 {
-    return this->camera_ptr;
+    return this->perspective_camera_ptr;
+}
+
+std::shared_ptr<Core::Resources::OrthographicCamera> SoftwareRenderer::GetOrthographicCamera() const
+{
+    return this->orthographic_camera_ptr;
+}
+
+std::shared_ptr<Core::Resources::Mesh> SoftwareRenderer::GetMesh() const
+{
+    return this->mesh_ptr;
 }
 
 void SoftwareRenderer::CreateTexture(int width, int height)

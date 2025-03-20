@@ -141,7 +141,7 @@ GLFWWindowManager::GLFWWindowManager()
     // glfwSetWindowAttrib(window, GLFW_DECORATED, GLFW_FALSE);
 
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(0);
+    glfwSwapInterval(1);
 
     if (gl3wInit() != 0) {
         fprintf(stderr, "Failed to initialize OpenGL loader!\n");
@@ -269,69 +269,191 @@ void GLFWWindowManager::UpdateController()
 
         if (ImGui::CollapsingHeader("Vertex Processing"))
         {
-            // Camera Settings
-            auto camera = this->renderer->GetCamera();
-
+            // Projection mode
+            int& projection_mode = this->renderer->projection_mode;
             ImGui::AlignTextToFramePadding();
-            ImGui::Text("Camera Settings: ");
-
-            // Pos
-            ImGui::AlignTextToFramePadding();
-            ImGui::Text("Pos: ");   ImGui::SameLine(0.25f * window_size.x);
-            ImGui::SetNextItemWidth(0.2f * window_size.x);
-            ImGui::InputFloat("x##camera_pos", &camera->pos.x); ImGui::SameLine();
-            ImGui::SetNextItemWidth(0.2f * window_size.x);
-            ImGui::InputFloat("y##camera_pos", &camera->pos.y); ImGui::SameLine();
-            ImGui::SetNextItemWidth(0.2f * window_size.x);
-            ImGui::InputFloat("z##camera_pos", &camera->pos.z);
-
-            // Look At
-            ImGui::AlignTextToFramePadding();
-            ImGui::Text("Look At: ");   ImGui::SameLine(0.25f * window_size.x);
-            ImGui::SetNextItemWidth(0.2f * window_size.x);
-            ImGui::InputFloat("x##camera_look_at", &camera->look_at.x); ImGui::SameLine();
-            ImGui::SetNextItemWidth(0.2f * window_size.x);
-            ImGui::InputFloat("y##camera_look_at", &camera->look_at.y); ImGui::SameLine();
-            ImGui::SetNextItemWidth(0.2f * window_size.x);
-            ImGui::InputFloat("z##camera_look_at", &camera->look_at.z);
-
-            // Up
-            ImGui::AlignTextToFramePadding();
-            ImGui::Text("Up: ");   ImGui::SameLine(0.25f * window_size.x);
-            ImGui::SetNextItemWidth(0.2f * window_size.x);
-            ImGui::InputFloat("x##camera_up", &camera->up.x); ImGui::SameLine();
-            ImGui::SetNextItemWidth(0.2f * window_size.x);
-            ImGui::InputFloat("y##camera_up", &camera->up.y); ImGui::SameLine();
-            ImGui::SetNextItemWidth(0.2f * window_size.x);
-            ImGui::InputFloat("z##camera_up", &camera->up.z);
-
-            // fov
-            ImGui::AlignTextToFramePadding();
-            ImGui::Text("FOV: ");   ImGui::SameLine(0.25f * window_size.x);
-            ImGui::SetNextItemWidth(0.2f * window_size.x);
-            ImGui::InputFloat("##FOV", &camera->fov); 
-
-            // aspect ratio
-            ImGui::AlignTextToFramePadding();
-            ImGui::Text("Aspect Ratio: ");   ImGui::SameLine(0.25f * window_size.x);
-            ImGui::SetNextItemWidth(0.2f * window_size.x);
-            ImGui::InputFloat("##Aspect Ratio", &camera->aspect_ratio);
-            
-            // near clip
-            ImGui::AlignTextToFramePadding();
-            ImGui::Text("Near Clip: ");   ImGui::SameLine(0.25f * window_size.x);
-            ImGui::SetNextItemWidth(0.2f * window_size.x);
-            ImGui::InputFloat("##Near Clip", &camera->near_clip);
-            
-            // far clip
-            ImGui::AlignTextToFramePadding();
-            ImGui::Text("Far Clip: ");   ImGui::SameLine(0.25f * window_size.x);
-            ImGui::SetNextItemWidth(0.2f * window_size.x);
-            ImGui::InputFloat("##Far Clip", &camera->far_clip); 
+            ImGui::Text("Projection mode: ");   ImGui::SameLine(0.35f * window_size.x);
+            ImGui::RadioButton("Orthographic", &projection_mode, 0);    ImGui::SameLine();
+            ImGui::RadioButton("Perspective", &projection_mode, 1);
 
             ImGui::Separator();
 
+            // Model Transformation Settings
+            auto mesh = this->renderer->GetMesh();
 
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Model Transformation Settings: ");
+            ImGui::Spacing();
+
+            // Translation
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Translation: ");   ImGui::SameLine(0.35f * window_size.x);
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("x##model translation", &mesh->translation.x); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("y##model translation", &mesh->translation.y); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("z##model translation", &mesh->translation.z);
+
+            // Rotation
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Rotation: ");   ImGui::SameLine(0.35f * window_size.x);
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("x##model rotation", &mesh->rotation.x); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("y##model rotation", &mesh->rotation.y); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("z##model rotation", &mesh->rotation.z);
+
+            // Scale
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Scale: ");   ImGui::SameLine(0.35f * window_size.x);
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("x##model scale", &mesh->scale.x); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("y##model scale", &mesh->scale.y); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("z##model scale", &mesh->scale.z);
+
+            ImGui::Separator();
+
+            // Camera Settings
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Camera Settings: ");
+            ImGui::Spacing();
+
+            // Orthographic projection
+            if (projection_mode == 0)
+            {
+                auto camera = this->renderer->GetOrthographicCamera();
+
+                // Pos
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Pos: ");   ImGui::SameLine(0.35f * window_size.x);
+                ImGui::SetNextItemWidth(0.2f * window_size.x);
+                ImGui::InputFloat("x##camera_pos", &camera->pos.x); ImGui::SameLine();
+                ImGui::SetNextItemWidth(0.2f * window_size.x);
+                ImGui::InputFloat("y##camera_pos", &camera->pos.y); ImGui::SameLine();
+                ImGui::SetNextItemWidth(0.2f * window_size.x);
+                ImGui::InputFloat("z##camera_pos", &camera->pos.z);
+    
+                // Look At
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Look At: ");   ImGui::SameLine(0.35f * window_size.x);
+                ImGui::SetNextItemWidth(0.2f * window_size.x);
+                ImGui::InputFloat("x##camera_look_at", &camera->look_at.x); ImGui::SameLine();
+                ImGui::SetNextItemWidth(0.2f * window_size.x);
+                ImGui::InputFloat("y##camera_look_at", &camera->look_at.y); ImGui::SameLine();
+                ImGui::SetNextItemWidth(0.2f * window_size.x);
+                ImGui::InputFloat("z##camera_look_at", &camera->look_at.z);
+    
+                // Up
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Up: ");   ImGui::SameLine(0.35f * window_size.x);
+                ImGui::SetNextItemWidth(0.2f * window_size.x);
+                ImGui::InputFloat("x##camera_up", &camera->up.x); ImGui::SameLine();
+                ImGui::SetNextItemWidth(0.2f * window_size.x);
+                ImGui::InputFloat("y##camera_up", &camera->up.y); ImGui::SameLine();
+                ImGui::SetNextItemWidth(0.2f * window_size.x);
+                ImGui::InputFloat("z##camera_up", &camera->up.z);
+
+                // left
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Left: ");   ImGui::SameLine(0.35f * window_size.x);
+                ImGui::SetNextItemWidth(0.5f * window_size.x);
+                ImGui::InputFloat("##left", &camera->left);
+
+                // right
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Right: ");   ImGui::SameLine(0.35f * window_size.x);
+                ImGui::SetNextItemWidth(0.5f * window_size.x);
+                ImGui::InputFloat("##right", &camera->right);
+                
+                // bottom
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Bottom: ");   ImGui::SameLine(0.35f * window_size.x);
+                ImGui::SetNextItemWidth(0.5f * window_size.x);
+                ImGui::InputFloat("##bottom", &camera->bottom);
+                
+                // top
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Top: ");   ImGui::SameLine(0.35f * window_size.x);
+                ImGui::SetNextItemWidth(0.5f * window_size.x);
+                ImGui::InputFloat("##top", &camera->top); 
+
+                // near clip
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Near Clip: ");   ImGui::SameLine(0.35f * window_size.x);
+                ImGui::SetNextItemWidth(0.5f * window_size.x);
+                ImGui::InputFloat("##Near Clip", &camera->near_clip);
+                
+                // far clip
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Far Clip: ");   ImGui::SameLine(0.35f * window_size.x);
+                ImGui::SetNextItemWidth(0.5f * window_size.x);
+                ImGui::InputFloat("##Far Clip", &camera->far_clip);
+            }
+
+            // Perspective projection
+            if (projection_mode == 1)
+            {
+                auto camera = this->renderer->GetPerspectiveCamera();
+    
+                // Pos
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Pos: ");   ImGui::SameLine(0.35f * window_size.x);
+                ImGui::SetNextItemWidth(0.2f * window_size.x);
+                ImGui::InputFloat("x##camera_pos", &camera->pos.x); ImGui::SameLine();
+                ImGui::SetNextItemWidth(0.2f * window_size.x);
+                ImGui::InputFloat("y##camera_pos", &camera->pos.y); ImGui::SameLine();
+                ImGui::SetNextItemWidth(0.2f * window_size.x);
+                ImGui::InputFloat("z##camera_pos", &camera->pos.z);
+    
+                // Look At
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Look At: ");   ImGui::SameLine(0.35f * window_size.x);
+                ImGui::SetNextItemWidth(0.2f * window_size.x);
+                ImGui::InputFloat("x##camera_look_at", &camera->look_at.x); ImGui::SameLine();
+                ImGui::SetNextItemWidth(0.2f * window_size.x);
+                ImGui::InputFloat("y##camera_look_at", &camera->look_at.y); ImGui::SameLine();
+                ImGui::SetNextItemWidth(0.2f * window_size.x);
+                ImGui::InputFloat("z##camera_look_at", &camera->look_at.z);
+    
+                // Up
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Up: ");   ImGui::SameLine(0.35f * window_size.x);
+                ImGui::SetNextItemWidth(0.2f * window_size.x);
+                ImGui::InputFloat("x##camera_up", &camera->up.x); ImGui::SameLine();
+                ImGui::SetNextItemWidth(0.2f * window_size.x);
+                ImGui::InputFloat("y##camera_up", &camera->up.y); ImGui::SameLine();
+                ImGui::SetNextItemWidth(0.2f * window_size.x);
+                ImGui::InputFloat("z##camera_up", &camera->up.z);
+    
+                // fov
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("FOV: ");   ImGui::SameLine(0.35f * window_size.x);
+                ImGui::SetNextItemWidth(0.5f * window_size.x);
+                ImGui::InputFloat("##FOV", &camera->fov); 
+    
+                // aspect ratio
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Aspect Ratio: ");   ImGui::SameLine(0.35f * window_size.x);
+                ImGui::SetNextItemWidth(0.5f * window_size.x);
+                ImGui::InputFloat("##Aspect Ratio", &camera->aspect_ratio);
+                
+                // near clip
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Near Clip: ");   ImGui::SameLine(0.35f * window_size.x);
+                ImGui::SetNextItemWidth(0.5f * window_size.x);
+                ImGui::InputFloat("##Near Clip", &camera->near_clip);
+                
+                // far clip
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Far Clip: ");   ImGui::SameLine(0.35f * window_size.x);
+                ImGui::SetNextItemWidth(0.5f * window_size.x);
+                ImGui::InputFloat("##Far Clip", &camera->far_clip);
+            }
+ 
         }
 
         if (ImGui::CollapsingHeader("Triangle Processing"))

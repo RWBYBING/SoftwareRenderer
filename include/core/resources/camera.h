@@ -8,7 +8,7 @@ namespace Core
 {
     namespace Resources
     {
-        struct Camera
+        struct PerspectiveCamera
         {
         public:
             Core::Math::Vector3 pos;
@@ -20,8 +20,26 @@ namespace Core
             float near_clip;
             float far_clip;
 
-            Camera();
-            ~Camera();
+            PerspectiveCamera();
+            ~PerspectiveCamera();
+        };
+
+        struct OrthographicCamera
+        {
+        public:
+            Core::Math::Vector3 pos;
+            Core::Math::Vector3 look_at;
+            Core::Math::Vector3 up;
+            
+            float left;
+            float right;
+            float bottom;
+            float top;
+            float near_clip;
+            float far_clip;
+
+            OrthographicCamera();
+            ~OrthographicCamera();
         };
     }
 }

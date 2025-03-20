@@ -1,13 +1,18 @@
 #include <core/resources/mesh.h>
 
-#include <cstdint>
 #include <cassert>
 
 using namespace Core::Resources;
 
 Mesh::Mesh()
+    : vertices{}
+    , indices{}
+    , material{}
+    , translation{0.0f, 0.0f, 0.0f}
+    , rotation{0.0f, 0.0f, 0.0f}
+    , scale{0.0f, 0.0f, 0.0f}
 {
-
+    
 }
 
 Mesh::~Mesh() = default;
