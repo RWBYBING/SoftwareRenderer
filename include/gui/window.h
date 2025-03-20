@@ -10,7 +10,7 @@
 #include <ImGui/imgui_impl_glfw.h>
 #include <ImGui/imgui_impl_opengl3.h>
 
-#include <core/renderer/renderer.h>
+#include <core/renderer/software_renderer.h>
 
 namespace GUI
 {
@@ -29,6 +29,7 @@ namespace GUI
 
     private:
         GLFWwindow* window;                                         // GLFWWindow Instance
+        std::unique_ptr<Core::Renderer::SoftwareRenderer> renderer; // Renderer
 
     private:
         int render_mode;                                            // Renderer option

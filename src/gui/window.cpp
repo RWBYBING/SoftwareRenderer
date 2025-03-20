@@ -3,8 +3,6 @@
 #include <cstdio>
 #include <iostream>
 
-#include <core/renderer/renderer_factory.h>
-
 using namespace GUI;
 
 static const unsigned int SCREEN_WIDTH = 1400;
@@ -107,7 +105,7 @@ void SetupImGuiStyle()
 }
 
 GLFWWindowManager::GLFWWindowManager()
-    : renderer{nullptr}
+    : renderer{std::make_unique<Core::Renderer::SoftwareRenderer>()}
     , render_mode{0}
 {
     // Initialize GLFW Pipeline
@@ -238,8 +236,6 @@ void GLFWWindowManager::Run()
 void GLFWWindowManager::Startup()
 {
     // Init Backend Renderer
-    Core::Renderer::SoftwareRendererFactory software_renderer_factory;
-    this->renderer = software_renderer_factory.CreateRenderer();
     this->renderer->Init();
     this->renderer->SetupPipeline();
 }
@@ -254,6 +250,9 @@ void GLFWWindowManager::UpdateController()
 {
     if (ImGui::Begin("Controller"))
     {
+        // Window Size
+        auto window_size = ImGui::GetContentRegionAvail();
+
         ImGui::Text("Frame Rate: %f", ImGui::GetIO().Framerate);
 
         ImGui::AlignTextToFramePadding();
@@ -266,8 +265,72 @@ void GLFWWindowManager::UpdateController()
 
         ImGui::Text("Choose Objects: ");
 
+        ImGui::Text("Rendering Pipeline: ");
+
         if (ImGui::CollapsingHeader("Vertex Processing"))
         {
+            // Camera Settings
+            auto camera = this->renderer->GetCamera();
+
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Camera Settings: ");
+
+            // Pos
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Pos: ");   ImGui::SameLine(0.25f * window_size.x);
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("x##camera_pos", &camera->pos.x); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("y##camera_pos", &camera->pos.y); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("z##camera_pos", &camera->pos.z);
+
+            // Look At
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Look At: ");   ImGui::SameLine(0.25f * window_size.x);
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("x##camera_look_at", &camera->look_at.x); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("y##camera_look_at", &camera->look_at.y); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("z##camera_look_at", &camera->look_at.z);
+
+            // Up
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Up: ");   ImGui::SameLine(0.25f * window_size.x);
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("x##camera_up", &camera->up.x); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("y##camera_up", &camera->up.y); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("z##camera_up", &camera->up.z);
+
+            // fov
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("FOV: ");   ImGui::SameLine(0.25f * window_size.x);
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("##FOV", &camera->fov); 
+
+            // aspect ratio
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Aspect Ratio: ");   ImGui::SameLine(0.25f * window_size.x);
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("##Aspect Ratio", &camera->aspect_ratio);
+            
+            // near clip
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Near Clip: ");   ImGui::SameLine(0.25f * window_size.x);
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("##Near Clip", &camera->near_clip);
+            
+            // far clip
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Far Clip: ");   ImGui::SameLine(0.25f * window_size.x);
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("##Far Clip", &camera->far_clip); 
+
+            ImGui::Separator();
+
 
         }
 

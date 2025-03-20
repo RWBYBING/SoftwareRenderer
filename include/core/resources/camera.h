@@ -6,7 +6,7 @@
 
 namespace Core
 {
-    namespace Primitives
+    namespace Resources
     {
         struct Camera
         {

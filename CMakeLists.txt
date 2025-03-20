@@ -63,12 +63,13 @@ set(GUI_SOURCES
 	src/core/primitives/vertex.cpp
 	src/core/primitives/fragment.cpp
 	src/core/primitives/triangle.cpp
-	src/core/primitives/camera.cpp
+	src/core/resources/camera.cpp
 	src/core/buffer/framebuffer.cpp
 	src/core/buffer/depthbuffer.cpp
+	src/core/pipeline/vertex_processing.cpp
+	src/core/pipeline/triangle_processing.cpp
+	src/core/pipeline/rasterizer.cpp
 	src/core/renderer/software_renderer.cpp
-	src/core/renderer/opengl_renderer.cpp
-	src/core/renderer/vulkan_renderer.cpp
 )
 
 set(SOURCES 

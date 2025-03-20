@@ -22,6 +22,9 @@ namespace Core
             // Transform Vertex
             Core::Primitives::Vertex TransformVertex(const Core::Primitives::Vertex& vert) const;
 
+        public:
+            bool projection_mode;                               // 0: Orthographc, 1: Perspective
+
         private:
             Core::Math::Matrix4x4 model_matrix;                 // Transform vertices from model space to world space
             Core::Math::Matrix4x4 view_matrix;                  // Transform vertices from world space to camera space

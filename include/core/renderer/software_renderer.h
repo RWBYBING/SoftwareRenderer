@@ -9,6 +9,8 @@
 #include <core/pipeline/triangle_processing.h>
 #include <core/pipeline/rasterizer.h>
 
+#include <core/resources/camera.h>
+
 namespace Core
 {
     namespace Renderer
@@ -26,6 +28,8 @@ namespace Core
             int GetTextureWidth();
             int GetTextureHeight();
 
+            std::shared_ptr<Core::Resources::Camera> GetCamera() const;
+
         private:
             void CreateTexture(int width, int height);          // Create the 2D texture for final displaying
             void UpdateTexture();                               // Update the 2D texture for final displaying
@@ -37,15 +41,21 @@ namespace Core
             int texture_width;
             int texture_height;
 
+        // Resources
         private:
-            
+            std::shared_ptr<Core::Resources::Camera> camera_ptr;
 
+        // Buffer
+        private:
+            std::shared_ptr<Core::Buffer::FrameBuffer> frame_buffer_ptr;
+            std::shared_ptr<Core::Buffer::DepthBuffer> depth_buffer_ptr;
+
+        // Pipeline
         private:
             std::unique_ptr<Core::Pipeline::VertexProcessing> vertex_processing_ptr;
             std::unique_ptr<Core::Pipeline::TriangleProcessing> triangle_processing_ptr;
             std::unique_ptr<Core::Pipeline::Rasterizer> rasterizer_ptr;
-            std::shared_ptr<Core::Buffer::FrameBuffer> frame_buffer_ptr;
-            std::shared_ptr<Core::Buffer::DepthBuffer> depth_buffer_ptr;
+
         };
     }
 }

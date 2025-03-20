@@ -9,11 +9,12 @@ using namespace Core::Renderer;
 SoftwareRenderer::SoftwareRenderer()
     : texture_width{0}
     , texture_height{0}
+    , camera_ptr{std::make_shared<Core::Resources::Camera>()}
+    , frame_buffer_ptr{std::make_shared<Core::Buffer::FrameBuffer>(100, 100)}
+    , depth_buffer_ptr{std::make_shared<Core::Buffer::DepthBuffer>(100, 100)}
     , vertex_processing_ptr{std::make_unique<Core::Pipeline::VertexProcessing>()}
     , triangle_processing_ptr{std::make_unique<Core::Pipeline::TriangleProcessing>()}
     , rasterizer_ptr{std::make_unique<Core::Pipeline::Rasterizer>()}
-    , frame_buffer_ptr{std::make_shared<Core::Buffer::FrameBuffer>(100, 100)}
-    , depth_buffer_ptr{std::make_shared<Core::Buffer::DepthBuffer>(100, 100)}
 {
 
 }
@@ -51,6 +52,11 @@ int SoftwareRenderer::GetTextureWidth()
 int SoftwareRenderer::GetTextureHeight()
 {
     return this->texture_height;
+}
+
+std::shared_ptr<Core::Resources::Camera> SoftwareRenderer::GetCamera() const
+{
+    return this->camera_ptr;
 }
 
 void SoftwareRenderer::CreateTexture(int width, int height)

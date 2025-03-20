@@ -1,6 +1,6 @@
-#include <core/primitives/camera.h>
+#include <core/resources/camera.h>
 
-using namespace Core::Primitives;
+using namespace Core::Resources;
 
 Camera::Camera()
     : pos{Core::Math::Vector3{0.0f, 0.0f, 0.0f}}
