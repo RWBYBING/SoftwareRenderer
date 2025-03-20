@@ -16,7 +16,7 @@ namespace Core
             ~Vertex();
 
             // Vertex attributes
-            Core::Math::Vector4 color;                  
+            Core::Math::Vector4 color;
             Core::Math::Vector4 pos;
             Core::Math::Vector3 normal;
             Core::Math::Vector2 texcoord;

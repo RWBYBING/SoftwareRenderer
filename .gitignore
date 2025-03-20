@@ -2,6 +2,5 @@ build/
 .vscode/
 *.o
 *.exe
-*.obj
 *.dSYM
 .DS_Store
