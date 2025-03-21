@@ -141,7 +141,7 @@ GLFWWindowManager::GLFWWindowManager()
     // glfwSetWindowAttrib(window, GLFW_DECORATED, GLFW_FALSE);
 
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
 
     if (gl3wInit() != 0) {
         fprintf(stderr, "Failed to initialize OpenGL loader!\n");
@@ -458,7 +458,8 @@ void GLFWWindowManager::UpdateController()
 
         if (ImGui::CollapsingHeader("Triangle Processing"))
         {
-
+            ImGui::Checkbox("enable backface culling", &this->renderer->enable_backface_culling);
+            ImGui::Checkbox("enable frustum clipping", &this->renderer->enable_frustum_clipping);
         }
 
         if (ImGui::CollapsingHeader("Rasterization"))

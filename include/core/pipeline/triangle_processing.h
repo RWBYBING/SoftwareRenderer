@@ -1,6 +1,9 @@
 #ifndef TRIANGLE_PROCESSING_H
 #define TRIANGLE_PROCESSING_H
 
+#include <vector>
+#include <cstdint>
+
 #include <core/primitives/triangle.h>
 
 namespace Core
@@ -13,7 +16,9 @@ namespace Core
             TriangleProcessing();
             ~TriangleProcessing();
 
-
+            std::vector<Core::Primitives::Triangle> Processing(
+                const std::vector<Core::Primitives::Vertex>& vertices,
+                const std::vector<uint32_t>& indices) const;
 
         private:
             

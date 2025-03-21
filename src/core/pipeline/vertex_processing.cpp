@@ -27,13 +27,15 @@ void VertexProcessing::SetProjectionMatrix(const Core::Math::Matrix4x4& mat)
     this->projection_matrix = mat;
 }
 
-std::vector<Core::Primitives::Vertex> VertexProcessing::TransformVertices(const std::vector<Core::Primitives::Vertex>& vertices) const
+std::vector<Core::Primitives::Vertex> VertexProcessing::TransformVertices(
+    const std::vector<Core::Primitives::Vertex>& vertices) const 
 {
+    const auto mvp = projection_matrix * (view_matrix * model_matrix);
+
     std::vector<Core::Primitives::Vertex> result = vertices;
-    for (long unsigned int i = 0; i < vertices.size(); ++i)
-    {
-        // Apply MVP transformation
-        result.at(i).pos = this->projection_matrix * (this->view_matrix * (this->model_matrix * vertices.at(i).pos));
+
+    for (size_t i = 0; i < vertices.size(); ++i) {
+        result[i].pos = mvp * vertices[i].pos;
     }
 
     return result;

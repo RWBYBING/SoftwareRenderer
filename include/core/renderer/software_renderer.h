@@ -39,7 +39,8 @@ namespace Core
 
         public:
             int projection_mode;                                // 0: Orthographic, 1: Perspective
-            
+            bool enable_backface_culling;                       
+            bool enable_frustum_clipping;       
 
         private:
             GLuint texture;                                     // OpenGL Texture id(only for displaying the final image)

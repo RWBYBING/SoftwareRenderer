@@ -8,6 +8,8 @@ using namespace Core::Renderer;
 
 SoftwareRenderer::SoftwareRenderer()
     : projection_mode{1}
+    , enable_backface_culling{1}
+    , enable_frustum_clipping{1}
     , texture_width{0}
     , texture_height{0}
     , mesh_ptr{std::make_shared<Core::Resources::Mesh>()}
@@ -50,7 +52,6 @@ void SoftwareRenderer::SetupPipeline()
 
 GLuint SoftwareRenderer::Render()
 {
-    // Utils::GlobalTimer::Instance().Start();
     // 1. Vertex Processing
     //   a. Apply MVP Transformation Matrix
     this->vertex_processing_ptr->SetModelMatrix(this->mesh_ptr->GetModelMatrix());
@@ -65,16 +66,20 @@ GLuint SoftwareRenderer::Render()
         this->vertex_processing_ptr->SetProjectionMatrix(this->perspective_camera_ptr->GetProjectionMatrix());
     }
     auto vertices_screen_space = this->vertex_processing_ptr->TransformVertices(this->mesh_ptr->vertices);
-    
-    // Utils::GlobalTimer::Instance().PrintElapsedTime();
 
 
 
     // 2. Triangle Processing
-    
+    this->triangle_processing_ptr->Processing(
+        vertices_screen_space,
+        this->mesh_ptr->indices
+    );
+
+
+
+    this->UpdateTexture();
 
     // Utils::GlobalTimer::Instance().Start();
-    this->UpdateTexture();
     // Utils::GlobalTimer::Instance().PrintElapsedTime();
     return this->texture;
 }
