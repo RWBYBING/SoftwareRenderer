@@ -27,10 +27,12 @@ namespace Core
 
             // Vector Operation
             float Dot(const Vector2& vec) const;
+            float Cross(const Vector2& vec) const; 
             Vector2 Normalize() const;
             float Magnitude() const;
 
             static float Dot(const Vector2& vec1, const Vector2& vec2);
+            static float Cross(const Vector2& vec1, const Vector2& vec2);
 
             // Debug Tools
             void PrintVec() const;

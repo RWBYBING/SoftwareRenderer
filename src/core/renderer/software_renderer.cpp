@@ -47,7 +47,8 @@ void SoftwareRenderer::Init()
 
 void SoftwareRenderer::SetupPipeline()
 {
-
+    this->rasterizer_ptr->SetFrameBuffer(this->frame_buffer_ptr);
+    this->rasterizer_ptr->SetDepthBuffer(this->depth_buffer_ptr);
 }
 
 GLuint SoftwareRenderer::Render()
@@ -70,11 +71,13 @@ GLuint SoftwareRenderer::Render()
 
 
     // 2. Triangle Processing
-    this->triangle_processing_ptr->Processing(
+    auto triangles = this->triangle_processing_ptr->Processing(
         vertices_screen_space,
         this->mesh_ptr->indices
     );
 
+    // 3. Rasterization
+    
 
 
     this->UpdateTexture();

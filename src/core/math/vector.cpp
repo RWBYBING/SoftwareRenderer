@@ -32,6 +32,11 @@ float Vector2::Dot(const Vector2& vec) const
     return this->x * vec.x + this->y * vec.y;
 }
 
+float Vector2::Cross(const Vector2& vec) const 
+{
+    return this->x * vec.y - this->y * vec.x;
+}
+
 Vector2 Vector2::Normalize() const
 {
     float mag = this->Magnitude();
@@ -46,6 +51,11 @@ float Vector2::Magnitude() const
 float Vector2::Dot(const Vector2& vec1, const Vector2& vec2) 
 {
     return vec1.x * vec2.x + vec1.y * vec2.y;
+}
+
+float Vector2::Cross(const Vector2& vec1, const Vector2& vec2) 
+{
+    return vec1.x * vec2.y - vec1.y * vec2.x;
 }
 
 void Vector2::PrintVec() const 
