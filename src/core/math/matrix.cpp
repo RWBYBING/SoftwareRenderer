@@ -77,7 +77,7 @@ Matrix4x4 Matrix4x4::operator* (const Matrix4x4& mat) const
             float temp = 0.0f;
             for (int k = 0; k < 4; ++k)
             {
-                temp += this->element[i][k] * mat.element[i][k];
+                temp += this->element[i][k] * mat.element[k][j];
             }
             result.element[i][j] = temp;
         }

@@ -67,8 +67,7 @@ GLuint SoftwareRenderer::Render()
         this->vertex_processing_ptr->SetProjectionMatrix(this->perspective_camera_ptr->GetProjectionMatrix());
     }
     auto vertices_screen_space = this->vertex_processing_ptr->TransformVertices(this->mesh_ptr->vertices);
-
-
+    // vertices_screen_space[0].pos.PrintVec();
 
     // 2. Triangle Processing
     auto triangles = this->triangle_processing_ptr->Processing(
@@ -77,7 +76,7 @@ GLuint SoftwareRenderer::Render()
     );
 
     // 3. Rasterization
-    
+
 
 
     this->UpdateTexture();

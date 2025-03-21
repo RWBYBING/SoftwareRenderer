@@ -37,6 +37,7 @@ std::vector<Core::Primitives::Vertex> VertexProcessing::TransformVertices(
     for (size_t i = 0; i < vertices.size(); ++i) {
         result[i].pos = mvp * vertices[i].pos;
     }
+    result[0].pos.PrintVec();vertices[0].pos.PrintVec();
 
     return result;
 }

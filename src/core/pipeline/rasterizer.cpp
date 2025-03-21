@@ -56,12 +56,23 @@ bool Rasterizer::BarycentricCoordinates(
     Core::Math::Vector2 AP = P - A;
 
     // Calculate area ratio
-    
+    float areaABC = AB.Cross(AC);   // The double area of ​​the numerator and denominator cancels out, so there is no need to explicitly divide by 2.
+    if (areaABC == 0) { return false; }
+
+    float areaPBC = (B - P).Cross(C - P);
+    float areaPCA = (C - P).Cross(A - P);
+    alpha = areaPBC / areaABC;
+    beta = areaPCA / areaABC;
+    gamma = 1.0f - alpha - beta;
+
+    return (alpha > 0) && (beta > 0) && (gamma > 0);
 }
 
 Core::Primitives::Fragment Rasterizer::InterpolateFragment(const Core::Primitives::Triangle& tri, float alpha, float beta, float gamma) const
 {
+    Core::Primitives::Fragment fragment;
 
+    
 }
 
 // std::vector<Core::Primitives::Fragment> Rasterizer::RasterizeTriangle(const Core::Primitives::Triangle& tri) const

@@ -48,12 +48,14 @@ Core::Math::Matrix4x4 PerspectiveCamera::GetViewMatrix() const
 
 Core::Math::Matrix4x4 PerspectiveCamera::GetProjectionMatrix() const
 {
+    float fov_radian = this->fov * (M_PI / 180.0f);
+
     Core::Math::Matrix4x4 projection_matrix;
-    projection_matrix.element[0][0] = -1 / (this->aspect_ratio * std::tanf(this->fov / 2));
-    projection_matrix.element[1][1] = -1 / (std::tanf(this->fov / 2));
+    projection_matrix.element[0][0] = 1 / (this->aspect_ratio * std::tanf(fov_radian / 2));
+    projection_matrix.element[1][1] = 1 / (std::tanf(fov_radian / 2));
     projection_matrix.element[2][2] = -(this->far_clip + this->near_clip) / (this->far_clip - this->near_clip);
     projection_matrix.element[2][3] = -(2 * this->near_clip * this->far_clip) / (this->far_clip - this->near_clip);
-    projection_matrix.element[3][2] = 1.0f;
+    projection_matrix.element[3][2] = -1.0f;
 
     return projection_matrix;
 }
