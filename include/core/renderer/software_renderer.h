@@ -39,6 +39,7 @@ namespace Core
 
         public:
             int projection_mode;                                // 0: Orthographic, 1: Perspective
+            
 
         private:
             GLuint texture;                                     // OpenGL Texture id(only for displaying the final image)

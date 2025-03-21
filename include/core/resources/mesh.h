@@ -5,6 +5,7 @@
 #include <cstdint>
 
 #include <core/math/vector.h>
+#include <core/math/matrix.h>
 #include <core/primitives/vertex.h>
 #include <core/resources/material.h>
 
@@ -25,6 +26,8 @@ namespace Core
 
             void AddVertex(const Core::Primitives::Vertex vert);        // Add a new vertex into our mesh object
             void AddTriangle(uint32_t i0, uint32_t i1, uint32_t i2);    // Add three indices of the vertex
+
+            Core::Math::Matrix4x4 GetModelMatrix() const;               // Get the model transformation matrix
 
             Mesh();
             ~Mesh();

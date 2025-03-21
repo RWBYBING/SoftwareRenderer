@@ -22,6 +22,9 @@ namespace Core
 
             PerspectiveCamera();
             ~PerspectiveCamera();
+
+            Core::Math::Matrix4x4 GetViewMatrix() const;
+            Core::Math::Matrix4x4 GetProjectionMatrix() const;
         };
 
         struct OrthographicCamera
@@ -40,6 +43,9 @@ namespace Core
 
             OrthographicCamera();
             ~OrthographicCamera();
+
+            Core::Math::Matrix4x4 GetViewMatrix() const;
+            Core::Math::Matrix4x4 GetProjectionMatrix() const;
         };
     }
 }

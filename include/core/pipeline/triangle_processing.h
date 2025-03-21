@@ -13,18 +13,10 @@ namespace Core
             TriangleProcessing();
             ~TriangleProcessing();
 
-            // Triangle Assembly
-            Core::Primitives::Triangle AssembleTriangle(const Core::Primitives::Vertex& v0,
-                                                        const Core::Primitives::Vertex& v1,
-                                                        const Core::Primitives::Vertex& v2) const;
 
-            // Clipping
 
-            // Mapping to Screen
-            // void MappingToScreenSpace(Core::Primitives::Triangle& triangle, int screenWidth, int screenHeight) const;
-          
         private:
-            // bool InsideViewFrustum(const Core::Primitives::Vertex& vert) const;       // Determine if a vertex is inside the view frustum
+            
         };
     }
 }

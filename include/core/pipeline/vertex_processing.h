@@ -19,8 +19,17 @@ namespace Core
             VertexProcessing();
             ~VertexProcessing();
 
-            // Transform Vertex
-            std::vector<Core::Primitives::Vertex> TransformMesh() const;
+            void SetModelMatrix(const Core::Math::Matrix4x4& mat);
+            void SetViewMatrix(const Core::Math::Matrix4x4& mat);
+            void SetProjectionMatrix(const Core::Math::Matrix4x4& mat);
+
+            // Transform Vertices
+            std::vector<Core::Primitives::Vertex> TransformVertices(const std::vector<Core::Primitives::Vertex>& vertices) const;
+
+        private:
+            Core::Math::Matrix4x4 model_matrix;
+            Core::Math::Matrix4x4 view_matrix;
+            Core::Math::Matrix4x4 projection_matrix;
         };
     }
 }

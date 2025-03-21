@@ -24,16 +24,23 @@ SoftwareRenderer::SoftwareRenderer()
 
 void SoftwareRenderer::Init()
 {
-    Core::Primitives::Vertex v0, v1, v2;
-    v0.SetPos(10.0f, 0.0f, -10.0f, 1.0f);
-    v1.SetPos(0.0f, 10.0f, -10.0f, 1.0f);
-    v2.SetPos(-10.0f, 0.0f, 10.0f, 1.0f);
+    Core::Primitives::Vertex v00, v01, v02;
+    Core::Primitives::Vertex v10, v11, v12;
+    v00.SetPos(10.0f, 0.0f, -10.0f, 1.0f);
+    v01.SetPos(0.0f, 10.0f, -10.0f, 1.0f);
+    v02.SetPos(-10.0f, 0.0f, -10.0f, 1.0f);
+    v10.SetPos(-5.0f, 0.0f, -50.0f, 1.0f);
+    v11.SetPos(-15.0f, 10.0f, -50.0f, 1.0f);
+    v12.SetPos(-25.0f, 0.0f, -50.0f, 1.0f);
 
-    this->mesh_ptr->AddVertex(v0);
-    this->mesh_ptr->AddVertex(v1);
-    this->mesh_ptr->AddVertex(v2);
+    this->mesh_ptr->AddVertex(v00);
+    this->mesh_ptr->AddVertex(v01);
+    this->mesh_ptr->AddVertex(v02);
+    this->mesh_ptr->AddVertex(v10);
+    this->mesh_ptr->AddVertex(v11);
+    this->mesh_ptr->AddVertex(v12);
     this->mesh_ptr->AddTriangle(0, 1, 2);
-
+    this->mesh_ptr->AddTriangle(3, 4, 5);
 }
 
 void SoftwareRenderer::SetupPipeline()
@@ -45,8 +52,26 @@ GLuint SoftwareRenderer::Render()
 {
     // Utils::GlobalTimer::Instance().Start();
     // 1. Vertex Processing
-    this->vertex_processing_ptr->TransformMesh();
+    //   a. Apply MVP Transformation Matrix
+    this->vertex_processing_ptr->SetModelMatrix(this->mesh_ptr->GetModelMatrix());
+    if (this->projection_mode == 0)
+    {
+        this->vertex_processing_ptr->SetViewMatrix(this->orthographic_camera_ptr->GetViewMatrix());
+        this->vertex_processing_ptr->SetProjectionMatrix(this->orthographic_camera_ptr->GetProjectionMatrix());
+    }
+    if (this->projection_mode == 1)
+    {
+        this->vertex_processing_ptr->SetViewMatrix(this->perspective_camera_ptr->GetViewMatrix());
+        this->vertex_processing_ptr->SetProjectionMatrix(this->perspective_camera_ptr->GetProjectionMatrix());
+    }
+    auto vertices_screen_space = this->vertex_processing_ptr->TransformVertices(this->mesh_ptr->vertices);
+    
     // Utils::GlobalTimer::Instance().PrintElapsedTime();
+
+
+
+    // 2. Triangle Processing
+    
 
     // Utils::GlobalTimer::Instance().Start();
     this->UpdateTexture();

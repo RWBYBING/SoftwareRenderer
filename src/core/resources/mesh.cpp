@@ -30,3 +30,17 @@ void Mesh::AddTriangle(uint32_t i0, uint32_t i1, uint32_t i2)
     this->indices.push_back(i1);
     this->indices.push_back(i2);
 }
+
+Core::Math::Matrix4x4 Mesh::GetModelMatrix() const
+{
+    // Set model transformation matrix
+    auto translation_matrix = Core::Math::Matrix4x4::Translation(this->translation);
+    auto scale_matrix = Core::Math::Matrix4x4::Scale(this->scale);
+    auto rotation_matrix = (
+        Core::Math::Matrix4x4::Rotation(this->rotation.x, Core::Math::_3D_Cartesian_Coord::X) *
+        Core::Math::Matrix4x4::Rotation(this->rotation.y, Core::Math::_3D_Cartesian_Coord::Y) *
+        Core::Math::Matrix4x4::Rotation(this->rotation.z, Core::Math::_3D_Cartesian_Coord::Z)
+    );
+
+    return scale_matrix * (rotation_matrix * translation_matrix);
+}

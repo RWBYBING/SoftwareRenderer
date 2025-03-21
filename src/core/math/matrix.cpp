@@ -168,26 +168,26 @@ Matrix4x4 Matrix4x4::Rotation(float angle, _3D_Cartesian_Coord axis)
     // Rotation around X-axis
     if (axis == _3D_Cartesian_Coord::X)
     {
-        result.element[1][1] = std::cos(radian);
-        result.element[1][2] = -std::sin(radian);
-        result.element[2][1] = std::sin(radian);
-        result.element[2][2] = std::cos(radian);
+        result.element[1][1] = std::cosf(radian);
+        result.element[1][2] = -std::sinf(radian);
+        result.element[2][1] = std::sinf(radian);
+        result.element[2][2] = std::cosf(radian);
     }
     // Rotation around Y-axis
     if (axis == _3D_Cartesian_Coord::Y)
     {
-        result.element[0][0] = std::cos(radian);
-        result.element[0][2] = std::sin(radian);
-        result.element[2][0] = -std::sin(radian);
-        result.element[2][2] = std::cos(radian);
+        result.element[0][0] = std::cosf(radian);
+        result.element[0][2] = std::sinf(radian);
+        result.element[2][0] = -std::sinf(radian);
+        result.element[2][2] = std::cosf(radian);
     }
     // Rotation around Z-axis
     if (axis == _3D_Cartesian_Coord::Z)
     {
-        result.element[0][0] = std::cos(radian);
-        result.element[0][1] = -std::sin(radian);
-        result.element[1][0] = std::sin(radian);
-        result.element[1][1] = std::cos(radian);
+        result.element[0][0] = std::cosf(radian);
+        result.element[0][1] = -std::sinf(radian);
+        result.element[1][0] = std::sinf(radian);
+        result.element[1][1] = std::cosf(radian);
     }
 
     return result;
