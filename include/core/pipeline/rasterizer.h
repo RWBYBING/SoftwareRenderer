@@ -24,8 +24,7 @@ namespace Core
             void SetDepthBuffer(std::shared_ptr<Core::Buffer::DepthBuffer> buffer);
 
             // Rasterization processing
-            std::vector<Core::Primitives::Fragment> RasterizeTriangle(const Core::Primitives::Triangle& tri) const;
-            bool DepthTest(const Core::Primitives::Fragment& frag) const;
+            std::vector<Core::Primitives::Fragment> RasterizeTriangle(const std::vector<Core::Primitives::Triangle>& triangles) const;
 
         private:
             // calculate the bounding box

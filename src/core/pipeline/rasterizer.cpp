@@ -72,54 +72,59 @@ Core::Primitives::Fragment Rasterizer::InterpolateFragment(const Core::Primitive
 {
     Core::Primitives::Fragment fragment;
 
-    fragment.depth = alpha * tri.vertices[0].pos.z / tri.vertices[0].pos.w;
+    // depth interpolation
+    fragment.depth = alpha * tri.vertices[0].pos.z
+                   + beta * tri.vertices[1].pos.z
+                   + gamma * tri.vertices[2].pos.z;
 
+    // color interpolation
+    fragment.color = tri.vertices[0].color * alpha
+                   + tri.vertices[1].color * beta
+                   + tri.vertices[2].color * gamma;
 
+    // texcoord interpolation
+    fragment.texcoord = tri.vertices[0].texcoord * alpha
+                      + tri.vertices[1].texcoord * beta
+                      + tri.vertices[2].texcoord * gamma;
+
+    return fragment;
 }
 
-// std::vector<Core::Primitives::Fragment> Rasterizer::RasterizeTriangle(const Core::Primitives::Triangle& tri) const
-// {
-//     std::vector<Core::Primitives::Fragment> fragments;
+std::vector<Core::Primitives::Fragment> Rasterizer::RasterizeTriangle(const std::vector<Core::Primitives::Triangle>& triangles) const
+{
+    std::vector<Core::Primitives::Fragment> fragments;
 
-//     // Calculate the bounding box
-//     float min_x = std::min({tri.vertices[0].pos.x, tri.vertices[1].pos.x, tri.vertices[2].pos.x});
-//     float max_x = std::max({tri.vertices[0].pos.x, tri.vertices[1].pos.x, tri.vertices[2].pos.x});
-//     float min_y = std::min({tri.vertices[0].pos.y, tri.vertices[1].pos.y, tri.vertices[2].pos.y});
-//     float max_y = std::max({tri.vertices[0].pos.y, tri.vertices[1].pos.y, tri.vertices[2].pos.y});
+    for (auto& triangle : triangles)
+    {
+        // 1. Get the screen pos
+        Core::Math::Vector2 screen_pos[3] = {
+            Core::Math::Vector2{triangle.vertices[0].pos.x, triangle.vertices[0].pos.y},
+            Core::Math::Vector2{triangle.vertices[1].pos.x, triangle.vertices[1].pos.y},
+            Core::Math::Vector2{triangle.vertices[2].pos.x, triangle.vertices[2].pos.y},
+        };
 
-//     // Iterate all the pixels in the bounding box
-//     for (int y = static_cast<int>(min_y); y <= static_cast<int>(max_y); ++y)
-//     {
-//         for (int x = static_cast<int>(min_x); x <= static_cast<int>(max_x); ++x)
-//         {
-//             // TODO
-//         }
-//     }
+        // 2. calculate the bounding box
+        int min_x, max_x, min_y, max_y;
+        this->CalculateBoundingBox(triangle, min_x, max_x, min_y, max_y);
 
-//     return fragments;
-// }
+        // 3. iterate each pixel in the bounding box
+        for (int y = min_y; y < max_y; ++y)
+        {
+            for (int x = min_x; x <= max_x; ++x)
+            {
+                Core::Math::Vector2 P(x + 0.5f, y + 0.5f); // Get the center of pixel
+                // 4: calculate the barycentric coordinates
+                float alpha, beta, gamma;
+                if (!this->BarycentricCoordinates(P, screen_pos[0], screen_pos[1], screen_pos[2], alpha, beta, gamma)) 
+                {
+                    continue; // the pixel is outside of the triangle
+                }
 
-// bool Rasterizer::DepthTest(const Core::Primitives::Fragment& frag) const
-// {
-//     if (!this->depth_buffer)
-//     {
-//         return false;
-//     }
+                Core::Primitives::Fragment fragment = this->InterpolateFragment(triangle, alpha, beta, gamma);
+                fragments.push_back(fragment);
+            }
+        }
+    }
 
-//     float current_depth = this->depth_buffer->GetDepth(static_cast<int>(frag.pos.x), static_cast<int>(frag.pos.y));
-//     if (frag.pos.z < current_depth)
-//     {
-//         this->depth_buffer->SetDepth(static_cast<int>(frag.pos.x), static_cast<int>(frag.pos.y), frag.pos.z);
-//         return true;
-//     }
-//     return false;
-// }
-
-// void Rasterizer::WriteToFrameBuffer(const Core::Primitives::Fragment& frag)
-// {
-//     if (this->frame_buffer) 
-//     {
-//         this->frame_buffer->SetPixel(static_cast<int>(frag.pos.x), static_cast<int>(frag.pos.y), frag.color);
-//     }
-// }
-
+    return fragments;
+}
