@@ -47,6 +47,8 @@ void SoftwareRenderer::Init()
 
 void SoftwareRenderer::SetupPipeline()
 {
+    this->vertex_processing_ptr->SetFrameBuffer(this->frame_buffer_ptr);
+
     this->rasterizer_ptr->SetFrameBuffer(this->frame_buffer_ptr);
     this->rasterizer_ptr->SetDepthBuffer(this->depth_buffer_ptr);
 }
@@ -54,7 +56,6 @@ void SoftwareRenderer::SetupPipeline()
 GLuint SoftwareRenderer::Render()
 {
     // 1. Vertex Processing
-    //   a. Apply MVP Transformation Matrix
     this->vertex_processing_ptr->SetModelMatrix(this->mesh_ptr->GetModelMatrix());
     if (this->projection_mode == 0)
     {
@@ -67,7 +68,7 @@ GLuint SoftwareRenderer::Render()
         this->vertex_processing_ptr->SetProjectionMatrix(this->perspective_camera_ptr->GetProjectionMatrix());
     }
     auto vertices_screen_space = this->vertex_processing_ptr->TransformVertices(this->mesh_ptr->vertices);
-    // vertices_screen_space[0].pos.PrintVec();
+    vertices_screen_space[0].pos.PrintVec();
 
     // 2. Triangle Processing
     auto triangles = this->triangle_processing_ptr->Processing(

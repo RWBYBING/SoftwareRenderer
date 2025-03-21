@@ -72,7 +72,9 @@ Core::Primitives::Fragment Rasterizer::InterpolateFragment(const Core::Primitive
 {
     Core::Primitives::Fragment fragment;
 
-    
+    fragment.depth = alpha * tri.vertices[0].pos.z / tri.vertices[0].pos.w;
+
+
 }
 
 // std::vector<Core::Primitives::Fragment> Rasterizer::RasterizeTriangle(const Core::Primitives::Triangle& tri) const

@@ -10,27 +10,14 @@ namespace Core
         struct Fragment
         {
         public:
-            Fragment();
-            Fragment(Core::Math::Vector4 color, Core::Math::Vector4 pos, Core::Math::Vector3 normal, Core::Math::Vector2 textcoord);
-            Fragment(const Fragment& vertex);
-            ~Fragment();
-                
-            // Fragment attributes
+            int x, y;                           // Position on screen
+            float depth;
             Core::Math::Vector4 color;
-            Core::Math::Vector4 pos;
             Core::Math::Vector3 normal;
-            Core::Math::Vector2 textcoord;
+            Core::Math::Vector2 texcoord;
 
-            // Operator overloading
-            Fragment& operator= (const Fragment& other);
-
-            // Set attributes
-            void SetColor(float r, float g, float b, float a);
-            void SetPos(float x, float y, float z, float w);
-            void SetNormal(float x, float y, float z);
-
-        private:
-
+            Fragment();
+            ~Fragment();
         };
     }
 }
