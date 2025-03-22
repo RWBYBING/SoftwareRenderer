@@ -20,6 +20,7 @@ SoftwareRenderer::SoftwareRenderer()
     , vertex_processing_ptr{std::make_unique<Core::Pipeline::VertexProcessing>()}
     , triangle_processing_ptr{std::make_unique<Core::Pipeline::TriangleProcessing>()}
     , rasterizer_ptr{std::make_unique<Core::Pipeline::Rasterizer>()}
+    , fragment_processing_ptr{std::make_unique<Core::Pipeline::FragmentProcessing>()}
 {
 
 }
@@ -79,6 +80,7 @@ GLuint SoftwareRenderer::Render()
     auto fragments = this->rasterizer_ptr->RasterizeTriangle(triangles);
 
     // 4. Fragment Processing
+    this->fragment_processing_ptr->ProcessFragments(fragments);
 
     // 5. FrameBuffer Operation
 
