@@ -53,7 +53,17 @@ void FrameBuffer::SetPixel(int x, int y, const Core::Math::Vector4& color)
 
 void FrameBuffer::Clear()
 {
-    
+    this->data.resize(this->width * this->height * 4, 0.0f);
+    for (int j = 0; j < height; ++j)
+    {
+        for (int i = 0; i < width; ++i)
+        {
+            this->data.at((j * width + i) * 4) = DEFAULT_COLOR.x;
+            this->data.at((j * width + i) * 4 + 1)  = DEFAULT_COLOR.y;
+            this->data.at((j * width + i) * 4 + 2)  = DEFAULT_COLOR.z;
+            this->data.at((j * width + i) * 4 + 3)  = DEFAULT_COLOR.w;
+        }
+    }
 }
 
 int FrameBuffer::GetWidth() const

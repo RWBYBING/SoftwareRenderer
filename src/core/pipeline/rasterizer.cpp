@@ -102,7 +102,7 @@ std::vector<Core::Primitives::Fragment> Rasterizer::RasterizeTriangle(const std:
             Core::Math::Vector2{triangle.vertices[1].pos.x, triangle.vertices[1].pos.y},
             Core::Math::Vector2{triangle.vertices[2].pos.x, triangle.vertices[2].pos.y},
         };
-
+        
         // 2. calculate the bounding box
         int min_x, max_x, min_y, max_y;
         this->CalculateBoundingBox(triangle, min_x, max_x, min_y, max_y);
@@ -121,6 +121,8 @@ std::vector<Core::Primitives::Fragment> Rasterizer::RasterizeTriangle(const std:
                 }
 
                 Core::Primitives::Fragment fragment = this->InterpolateFragment(triangle, alpha, beta, gamma);
+                fragment.x = x;
+                fragment.y = y;
                 fragments.push_back(fragment);
             }
         }

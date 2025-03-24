@@ -9,6 +9,7 @@
 #include <core/pipeline/triangle_processing.h>
 #include <core/pipeline/rasterizer.h>
 #include <core/pipeline/fragment_processing.h>
+#include <core/pipeline/framebuffer_operation.h>
 
 #include <core/resources/camera.h>
 #include <core/resources/mesh.h>
@@ -67,6 +68,7 @@ namespace Core
             std::unique_ptr<Core::Pipeline::TriangleProcessing> triangle_processing_ptr;
             std::unique_ptr<Core::Pipeline::Rasterizer> rasterizer_ptr;
             std::unique_ptr<Core::Pipeline::FragmentProcessing> fragment_processing_ptr;
+            std::unique_ptr<Core::Pipeline::FrameBufferOperation> framebuffer_operation_ptr;
         };
     }
 }

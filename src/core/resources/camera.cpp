@@ -10,8 +10,8 @@ PerspectiveCamera::PerspectiveCamera()
     , up{Core::Math::Vector3{0.0f, 1.0f, 0.0f}}
     , fov{120.0f}
     , aspect_ratio{1.33f}
-    , near_clip{0.1f}
-    , far_clip{100.0f}
+    , near_clip{-0.1f}
+    , far_clip{-100.0f}
 {
 
 }
@@ -68,8 +68,8 @@ OrthographicCamera::OrthographicCamera()
     , right{100.0f}
     , bottom{-100.0f}
     , top{100.0f}
-    , near_clip{0.1f}
-    , far_clip{100.0f}
+    , near_clip{-0.1f}
+    , far_clip{-100.0f}
 {
 
 }

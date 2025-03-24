@@ -72,6 +72,7 @@ set(GUI_SOURCES
 	src/core/pipeline/triangle_processing.cpp
 	src/core/pipeline/rasterizer.cpp
 	src/core/pipeline/fragment_processing.cpp
+	src/core/pipeline/framebuffer_operation.cpp
 	src/core/renderer/software_renderer.cpp
 )
 

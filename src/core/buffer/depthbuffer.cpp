@@ -1,12 +1,14 @@
 #include <core/buffer/depthbuffer.h>
 
+#include <iostream>
+
 using namespace Core::Buffer;
 
 DepthBuffer::DepthBuffer(int width, int height)
     : width{width}
     , height{height}
 {
-    this->data.resize(width * height, 1.0);
+    this->data.resize(width * height, -1.0f);
 }
 
 DepthBuffer::~DepthBuffer() = default;
@@ -55,5 +57,5 @@ void DepthBuffer::SetHeight(int height)
 
 void DepthBuffer::ResizeBuffer()
 {
-    this->data.resize(this->width * this->height, 1.0);
+    this->data.resize(this->width * this->height, -1.0f);
 }

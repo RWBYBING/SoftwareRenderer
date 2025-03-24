@@ -16,7 +16,7 @@ namespace Core
 
             float GetDepth(int x, int y) const;                            // Get Depth
             void SetDepth(int x, int y, float depth);                      // Set Depth
-            void Clear(float default_depth = 1.0f);                        // Clear buffer
+            void Clear(float default_depth = -1.0f);                       // Clear buffer
 
             int GetWidth() const;                                           // Get buffer width
             int GetHeight() const;                                          // Get buffer height

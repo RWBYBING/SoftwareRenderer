@@ -7,7 +7,7 @@
 using namespace Core::Renderer;
 
 SoftwareRenderer::SoftwareRenderer()
-    : projection_mode{1}
+    : projection_mode{0}
     , enable_backface_culling{1}
     , enable_frustum_clipping{1}
     , texture_width{0}
@@ -21,6 +21,7 @@ SoftwareRenderer::SoftwareRenderer()
     , triangle_processing_ptr{std::make_unique<Core::Pipeline::TriangleProcessing>()}
     , rasterizer_ptr{std::make_unique<Core::Pipeline::Rasterizer>()}
     , fragment_processing_ptr{std::make_unique<Core::Pipeline::FragmentProcessing>()}
+    , framebuffer_operation_ptr{std::make_unique<Core::Pipeline::FrameBufferOperation>()}
 {
 
 }
@@ -32,9 +33,13 @@ void SoftwareRenderer::Init()
     v00.SetPos(10.0f, 0.0f, -10.0f, 1.0f);
     v01.SetPos(0.0f, 10.0f, -10.0f, 1.0f);
     v02.SetPos(-10.0f, 0.0f, -10.0f, 1.0f);
-    v10.SetPos(-5.0f, 0.0f, -50.0f, 1.0f);
-    v11.SetPos(-15.0f, 10.0f, -50.0f, 1.0f);
-    v12.SetPos(-25.0f, 0.0f, -50.0f, 1.0f);
+    v10.SetPos(-5.0f, 0.0f, -15.0f, 1.0f);
+    v11.SetPos(-15.0f, 10.0f, -15.0f, 1.0f);
+    v12.SetPos(-25.0f, 0.0f, -15.0f, 1.0f);
+
+    v10.SetColor(1.0f, 1.0f, 0.0f, 1.0f);
+    v11.SetColor(1.0f, 1.0f, 0.0f, 1.0f);
+    v12.SetColor(1.0f, 1.0f, 0.0f, 1.0f);
 
     this->mesh_ptr->AddVertex(v00);
     this->mesh_ptr->AddVertex(v01);
@@ -52,10 +57,19 @@ void SoftwareRenderer::SetupPipeline()
 
     this->rasterizer_ptr->SetFrameBuffer(this->frame_buffer_ptr);
     this->rasterizer_ptr->SetDepthBuffer(this->depth_buffer_ptr);
+
+    this->framebuffer_operation_ptr->SetFrameBuffer(this->frame_buffer_ptr);
+    this->framebuffer_operation_ptr->SetDepthBuffer(this->depth_buffer_ptr);
 }
 
 GLuint SoftwareRenderer::Render()
 {
+    Utils::GlobalTimer::Instance().Start();
+    this->frame_buffer_ptr->Clear();
+    this->depth_buffer_ptr->Clear();
+    Utils::GlobalTimer::Instance().PrintElapsedTime();
+
+    // Utils::GlobalTimer::Instance().Start();
     // 1. Vertex Processing
     this->vertex_processing_ptr->SetModelMatrix(this->mesh_ptr->GetModelMatrix());
     if (this->projection_mode == 0)
@@ -69,22 +83,34 @@ GLuint SoftwareRenderer::Render()
         this->vertex_processing_ptr->SetProjectionMatrix(this->perspective_camera_ptr->GetProjectionMatrix());
     }
     auto vertices_screen_space = this->vertex_processing_ptr->TransformVertices(this->mesh_ptr->vertices);
+    // Utils::GlobalTimer::Instance().PrintElapsedTime();
 
+    // Utils::GlobalTimer::Instance().Start();
     // 2. Triangle Processing
     auto triangles = this->triangle_processing_ptr->Processing(
         vertices_screen_space,
         this->mesh_ptr->indices
     );
+    // Utils::GlobalTimer::Instance().PrintElapsedTime();
 
+    // Utils::GlobalTimer::Instance().Start();
     // 3. Rasterization
     auto fragments = this->rasterizer_ptr->RasterizeTriangle(triangles);
+    // Utils::GlobalTimer::Instance().PrintElapsedTime();
 
+    // Utils::GlobalTimer::Instance().Start();
     // 4. Fragment Processing
     this->fragment_processing_ptr->ProcessFragments(fragments);
+    // Utils::GlobalTimer::Instance().PrintElapsedTime();
 
+    // Utils::GlobalTimer::Instance().Start();
     // 5. FrameBuffer Operation
+    this->framebuffer_operation_ptr->WriteFragment2Buffer(fragments);
+    // Utils::GlobalTimer::Instance().PrintElapsedTime();
 
+    // Utils::GlobalTimer::Instance().Start();
     this->UpdateTexture();
+    // Utils::GlobalTimer::Instance().PrintElapsedTime();
 
     // Utils::GlobalTimer::Instance().Start();
     // Utils::GlobalTimer::Instance().PrintElapsedTime();
@@ -98,6 +124,10 @@ void SoftwareRenderer::HandleWindowResize(int width, int height)
     this->frame_buffer_ptr->SetWidth(width);
     this->frame_buffer_ptr->SetHeight(height);
     this->frame_buffer_ptr->ResizeBuffer();
+
+    this->depth_buffer_ptr->SetWidth(width);
+    this->depth_buffer_ptr->SetHeight(height);
+    this->depth_buffer_ptr->ResizeBuffer();
 }
 
 int SoftwareRenderer::GetTextureWidth()
