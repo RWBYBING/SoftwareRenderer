@@ -4,23 +4,11 @@
 
 using namespace Core::Buffer;
 
-static Core::Math::Vector4 DEFAULT_COLOR{0.0f, 0.0f, 0.0f, 1.0f};
-
 FrameBuffer::FrameBuffer(int width, int height)
     : width{width}
     , height{height}
 {
     this->data.resize(this->width * this->height * 4, 0.0f);
-    for (int j = 0; j < height; ++j)
-    {
-        for (int i = 0; i < width; ++i)
-        {
-            this->data.at((j * width + i) * 4) = DEFAULT_COLOR.x;
-            this->data.at((j * width + i) * 4 + 1)  = DEFAULT_COLOR.y;
-            this->data.at((j * width + i) * 4 + 2)  = DEFAULT_COLOR.z;
-            this->data.at((j * width + i) * 4 + 3)  = DEFAULT_COLOR.w;
-        }
-    }
 }
 
 FrameBuffer::~FrameBuffer() = default;
@@ -53,17 +41,7 @@ void FrameBuffer::SetPixel(int x, int y, const Core::Math::Vector4& color)
 
 void FrameBuffer::Clear()
 {
-    this->data.resize(this->width * this->height * 4, 0.0f);
-    for (int j = 0; j < height; ++j)
-    {
-        for (int i = 0; i < width; ++i)
-        {
-            this->data.at((j * width + i) * 4) = DEFAULT_COLOR.x;
-            this->data.at((j * width + i) * 4 + 1)  = DEFAULT_COLOR.y;
-            this->data.at((j * width + i) * 4 + 2)  = DEFAULT_COLOR.z;
-            this->data.at((j * width + i) * 4 + 3)  = DEFAULT_COLOR.w;
-        }
-    }
+    std::fill(this->data.begin(), this->data.end(), 0.0f);
 }
 
 int FrameBuffer::GetWidth() const
@@ -91,16 +69,6 @@ void FrameBuffer::SetHeight(int height)
 void FrameBuffer::ResizeBuffer()
 {
     this->data.resize(this->width * this->height * 4, 0.0f);
-    for (int j = 0; j < height; ++j)
-    {
-        for (int i = 0; i < width; ++i)
-        {
-            this->data.at((j * width + i) * 4) = DEFAULT_COLOR.x;
-            this->data.at((j * width + i) * 4 + 1)  = DEFAULT_COLOR.y;
-            this->data.at((j * width + i) * 4 + 2)  = DEFAULT_COLOR.z;
-            this->data.at((j * width + i) * 4 + 3)  = DEFAULT_COLOR.w;
-        }
-    }
 }
 
 float* FrameBuffer::GetBuffer()

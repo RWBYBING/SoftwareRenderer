@@ -64,10 +64,10 @@ void SoftwareRenderer::SetupPipeline()
 
 GLuint SoftwareRenderer::Render()
 {
-    Utils::GlobalTimer::Instance().Start();
+    // Utils::GlobalTimer::Instance().Start();
     this->frame_buffer_ptr->Clear();
     this->depth_buffer_ptr->Clear();
-    Utils::GlobalTimer::Instance().PrintElapsedTime();
+    // Utils::GlobalTimer::Instance().PrintElapsedTime();
 
     // Utils::GlobalTimer::Instance().Start();
     // 1. Vertex Processing
