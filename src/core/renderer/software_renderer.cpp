@@ -140,6 +140,20 @@ int SoftwareRenderer::GetTextureHeight()
     return this->texture_height;
 }
 
+void SoftwareRenderer::HandleCameraMove(float x, float y)
+{
+    // Update orthographic camera
+    if (this->projection_mode == 0)
+    {   
+
+    }
+    // Update perspective camera
+    else
+    {
+
+    }
+}
+
 std::shared_ptr<Core::Resources::PerspectiveCamera> SoftwareRenderer::GetPerspectiveCamera() const
 {
     return this->perspective_camera_ptr;

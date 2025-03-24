@@ -31,6 +31,8 @@ namespace Core
             int GetTextureWidth();
             int GetTextureHeight();
 
+            void HandleCameraMove(float x, float y);
+
             std::shared_ptr<Core::Resources::PerspectiveCamera> GetPerspectiveCamera() const;
             std::shared_ptr<Core::Resources::OrthographicCamera> GetOrthographicCamera() const;
             std::shared_ptr<Core::Resources::Mesh> GetMesh() const;

@@ -484,6 +484,29 @@ void GLFWWindowManager::UpdateFramebuffer()
 {
     if (ImGui::Begin("Result"))
     {
+        // Handle the mouse events
+        if (ImGui::IsWindowHovered()) {
+            // 1. left button dragging
+            if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)) 
+            {
+                ImVec2 drag_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left);
+                this->renderer->HandleCameraMove(drag_delta.x, drag_delta.y);
+            }
+            
+            // 2. wheel
+            float wheel = ImGui::GetIO().MouseWheel;
+            if (wheel != 0.0f) 
+            {
+                
+            }
+            
+            // 3. right button dragging
+            if (ImGui::IsMouseDragging(ImGuiMouseButton_Right)) 
+            {
+
+            }
+        }
+
         ImVec2 window_size = ImGui::GetContentRegionAvail();
         // Resize the texture size when window size changed
         int current_width = static_cast<int>(window_size.x);
