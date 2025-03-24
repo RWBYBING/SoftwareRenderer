@@ -18,6 +18,13 @@ namespace Core
 {
     namespace Renderer
     {
+        enum class Object
+        {
+            TWO_TRIANGLES,              // Two simple triangles with the same size and different distance from the x-y plane
+            CUBE,                       // A Cube with six faces
+            STANDFORD_BUNNY             // The classical cute bunny                       
+        };
+
         class SoftwareRenderer
         {
         public:

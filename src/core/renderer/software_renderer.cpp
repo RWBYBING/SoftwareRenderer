@@ -3,11 +3,12 @@
 #include <chrono>
 
 #include <utils/timer.h>
+#include <core/loader/obj_loader.h>
 
 using namespace Core::Renderer;
 
 SoftwareRenderer::SoftwareRenderer()
-    : projection_mode{0}
+    : projection_mode{1}
     , enable_backface_culling{1}
     , enable_frustum_clipping{1}
     , texture_width{0}
@@ -49,6 +50,8 @@ void SoftwareRenderer::Init()
     this->mesh_ptr->AddVertex(v12);
     this->mesh_ptr->AddTriangle(0, 1, 2);
     this->mesh_ptr->AddTriangle(3, 4, 5);
+
+    // Core::Loader::ParseOBJFile("../asset/cube/cube.obj", this->mesh_ptr);
 }
 
 void SoftwareRenderer::SetupPipeline()

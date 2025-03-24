@@ -3,29 +3,47 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 
 using namespace Core::Loader;
 
-Core::Resources::Mesh ParseOBJFile(const std::string& file_path)
+void Core::Loader::ParseOBJFile(const std::string& file_path, std::shared_ptr<Core::Resources::Mesh> mesh)
 {
-    // Core::Resources::Mesh mesh;
+    std::vector<Core::Math::Vector3> temp_positions;
+    std::vector<uint32_t> temp_indices;
+    
+    std::ifstream file(file_path);
+    if (!file.is_open()) {
+        throw std::runtime_error("Failed to open OBJ file: " + file_path);
+    }
 
-    // std::ifstream file(file_path);
-    // std::string line;
+    std::string line;
+    while (std::getline(file, line)) {
+        // skip the empty line and comments
+        if (line.empty() || line[0] == '#') {
+            continue;
+        }
+        
+        std::istringstream iss(line);
+        std::string prefix;
+        iss >> prefix;
+        
+        // Parse the vertex position
+        if (prefix == "v") 
+        {
+            float x, y, z;
+            iss >> x >> y >> z;
+            Core::Primitives::Vertex vertex;
+            vertex.SetPos(x, y, z, 1.0f);
+            mesh->AddVertex(vertex);
+        }
 
-    // std::vector<Core::Math::Vector4> pos;
-    // std::vector<Core::Math::Vector3> normal;
-    // std::vector<Core::Math::Vector2> texcoord;
-
-    // while (std::getline(file, line))
-    // {   
-    //     std::istringstream iss(line);
-    //     std::string type;
-    //     iss >> type;
-    // }
-}
-
-std::map<std::string, Core::Resources::Material> ParseMTLFile(const std::string& file_path)
-{
-
+        // Parse the faces
+        else if (prefix == "f") 
+        {
+            uint32_t a, b, c;
+            iss >> a >> b >> c;
+            mesh->AddTriangle(a - 1, b - 1, c - 1);
+        }
+    }
 }

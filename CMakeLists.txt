@@ -58,6 +58,7 @@ set(CORE_SOURCES
 set(GUI_SOURCES
 	src/gui/window.cpp
 	src/utils/timer.cpp
+	src/core/loader/obj_loader.cpp
 	src/core/math/vector.cpp
 	src/core/math/matrix.cpp
 	src/core/primitives/vertex.cpp
