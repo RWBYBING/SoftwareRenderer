@@ -10,8 +10,6 @@ using namespace Core::Renderer;
 SoftwareRenderer::SoftwareRenderer()
     : projection_mode{0}
     , model_selection{0}
-    , enable_backface_culling{1}
-    , enable_frustum_clipping{1}
     , texture_width{0}
     , texture_height{0}
     , mesh_ptr{std::make_shared<Core::Resources::Mesh>()}
@@ -85,7 +83,6 @@ GLuint SoftwareRenderer::Render()
         this->vertex_processing_ptr->SetProjectionMatrix(this->perspective_camera_ptr->GetProjectionMatrix());
     }
     auto vertices_screen_space = this->vertex_processing_ptr->TransformVertices(this->mesh_ptr->vertices);
-    vertices_screen_space[0].pos.PrintVec();
     // Utils::GlobalTimer::Instance().PrintElapsedTime();
 
     // Utils::GlobalTimer::Instance().Start();
@@ -120,6 +117,16 @@ GLuint SoftwareRenderer::Render()
     return this->texture;
 }
 
+int SoftwareRenderer::GetTextureWidth()
+{
+    return this->texture_width;
+}
+
+int SoftwareRenderer::GetTextureHeight()
+{
+    return this->texture_height;
+}
+
 void SoftwareRenderer::HandleWindowResize(int width, int height)
 {
     this->CreateTexture(width, height);
@@ -131,6 +138,42 @@ void SoftwareRenderer::HandleWindowResize(int width, int height)
     this->depth_buffer_ptr->SetWidth(width);
     this->depth_buffer_ptr->SetHeight(height);
     this->depth_buffer_ptr->ResizeBuffer();
+}
+
+void SoftwareRenderer::HandleCameraMove(float x, float y)
+{
+    // Update orthographic camera
+    if (this->projection_mode == 0)
+    {   
+        this->orthographic_camera_ptr->pos.x += x / 50;
+        this->orthographic_camera_ptr->pos.y += y / 50;
+    }
+    // Update perspective camera
+    else
+    {
+        this->perspective_camera_ptr->pos.x += x / 50;
+        this->perspective_camera_ptr->pos.y += y / 50;
+    }
+}
+
+void SoftwareRenderer::HandleCameraMove(float z)
+{
+    // Update orthographic camera
+    if (this->projection_mode == 0)
+    {   
+        this->orthographic_camera_ptr->pos.z += z;
+    }
+    // Update perspective camera
+    else
+    {
+        this->perspective_camera_ptr->pos.z += z;
+    }
+}
+
+void SoftwareRenderer::HandleMeshRotation(float x, float y)
+{
+    this->mesh_ptr->rotation.x += y / 20;
+    this->mesh_ptr->rotation.y += x / 20;
 }
 
 void SoftwareRenderer::ReloadMesh()
@@ -173,28 +216,53 @@ void SoftwareRenderer::ReloadMesh()
     }
 }
 
-int SoftwareRenderer::GetTextureWidth()
+void SoftwareRenderer::ResetMeshPos()
 {
-    return this->texture_width;
+    this->mesh_ptr->translation.x = 0.0f;
+    this->mesh_ptr->translation.y = 0.0f;
+    this->mesh_ptr->translation.z = 0.0f;
+    this->mesh_ptr->rotation.x = 0.0f;
+    this->mesh_ptr->rotation.y = 0.0f;
+    this->mesh_ptr->rotation.z = 0.0f;
+    this->mesh_ptr->scale.x = 1.0f;
+    this->mesh_ptr->scale.y = 1.0f;
+    this->mesh_ptr->scale.z = 1.0f;
 }
 
-int SoftwareRenderer::GetTextureHeight()
+void SoftwareRenderer::ResetCamera()
 {
-    return this->texture_height;
-}
+    // reset orthographic camera
+    this->orthographic_camera_ptr->pos.x = 0.0f;
+    this->orthographic_camera_ptr->pos.y = 0.0f;
+    this->orthographic_camera_ptr->pos.z = 0.0f;
+    this->orthographic_camera_ptr->look_at.x = 0.0f;
+    this->orthographic_camera_ptr->look_at.y = 0.0f;
+    this->orthographic_camera_ptr->look_at.z = -1.0f;
+    this->orthographic_camera_ptr->up.x = 0.0f;
+    this->orthographic_camera_ptr->up.y = 1.0f;
+    this->orthographic_camera_ptr->up.z = 0.0f;
+    this->orthographic_camera_ptr->left = -100.0f;
+    this->orthographic_camera_ptr->right = 100.0f;
+    this->orthographic_camera_ptr->bottom = -100.0f;
+    this->orthographic_camera_ptr->top = 100.0f;
+    this->orthographic_camera_ptr->near_clip = 0.1f;
+    this->orthographic_camera_ptr->far_clip = 100.0f;
 
-void SoftwareRenderer::HandleCameraMove(float x, float y)
-{
-    // Update orthographic camera
-    if (this->projection_mode == 0)
-    {   
+    // reset perspective camera
+    this->perspective_camera_ptr->pos.x = 0.0f;
+    this->perspective_camera_ptr->pos.y = 0.0f;
+    this->perspective_camera_ptr->pos.z = 0.0f;
+    this->perspective_camera_ptr->look_at.x = 0.0f;
+    this->perspective_camera_ptr->look_at.y = 0.0f;
+    this->perspective_camera_ptr->look_at.z = -1.0f;
+    this->perspective_camera_ptr->up.x = 0.0f;
+    this->perspective_camera_ptr->up.y = 1.0f;
+    this->perspective_camera_ptr->up.z = 0.0f;
+    this->perspective_camera_ptr->fov = 120.0f;
+    this->perspective_camera_ptr->aspect_ratio = 1.33f;
+    this->perspective_camera_ptr->near_clip = 0.1f;
+    this->perspective_camera_ptr->far_clip = 100.0f;
 
-    }
-    // Update perspective camera
-    else
-    {
-
-    }
 }
 
 std::shared_ptr<Core::Resources::PerspectiveCamera> SoftwareRenderer::GetPerspectiveCamera() const

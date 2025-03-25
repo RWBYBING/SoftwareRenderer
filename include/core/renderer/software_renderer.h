@@ -38,8 +38,13 @@ namespace Core
             int GetTextureWidth();
             int GetTextureHeight();
 
-            void HandleCameraMove(float x, float y);
-            void ReloadMesh();
+            void HandleCameraMove(float x, float y);            // Camera translation in x-y plane
+            void HandleCameraMove(float z);                     // Camera translation on z-axis
+            void HandleMeshRotation(float x, float y);          // Mesh rotation on x-axis and y-axis
+            
+            void ReloadMesh();                                  // Load a new mesh ptr
+            void ResetMeshPos();                                // Reset the mesh position
+            void ResetCamera();                                 // Reset the camera
 
             std::shared_ptr<Core::Resources::PerspectiveCamera> GetPerspectiveCamera() const;
             std::shared_ptr<Core::Resources::OrthographicCamera> GetOrthographicCamera() const;
@@ -52,8 +57,6 @@ namespace Core
         public:
             int projection_mode;                                // 0: Orthographic, 1: Perspective
             Model model_selection;                              // 0: two triangles, 1: cube, 2: stanford bunny
-            bool enable_backface_culling;                       
-            bool enable_frustum_clipping;
 
         private:
             GLuint texture;                                     // OpenGL Texture id(only for displaying the final image)

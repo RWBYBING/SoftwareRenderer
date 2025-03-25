@@ -279,7 +279,7 @@ void GLFWWindowManager::UpdateController()
 
         ImGui::Text("Rendering Pipeline: ");
 
-        if (ImGui::CollapsingHeader("Vertex Processing"))
+        if (ImGui::CollapsingHeader("MVP Transformation"))
         {
             // Projection mode
             int& projection_mode = this->renderer->projection_mode;
@@ -326,6 +326,11 @@ void GLFWWindowManager::UpdateController()
             ImGui::InputFloat("y##model scale", &mesh->scale.y); ImGui::SameLine();
             ImGui::SetNextItemWidth(0.2f * window_size.x);
             ImGui::InputFloat("z##model scale", &mesh->scale.z);
+
+            if (ImGui::Button("Reset##model"))
+            {
+                this->renderer->ResetMeshPos();
+            }
 
             ImGui::Separator();
 
@@ -466,12 +471,16 @@ void GLFWWindowManager::UpdateController()
                 ImGui::InputFloat("##Far Clip", &camera->far_clip);
             }
  
+            if (ImGui::Button("Reset##camera"))
+            {
+                this->renderer->ResetCamera();
+            }
+
         }
 
         if (ImGui::CollapsingHeader("Triangle Processing"))
         {
-            ImGui::Checkbox("enable backface culling", &this->renderer->enable_backface_culling);
-            ImGui::Checkbox("enable frustum clipping", &this->renderer->enable_frustum_clipping);
+
         }
 
         if (ImGui::CollapsingHeader("Rasterization"))
@@ -503,19 +512,23 @@ void GLFWWindowManager::UpdateFramebuffer()
             {
                 ImVec2 drag_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left);
                 this->renderer->HandleCameraMove(drag_delta.x, drag_delta.y);
+                ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
             }
+            
             
             // 2. wheel
             float wheel = ImGui::GetIO().MouseWheel;
             if (wheel != 0.0f) 
             {
-                
+                this->renderer->HandleCameraMove(wheel);
             }
             
             // 3. right button dragging
             if (ImGui::IsMouseDragging(ImGuiMouseButton_Right)) 
             {
-
+                ImVec2 drag_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
+                this->renderer->HandleMeshRotation(drag_delta.x, drag_delta.y);
+                ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
             }
         }
 
