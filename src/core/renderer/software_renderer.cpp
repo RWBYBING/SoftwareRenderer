@@ -8,7 +8,8 @@
 using namespace Core::Renderer;
 
 SoftwareRenderer::SoftwareRenderer()
-    : projection_mode{1}
+    : projection_mode{0}
+    , model_selection{0}
     , enable_backface_culling{1}
     , enable_frustum_clipping{1}
     , texture_width{0}
@@ -50,8 +51,6 @@ void SoftwareRenderer::Init()
     this->mesh_ptr->AddVertex(v12);
     this->mesh_ptr->AddTriangle(0, 1, 2);
     this->mesh_ptr->AddTriangle(3, 4, 5);
-
-    // Core::Loader::ParseOBJFile("../asset/cube/cube.obj", this->mesh_ptr);
 }
 
 void SoftwareRenderer::SetupPipeline()
@@ -86,6 +85,7 @@ GLuint SoftwareRenderer::Render()
         this->vertex_processing_ptr->SetProjectionMatrix(this->perspective_camera_ptr->GetProjectionMatrix());
     }
     auto vertices_screen_space = this->vertex_processing_ptr->TransformVertices(this->mesh_ptr->vertices);
+    vertices_screen_space[0].pos.PrintVec();
     // Utils::GlobalTimer::Instance().PrintElapsedTime();
 
     // Utils::GlobalTimer::Instance().Start();
@@ -131,6 +131,46 @@ void SoftwareRenderer::HandleWindowResize(int width, int height)
     this->depth_buffer_ptr->SetWidth(width);
     this->depth_buffer_ptr->SetHeight(height);
     this->depth_buffer_ptr->ResizeBuffer();
+}
+
+void SoftwareRenderer::ReloadMesh()
+{
+    this->mesh_ptr = std::make_shared<Core::Resources::Mesh>();
+
+    if (this->model_selection == Model::TWO_TRIANGLES)
+    {
+        Core::Primitives::Vertex v00, v01, v02;
+        Core::Primitives::Vertex v10, v11, v12;
+        v00.SetPos(10.0f, 0.0f, -10.0f, 1.0f);
+        v01.SetPos(0.0f, 10.0f, -10.0f, 1.0f);
+        v02.SetPos(-10.0f, 0.0f, -10.0f, 1.0f);
+        v10.SetPos(-5.0f, 0.0f, -15.0f, 1.0f);
+        v11.SetPos(-15.0f, 10.0f, -15.0f, 1.0f);
+        v12.SetPos(-25.0f, 0.0f, -15.0f, 1.0f);
+    
+        v10.SetColor(1.0f, 1.0f, 0.0f, 1.0f);
+        v11.SetColor(1.0f, 1.0f, 0.0f, 1.0f);
+        v12.SetColor(1.0f, 1.0f, 0.0f, 1.0f);
+    
+        this->mesh_ptr->AddVertex(v00);
+        this->mesh_ptr->AddVertex(v01);
+        this->mesh_ptr->AddVertex(v02);
+        this->mesh_ptr->AddVertex(v10);
+        this->mesh_ptr->AddVertex(v11);
+        this->mesh_ptr->AddVertex(v12);
+        this->mesh_ptr->AddTriangle(0, 1, 2);
+        this->mesh_ptr->AddTriangle(3, 4, 5);
+    }
+
+    if (this->model_selection == Model::CUBE)
+    {
+        Core::Loader::ParseOBJFile("../asset/cube/cube.obj", this->mesh_ptr);
+    }
+
+    if (this->model_selection == Model::STANDFORD_BUNNY)
+    {
+        Core::Loader::ParseOBJFile("../asset/stanford_bunny/bunny.obj", this->mesh_ptr);
+    }
 }
 
 int SoftwareRenderer::GetTextureWidth()

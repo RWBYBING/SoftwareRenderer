@@ -47,7 +47,7 @@ void VertexProcessing::ViewportTransformation(Core::Primitives::Vertex& vertex) 
     int screen_width = this->frame_buffer->GetWidth();
     int screen_height = this->frame_buffer->GetHeight();
 
-    vertex.pos.x = (vertex.pos.x + 1.0f) * 0.5f * screen_width;
+    vertex.pos.x = (1.0f - vertex.pos.x) * 0.5f * screen_width;
     vertex.pos.y = (1.0f - vertex.pos.y) * 0.5f * screen_height;
     vertex.pos.z = vertex.pos.z;   // (depth_near = 1, depth_far = -1)
 }

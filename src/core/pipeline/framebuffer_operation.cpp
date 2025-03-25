@@ -47,7 +47,7 @@ bool FrameBufferOperation::DepthTest(int x, int y, float depth) const
 {
     float current_depth = this->depth_buffer_ptr->GetDepth(x, y);
 
-    if (depth > current_depth)
+    if (depth > current_depth && depth < 1.0f)
     {
         this->depth_buffer_ptr->SetDepth(x, y, depth);
         return true;

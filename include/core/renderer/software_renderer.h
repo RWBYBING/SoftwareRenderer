@@ -18,7 +18,7 @@ namespace Core
 {
     namespace Renderer
     {
-        enum class Object
+        enum class Model
         {
             TWO_TRIANGLES,              // Two simple triangles with the same size and different distance from the x-y plane
             CUBE,                       // A Cube with six faces
@@ -39,6 +39,7 @@ namespace Core
             int GetTextureHeight();
 
             void HandleCameraMove(float x, float y);
+            void ReloadMesh();
 
             std::shared_ptr<Core::Resources::PerspectiveCamera> GetPerspectiveCamera() const;
             std::shared_ptr<Core::Resources::OrthographicCamera> GetOrthographicCamera() const;
@@ -50,6 +51,7 @@ namespace Core
 
         public:
             int projection_mode;                                // 0: Orthographic, 1: Perspective
+            Model model_selection;                              // 0: two triangles, 1: cube, 2: stanford bunny
             bool enable_backface_culling;                       
             bool enable_frustum_clipping;
 
