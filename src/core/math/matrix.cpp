@@ -1,32 +1,18 @@
 #include <core/math/matrix.h>
 
 #include <cassert>
+#include <cstring>
 
 using namespace Core::Math;
 
-Matrix4x4::Matrix4x4() 
+Matrix4x4::Matrix4x4() noexcept
 {
-    for (int i = 0; i < 4; ++i)
-    {
-        for (int j = 0; j < 4; ++j)
-        {
-            element[i][j] = 0.0f;
-        }
-    }
+    std::memset(element, 0, sizeof(element));
 }
 
-Matrix4x4::Matrix4x4(const Matrix4x4& mat)
-{
-    for (int i = 0; i < 4; ++i)
-    {
-        for (int j = 0; j < 4; ++j)
-        {
-            element[i][j] = mat.element[i][j];
-        }
-    }
-}
+Matrix4x4::Matrix4x4(const Matrix4x4& mat) noexcept = default;
 
-Matrix4x4::Matrix4x4(const float matValue[4][4])
+Matrix4x4::Matrix4x4(const float matValue[4][4]) noexcept
 {
     for (int i = 0; i < 4; ++i)
     {
@@ -37,11 +23,11 @@ Matrix4x4::Matrix4x4(const float matValue[4][4])
     }
 }
 
-Matrix4x4::~Matrix4x4() = default;
+Matrix4x4::~Matrix4x4() noexcept = default;
 
-Matrix4x4& Matrix4x4::operator=(const Matrix4x4& other) = default;
+Matrix4x4& Matrix4x4::operator=(const Matrix4x4& other) noexcept = default;
 
-Matrix4x4 Matrix4x4::operator+ (const Matrix4x4& mat) const
+Matrix4x4 Matrix4x4::operator+ (const Matrix4x4& mat) const noexcept
 {
     Matrix4x4 result = Matrix4x4();
     for (int i = 0; i < 4; ++i)
@@ -54,7 +40,7 @@ Matrix4x4 Matrix4x4::operator+ (const Matrix4x4& mat) const
     return result;
 }
 
-Matrix4x4 Matrix4x4::operator- (const Matrix4x4& mat) const
+Matrix4x4 Matrix4x4::operator- (const Matrix4x4& mat) const noexcept
 {
     Matrix4x4 result = Matrix4x4();
     for (int i = 0; i < 4; ++i)
@@ -67,35 +53,31 @@ Matrix4x4 Matrix4x4::operator- (const Matrix4x4& mat) const
     return result;
 }
 
-Matrix4x4 Matrix4x4::operator* (const Matrix4x4& mat) const
+Matrix4x4 Matrix4x4::operator*(const Matrix4x4& mat) const noexcept
 {
-    Matrix4x4 result = Matrix4x4();
-    for (int i = 0; i < 4; ++i)
-    {
-        for (int j = 0; j < 4; ++j)
-        {
-            float temp = 0.0f;
-            for (int k = 0; k < 4; ++k)
-            {
-                temp += this->element[i][k] * mat.element[k][j];
-            }
-            result.element[i][j] = temp;
+    Matrix4x4 result;
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            result.element[i][j] = element[i][0] * mat.element[0][j] +
+                                  element[i][1] * mat.element[1][j] +
+                                  element[i][2] * mat.element[2][j] +
+                                  element[i][3] * mat.element[3][j];
         }
     }
     return result;
 }
 
-Vector4 Matrix4x4::operator* (const Vector4& vec) const
+Vector4 Matrix4x4::operator*(const Vector4& vec) const noexcept
 {
-    Vector4 result = Vector4();
-    result.x = this->GetRowVector(0).Dot(vec);
-    result.y = this->GetRowVector(1).Dot(vec);
-    result.z = this->GetRowVector(2).Dot(vec);
-    result.w = this->GetRowVector(3).Dot(vec);
-    return result;
+    return Vector4(
+        element[0][0] * vec.x + element[0][1] * vec.y + element[0][2] * vec.z + element[0][3] * vec.w,
+        element[1][0] * vec.x + element[1][1] * vec.y + element[1][2] * vec.z + element[1][3] * vec.w,
+        element[2][0] * vec.x + element[2][1] * vec.y + element[2][2] * vec.z + element[2][3] * vec.w,
+        element[3][0] * vec.x + element[3][1] * vec.y + element[3][2] * vec.z + element[3][3] * vec.w
+    );
 }
 
-Matrix4x4 Matrix4x4::operator* (const float k) const
+Matrix4x4 Matrix4x4::operator* (const float k) const noexcept
 {
     Matrix4x4 result = Matrix4x4();
     for (int i = 0; i < 4; ++i)
@@ -108,19 +90,19 @@ Matrix4x4 Matrix4x4::operator* (const float k) const
     return result;
 }
 
-Vector4 Matrix4x4::GetRowVector(int i) const
+Vector4 Matrix4x4::GetRowVector(int i) const noexcept
 {
     assert(i <= 3 && i >= 0);
     return Vector4(element[i][0], element[i][1], element[i][2], element[i][3]);
 }
 
-Vector4 Matrix4x4::GetColVector(int j) const
+Vector4 Matrix4x4::GetColVector(int j) const noexcept
 {
     assert(j <= 3 && j >= 0);
     return Vector4(element[0][j], element[1][j], element[2][j], element[3][j]);
 }
 
-Matrix4x4 Matrix4x4::GetTranspose() const
+Matrix4x4 Matrix4x4::GetTranspose() const noexcept
 {
     Matrix4x4 result = Matrix4x4();
     for (int i = 0; i < 4; ++i)
@@ -133,7 +115,7 @@ Matrix4x4 Matrix4x4::GetTranspose() const
     return result;
 }
 
-Matrix4x4 Matrix4x4::GetIdentity()
+Matrix4x4 Matrix4x4::GetIdentity() noexcept
 {
     Matrix4x4 result = Matrix4x4();
     result.element[0][0] = 1.0;
@@ -143,7 +125,7 @@ Matrix4x4 Matrix4x4::GetIdentity()
     return result;
 }
 
-Matrix4x4 Matrix4x4::Translation(const Vector3& vec)
+Matrix4x4 Matrix4x4::Translation(const Vector3& vec) noexcept
 {
     Matrix4x4 result = GetIdentity();
     result.element[0][3] = vec.x;
@@ -152,7 +134,7 @@ Matrix4x4 Matrix4x4::Translation(const Vector3& vec)
     return result;
 }
 
-Matrix4x4 Matrix4x4::Scale(const Vector3& vec)
+Matrix4x4 Matrix4x4::Scale(const Vector3& vec) noexcept
 {
     Matrix4x4 result = GetIdentity();
     result.element[0][0] = vec.x;
@@ -161,7 +143,7 @@ Matrix4x4 Matrix4x4::Scale(const Vector3& vec)
     return result;
 }
 
-Matrix4x4 Matrix4x4::Rotation(float angle, _3D_Cartesian_Coord axis)
+Matrix4x4 Matrix4x4::Rotation(float angle, _3D_Cartesian_Coord axis) noexcept
 {
     float radian = angle * (M_PI / 180.0f);
     Matrix4x4 result = GetIdentity();
@@ -193,7 +175,7 @@ Matrix4x4 Matrix4x4::Rotation(float angle, _3D_Cartesian_Coord axis)
     return result;
 }
 
-void Matrix4x4::PrintMat() const
+void Matrix4x4::PrintMat() const noexcept
 {
     std::cout << "Matrix4x4: " << std::endl;
     for (int i = 0; i < 4; ++i)

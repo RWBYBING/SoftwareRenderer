@@ -55,6 +55,7 @@ include_directories(include)
 include_directories(include/core)
 include_directories(include/gui)
 include_directories(include/utils)
+include_directories(${TBB_INCLUDE_DIRS})
 
 # Source Files
 set(CORE_SOURCES
@@ -150,4 +151,4 @@ endforeach()
 # Executable
 add_executable(${PROGRAM_NAME} ${SOURCES} src/main.cpp)
 
-target_link_libraries(${PROGRAM_NAME} PUBLIC gl3w imgui)
+target_link_libraries(${PROGRAM_NAME} PUBLIC gl3w imgui ${TBB_LIBRARIES})

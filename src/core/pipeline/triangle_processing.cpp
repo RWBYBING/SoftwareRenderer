@@ -29,3 +29,13 @@ std::vector<Core::Primitives::Triangle> TriangleProcessing::Processing(
 
     return triangles;
 }
+
+void TriangleProcessing::BackfaceCulling(std::vector<Core::Primitives::Triangle>& triangles) const
+{
+
+}
+
+void TriangleProcessing::FrustumClipping(std::vector<Core::Primitives::Triangle>& triangles) const
+{
+
+}

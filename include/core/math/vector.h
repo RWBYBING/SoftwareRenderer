@@ -14,28 +14,30 @@ namespace Core
             float x;
             float y;
 
-            Vector2();
-            Vector2(float x, float y);
-            Vector2(const Vector2& vec);
-            ~Vector2();
+            Vector2() noexcept;
+            Vector2(float x, float y) noexcept;
+            Vector2(const Vector2& vec) noexcept;
+            ~Vector2() noexcept;
 
             // Operator Overloading
-            Vector2 operator+ (const Vector2& vec) const;
-            Vector2 operator- (const Vector2& vec) const;
-            Vector2 operator* (float k) const;
-            Vector2& operator= (const Vector2& other);
+            Vector2 operator+ (const Vector2& vec) const noexcept;
+            Vector2 operator- (const Vector2& vec) const noexcept;
+            Vector2 operator* (float k) const noexcept;
+            Vector2& operator= (const Vector2& other) noexcept;
 
             // Vector Operation
-            float Dot(const Vector2& vec) const;
-            float Cross(const Vector2& vec) const; 
+            float Dot(const Vector2& vec) const noexcept;
+            float Cross(const Vector2& vec) const noexcept; 
             Vector2 Normalize() const;
-            float Magnitude() const;
+            void NormalizeSelf();
 
-            static float Dot(const Vector2& vec1, const Vector2& vec2);
-            static float Cross(const Vector2& vec1, const Vector2& vec2);
+            float Magnitude() const noexcept;
+
+            static float Dot(const Vector2& vec1, const Vector2& vec2) noexcept;
+            static float Cross(const Vector2& vec1, const Vector2& vec2) noexcept;
 
             // Debug Tools
-            void PrintVec() const;
+            void PrintVec() const noexcept;
             
 
         private:
@@ -49,28 +51,29 @@ namespace Core
             float y;
             float z;
 
-            Vector3();
-            Vector3(float x, float y, float z);
-            Vector3(const Vector3& vec);
-            ~Vector3();
+            Vector3() noexcept;
+            Vector3(float x, float y, float z) noexcept;
+            Vector3(const Vector3& vec) noexcept;
+            ~Vector3() noexcept;
 
             // Operator Overloading
-            Vector3 operator+ (const Vector3& vec) const;
-            Vector3 operator- (const Vector3& vec) const;
-            Vector3 operator* (float k) const;
-            Vector3& operator= (const Vector3& other);
+            Vector3 operator+ (const Vector3& vec) const noexcept;
+            Vector3 operator- (const Vector3& vec) const noexcept;
+            Vector3 operator* (float k) const noexcept;
+            Vector3& operator= (const Vector3& other) noexcept;
 
             // Vector Operation
-            float Dot(const Vector3& vec) const;
-            Vector3 Cross(const Vector3& vec) const;
+            float Dot(const Vector3& vec) const noexcept;
+            Vector3 Cross(const Vector3& vec) const noexcept;
             Vector3 Normalize() const;
-            float Magnitude() const;
+            void NormalizeSelf();
+            float Magnitude() const noexcept;
 
-            static float Dot(const Vector3& vec1, const Vector3& vec2);
-            static Vector3 Cross(const Vector3& vec1, const Vector3& vec2);
+            static float Dot(const Vector3& vec1, const Vector3& vec2) noexcept;
+            static Vector3 Cross(const Vector3& vec1, const Vector3& vec2) noexcept;
 
             // Debug Tools
-            void PrintVec() const;
+            void PrintVec() const noexcept;
 
         private:
 
@@ -85,26 +88,27 @@ namespace Core
             float z;
             float w;
 
-            Vector4();
-            Vector4(float x, float y, float z, float w);
-            Vector4(const Vector4& vec);
-            ~Vector4();
+            Vector4() noexcept;
+            Vector4(float x, float y, float z, float w) noexcept;
+            Vector4(const Vector4& vec) noexcept;
+            ~Vector4() noexcept;
 
             // Operator Overloading
-            Vector4 operator+ (const Vector4& vec) const;
-            Vector4 operator- (const Vector4& vec) const;
-            Vector4 operator* (float k) const;
-            Vector4& operator= (const Vector4& other);
+            Vector4 operator+ (const Vector4& vec) const noexcept;
+            Vector4 operator- (const Vector4& vec) const noexcept;
+            Vector4 operator* (float k) const noexcept;
+            Vector4& operator= (const Vector4& other) noexcept;
 
             // Vector Operation
-            float Dot(const Vector4& vec) const;
+            float Dot(const Vector4& vec) const noexcept;
             Vector4 Normalize() const;
-            float Magnitude() const;
+            void NormalizeSelf();
+            float Magnitude() const noexcept;
 
-            static float Dot(const Vector4& vec1, const Vector4& vec2);
+            static float Dot(const Vector4& vec1, const Vector4& vec2) noexcept;
 
             // Debug Tool
-            void PrintVec() const;
+            void PrintVec() const noexcept;
         };
     }
 }

@@ -21,7 +21,8 @@ namespace Core
                 const std::vector<uint32_t>& indices) const;
 
         private:
-            
+            void BackfaceCulling(std::vector<Core::Primitives::Triangle>& triangles) const;
+            void FrustumClipping(std::vector<Core::Primitives::Triangle>& triangles) const;
         };
     }
 }
