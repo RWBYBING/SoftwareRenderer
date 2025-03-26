@@ -23,10 +23,16 @@ endif()
 message("CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 # Build Type Specific Flags
-if (CMAKE_BUILD_TYPE STREQUAL Debug)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -g -std=c++17")
-elseif (CMAKE_BUILD_TYPE STREQUAL Release)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -O3 -DNDEBUG -std=c++17 -flto -ffast-math")
+elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -mavx2 -march=native -ffast-math -DNDEBUG")
+    
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fopt-info-vec-missed -fopt-info-vec-optimized")
+    
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -Wextra -Wpedantic -std=c++17")
+    
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_RELEASE}")
 endif()
 
 # Windows _DNOMINMAX Problem Fix

@@ -1,5 +1,7 @@
 #include <core/pipeline/rasterizer.h>
 
+#include <utils/timer.h>
+
 #include <algorithm>
 
 using namespace Core::Pipeline;
@@ -68,9 +70,11 @@ bool Rasterizer::BarycentricCoordinates(
     return (alpha > 0) && (beta > 0) && (gamma > 0);
 }
 
-Core::Primitives::Fragment Rasterizer::InterpolateFragment(const Core::Primitives::Triangle& tri, float alpha, float beta, float gamma) const
+Core::Primitives::Fragment Rasterizer::InterpolateFragment(const Core::Primitives::Triangle& tri, float alpha, float beta, float gamma, int x, int y) const
 {
     Core::Primitives::Fragment fragment;
+    fragment.x = x;
+    fragment.y = y;
 
     // depth interpolation
     fragment.depth = alpha * tri.vertices[0].pos.z
@@ -93,6 +97,16 @@ Core::Primitives::Fragment Rasterizer::InterpolateFragment(const Core::Primitive
 std::vector<Core::Primitives::Fragment> Rasterizer::RasterizeTriangle(const std::vector<Core::Primitives::Triangle>& triangles) const
 {
     std::vector<Core::Primitives::Fragment> fragments;
+
+    // reserve the memory for the vector
+    size_t maxPossibleFragments = 0;
+    for (const auto& triangle : triangles) {
+        int min_x, max_x, min_y, max_y;
+        this->CalculateBoundingBox(triangle, min_x, max_x, min_y, max_y);
+        maxPossibleFragments += (max_x - min_x + 1) * (max_y - min_y + 1);
+    }
+    fragments.reserve(maxPossibleFragments);
+    // std::cout << maxPossibleFragments << std::endl;
 
     for (auto& triangle : triangles)
     {
@@ -120,13 +134,15 @@ std::vector<Core::Primitives::Fragment> Rasterizer::RasterizeTriangle(const std:
                     continue; // the pixel is outside of the triangle
                 }
 
-                Core::Primitives::Fragment fragment = this->InterpolateFragment(triangle, alpha, beta, gamma);
-                fragment.x = x;
-                fragment.y = y;
-                fragments.push_back(fragment);
+                fragments.emplace_back(
+                    this->InterpolateFragment(triangle, alpha, beta, gamma, x, y)
+                );
             }
         }
     }
+
+    // Utils::GlobalTimer::Instance().Start();
+    // Utils::GlobalTimer::Instance().PrintElapsedTime();
 
     return fragments;
 }

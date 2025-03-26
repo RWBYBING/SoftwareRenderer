@@ -40,7 +40,7 @@ namespace Core
                 float& gamma
             ) const;
             // Interpolate
-            Core::Primitives::Fragment InterpolateFragment(const Core::Primitives::Triangle& tri, float alpha, float beta, float gamma) const;
+            Core::Primitives::Fragment InterpolateFragment(const Core::Primitives::Triangle& tri, float alpha, float beta, float gamma, int x, int y) const;
 
 
         private:

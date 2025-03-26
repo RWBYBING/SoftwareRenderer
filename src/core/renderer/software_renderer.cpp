@@ -8,7 +8,7 @@
 using namespace Core::Renderer;
 
 SoftwareRenderer::SoftwareRenderer()
-    : projection_mode{0}
+    : projection_mode{1}
     , model_selection{0}
     , texture_width{0}
     , texture_height{0}
@@ -93,10 +93,10 @@ GLuint SoftwareRenderer::Render()
     );
     // Utils::GlobalTimer::Instance().PrintElapsedTime();
 
-    // Utils::GlobalTimer::Instance().Start();
+    Utils::GlobalTimer::Instance().Start();
     // 3. Rasterization
     auto fragments = this->rasterizer_ptr->RasterizeTriangle(triangles);
-    // Utils::GlobalTimer::Instance().PrintElapsedTime();
+    Utils::GlobalTimer::Instance().PrintElapsedTime();
 
     // Utils::GlobalTimer::Instance().Start();
     // 4. Fragment Processing
