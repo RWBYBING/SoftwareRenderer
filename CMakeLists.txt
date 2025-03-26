@@ -50,6 +50,14 @@ if (NOT MSVC)
     endif()
 endif()
 
+find_package(TBB CONFIG REQUIRED)
+
+if(TBB_FOUND)
+    message(STATUS "TBB found: ${TBB_VERSION}")
+else()
+    message(FATAL_ERROR "TBB not found")
+endif()
+
 # Include Directories
 include_directories(include)
 include_directories(include/core)
@@ -151,4 +159,4 @@ endforeach()
 # Executable
 add_executable(${PROGRAM_NAME} ${SOURCES} src/main.cpp)
 
-target_link_libraries(${PROGRAM_NAME} PUBLIC gl3w imgui ${TBB_LIBRARIES})
+target_link_libraries(${PROGRAM_NAME} PUBLIC gl3w imgui TBB::tbb)

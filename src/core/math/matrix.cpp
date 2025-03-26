@@ -5,10 +5,7 @@
 
 using namespace Core::Math;
 
-Matrix4x4::Matrix4x4() noexcept
-{
-    std::memset(element, 0, sizeof(element));
-}
+Matrix4x4::Matrix4x4() noexcept : element{} {}
 
 Matrix4x4::Matrix4x4(const Matrix4x4& mat) noexcept = default;
 

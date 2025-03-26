@@ -4,6 +4,10 @@
 #include <memory>
 #include <vector>
 
+#include <tbb/parallel_for.h>
+#include <tbb/concurrent_vector.h>
+#include <tbb/blocked_range2d.h>
+
 #include <core/buffer/framebuffer.h>
 #include <core/buffer/depthbuffer.h>
 #include <core/primitives/fragment.h>
@@ -41,7 +45,7 @@ namespace Core
             ) const;
             // Interpolate
             Core::Primitives::Fragment InterpolateFragment(const Core::Primitives::Triangle& tri, float alpha, float beta, float gamma, int x, int y) const;
-
+            void ProcessTriangle(const Core::Primitives::Triangle& triangle, tbb::concurrent_vector<Core::Primitives::Fragment>& fragments) const;
 
         private:
             std::shared_ptr<Core::Buffer::FrameBuffer> frame_buffer;    // frame buffer

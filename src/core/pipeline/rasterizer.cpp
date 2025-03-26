@@ -94,11 +94,42 @@ Core::Primitives::Fragment Rasterizer::InterpolateFragment(const Core::Primitive
     return fragment;
 }
 
+void Rasterizer::ProcessTriangle(
+    const Core::Primitives::Triangle& triangle,
+    tbb::concurrent_vector<Core::Primitives::Fragment>& fragments) const
+{
+    Core::Math::Vector2 screen_pos[3] = {
+        Core::Math::Vector2{triangle.vertices[0].pos.x, triangle.vertices[0].pos.y},
+        Core::Math::Vector2{triangle.vertices[1].pos.x, triangle.vertices[1].pos.y},
+        Core::Math::Vector2{triangle.vertices[2].pos.x, triangle.vertices[2].pos.y},
+    };
+    
+    int min_x, max_x, min_y, max_y;
+    this->CalculateBoundingBox(triangle, min_x, max_x, min_y, max_y);
+
+    // 使用2D范围并行化像素处理
+    tbb::parallel_for(tbb::blocked_range2d<int>(min_y, max_y, min_x, max_x),
+        [&](const tbb::blocked_range2d<int>& range) {
+            for (int y = range.rows().begin(); y != range.rows().end(); ++y) {
+                for (int x = range.cols().begin(); x != range.cols().end(); ++x) {
+                    Core::Math::Vector2 P(x + 0.5f, y + 0.5f);
+                    float alpha, beta, gamma;
+                    if (this->BarycentricCoordinates(P, screen_pos[0], screen_pos[1], screen_pos[2], alpha, beta, gamma)) {
+                        fragments.emplace_back(
+                            this->InterpolateFragment(triangle, alpha, beta, gamma, x, y)
+                        );
+                    }
+                }
+            }
+        }
+    );
+}
+
 std::vector<Core::Primitives::Fragment> Rasterizer::RasterizeTriangle(const std::vector<Core::Primitives::Triangle>& triangles) const
 {
-    std::vector<Core::Primitives::Fragment> fragments;
+    tbb::concurrent_vector<Core::Primitives::Fragment> fragments;
 
-    // reserve the memory for the vector
+    // 1. reserve memory for the vector
     size_t maxPossibleFragments = 0;
     for (const auto& triangle : triangles) {
         int min_x, max_x, min_y, max_y;
@@ -106,43 +137,15 @@ std::vector<Core::Primitives::Fragment> Rasterizer::RasterizeTriangle(const std:
         maxPossibleFragments += (max_x - min_x + 1) * (max_y - min_y + 1);
     }
     fragments.reserve(maxPossibleFragments);
-    // std::cout << maxPossibleFragments << std::endl;
 
-    for (auto& triangle : triangles)
-    {
-        // 1. Get the screen pos
-        Core::Math::Vector2 screen_pos[3] = {
-            Core::Math::Vector2{triangle.vertices[0].pos.x, triangle.vertices[0].pos.y},
-            Core::Math::Vector2{triangle.vertices[1].pos.x, triangle.vertices[1].pos.y},
-            Core::Math::Vector2{triangle.vertices[2].pos.x, triangle.vertices[2].pos.y},
-        };
-        
-        // 2. calculate the bounding box
-        int min_x, max_x, min_y, max_y;
-        this->CalculateBoundingBox(triangle, min_x, max_x, min_y, max_y);
-
-        // 3. iterate each pixel in the bounding box
-        for (int y = min_y; y < max_y; ++y)
-        {
-            for (int x = min_x; x <= max_x; ++x)
-            {
-                Core::Math::Vector2 P(x + 0.5f, y + 0.5f); // Get the center of pixel
-                // 4: calculate the barycentric coordinates
-                float alpha, beta, gamma;
-                if (!this->BarycentricCoordinates(P, screen_pos[0], screen_pos[1], screen_pos[2], alpha, beta, gamma)) 
-                {
-                    continue; // the pixel is outside of the triangle
-                }
-
-                fragments.emplace_back(
-                    this->InterpolateFragment(triangle, alpha, beta, gamma, x, y)
-                );
+    // 2. process triangle parallelly
+    tbb::parallel_for(tbb::blocked_range<size_t>(0, triangles.size()),
+        [&](const tbb::blocked_range<size_t>& range) {
+            for (size_t i = range.begin(); i != range.end(); ++i) {
+                ProcessTriangle(triangles[i], fragments);
             }
         }
-    }
+    );
 
-    // Utils::GlobalTimer::Instance().Start();
-    // Utils::GlobalTimer::Instance().PrintElapsedTime();
-
-    return fragments;
+    return std::vector<Core::Primitives::Fragment>(fragments.begin(), fragments.end());
 }
