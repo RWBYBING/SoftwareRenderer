@@ -277,25 +277,12 @@ void GLFWWindowManager::UpdateController()
             this->renderer->ReloadMesh();
         }
 
-        ImGui::Text("Rendering Pipeline: ");
+        ImGui::Text("Rendering Parameters: ");
 
-        if (ImGui::CollapsingHeader("MVP Transformation"))
+        if (ImGui::CollapsingHeader("Model Settings"))
         {
-            // Projection mode
-            int& projection_mode = this->renderer->projection_mode;
-            ImGui::AlignTextToFramePadding();
-            ImGui::Text("Projection mode: ");   ImGui::SameLine(0.3f * window_size.x);
-            ImGui::RadioButton("Orthographic", &projection_mode, 0);    ImGui::SameLine();
-            ImGui::RadioButton("Perspective", &projection_mode, 1);
-
-            ImGui::Separator();
-
             // Model Transformation Settings
             auto mesh = this->renderer->GetMesh();
-
-            ImGui::AlignTextToFramePadding();
-            ImGui::Text("Model Transformation Settings: ");
-            ImGui::Spacing();
 
             // Translation
             ImGui::AlignTextToFramePadding();
@@ -329,16 +316,27 @@ void GLFWWindowManager::UpdateController()
 
             if (ImGui::Button("Reset##model"))
             {
-                this->renderer->ResetMeshPos();
+                this->renderer->ResetMesh();
             }
+        }
+
+        if (ImGui::CollapsingHeader("Rasterization Settings"))
+        {   
+
+        }
+
+        if (ImGui::CollapsingHeader("Camera Settings"))
+        {
+            // Projection mode
+            auto& projection_mode = this->renderer->camera_mode;
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Projection mode: ");   ImGui::SameLine(0.3f * window_size.x);
+            ImGui::RadioButton("Orthographic", (int*)&projection_mode, 0);    ImGui::SameLine();
+            ImGui::RadioButton("Perspective", (int*)&projection_mode, 1);
 
             ImGui::Separator();
 
             // Camera Settings
-            ImGui::AlignTextToFramePadding();
-            ImGui::Text("Camera Settings: ");
-            ImGui::Spacing();
-
             // Orthographic projection
             if (projection_mode == 0)
             {
@@ -470,31 +468,53 @@ void GLFWWindowManager::UpdateController()
                 ImGui::SetNextItemWidth(0.5f * window_size.x);
                 ImGui::InputFloat("##Far Clip", &camera->far_clip);
             }
- 
+    
             if (ImGui::Button("Reset##camera"))
             {
                 this->renderer->ResetCamera();
             }
+        }
+
+        if (ImGui::CollapsingHeader("Light Settings"))
+        {
+            auto light = this->renderer->GetLight();
+
+            // Pos
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Pos: ");   ImGui::SameLine(0.3f * window_size.x);
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("x##light_pos", &light->pos.x); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("y##light_pos", &light->pos.y); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("z##light_pos", &light->pos.z);
+
+            // Dir
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Direction: "); ImGui::SameLine(0.3f * window_size.x);
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("x##light_dir", &light->dir.x); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("y##light_dir", &light->dir.y); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("z##light_dir", &light->dir.z);
 
         }
 
-        if (ImGui::CollapsingHeader("Triangle Processing"))
+        if (ImGui::CollapsingHeader("Material Settings"))
         {
+            auto material = this->renderer->GetMaterial();
 
         }
 
-        if (ImGui::CollapsingHeader("Rasterization"))
+        if (ImGui::CollapsingHeader("Shading Settings"))
         {
+            // shading mode
 
         }
 
-        if (ImGui::CollapsingHeader("Fragment Processing"))
-        {
-
-        }
-
-        if (ImGui::CollapsingHeader("FrameBuffer Operation"))
-        {
+        if (ImGui::CollapsingHeader("More features"))
+        {   
 
         }
     }
@@ -539,10 +559,10 @@ void GLFWWindowManager::UpdateFramebuffer()
         int texture_width = this->renderer->GetTextureWidth();
         int texture_height = this->renderer->GetTextureHeight();
 
-        if (current_width != texture_width || current_height != texture_height)
+        if (current_width / 3 != texture_width || current_height / 3 != texture_height)
         {
-            this->renderer->HandleWindowResize(current_width, current_height);
-            std::cout << "Window Resized: " << current_width << ", " << current_height << std::endl;
+            this->renderer->HandleWindowResize(current_width / 3, current_height / 3);
+            // std::cout << "Window Resized: " << current_width << ", " << current_height << std::endl;
         }
 
         // render given texture

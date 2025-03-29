@@ -2,8 +2,6 @@
 #include <iostream>
 
 #include <gui/window.h>
-#include <core/math/vector.h>
-#include <core/math/matrix.h>
 
 int main(void)
 {

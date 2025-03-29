@@ -5,11 +5,11 @@
 #include <vector>
 #include <algorithm>
 
-using namespace Core::Loader;
+using namespace Loader;
 
-void Core::Loader::ParseOBJFile(const std::string& file_path, std::shared_ptr<Core::Resources::Mesh> mesh)
+void Loader::ParseOBJFile(const std::string& file_path, std::shared_ptr<Resources::Mesh> mesh)
 {
-    std::vector<Core::Math::Vector3> temp_positions;
+    std::vector<Vector3> temp_positions;
     std::vector<uint32_t> temp_indices;
     
     std::ifstream file(file_path);
@@ -33,8 +33,8 @@ void Core::Loader::ParseOBJFile(const std::string& file_path, std::shared_ptr<Co
         {
             float x, y, z;
             iss >> x >> y >> z;
-            Core::Primitives::Vertex vertex;
-            vertex.SetPos(x, y, z, 1.0f);
+            Primitives::Vertex vertex;
+            vertex.pos = Vector4(x, y, z, 1.0f);
             mesh->AddVertex(vertex);
         }
 

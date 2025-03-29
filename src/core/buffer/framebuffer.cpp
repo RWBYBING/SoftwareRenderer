@@ -1,8 +1,9 @@
 #include <core/buffer/framebuffer.h>
 
 #include <cassert>
+#include <cstring>
 
-using namespace Core::Buffer;
+using namespace Buffer;
 
 FrameBuffer::FrameBuffer(int width, int height)
     : width{width}
@@ -13,11 +14,11 @@ FrameBuffer::FrameBuffer(int width, int height)
 
 FrameBuffer::~FrameBuffer() = default;
 
-Core::Math::Vector4 FrameBuffer::GetPixel(int x, int y) const
+Vector4 FrameBuffer::GetPixel(int x, int y) const
 {
     if (x >= 0 && x < this->width && y >= 0 && y < this->height) 
     {
-        Core::Math::Vector4 result;
+        Vector4 result;
         result.x = this->data.at((y * width + x) * 4);
         result.y = this->data.at((y * width + x) * 4 + 1);
         result.z = this->data.at((y * width + x) * 4 + 2);
@@ -25,10 +26,10 @@ Core::Math::Vector4 FrameBuffer::GetPixel(int x, int y) const
 
         return result;
     }
-    return Core::Math::Vector4{0.0f, 0.0f, 0.0f, 1.0f};
+    return Vector4{0.0f, 0.0f, 0.0f, 1.0f};
 }
 
-void FrameBuffer::SetPixel(int x, int y, const Core::Math::Vector4& color)
+void FrameBuffer::SetPixel(int x, int y, const Vector4& color)
 {
     if (x >= 0 && x < this->width && y >= 0 && y < this->height)
     {
@@ -41,7 +42,8 @@ void FrameBuffer::SetPixel(int x, int y, const Core::Math::Vector4& color)
 
 void FrameBuffer::Clear()
 {
-    std::fill(this->data.begin(), this->data.end(), 0.0f);
+    // std::fill(this->data.begin(), this->data.end(), 1.0f);
+    memset(data.data(), 0, data.size() * sizeof(float));
 }
 
 int FrameBuffer::GetWidth() const

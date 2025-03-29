@@ -8,38 +8,42 @@
 using namespace Core::Renderer;
 
 SoftwareRenderer::SoftwareRenderer()
-    : projection_mode{1}
-    , model_selection{0}
+    : model_selection{Model::TWO_TRIANGLES}
+    , rendering_mode{RenderingMode::Triangles}
+    , camera_mode{CameraMode::Perspective}
+    , shading_mode{ShadingMode::Phong}
+    , anti_aliasing_mode{AntiAliasingMode::None}
     , texture_width{0}
     , texture_height{0}
-    , mesh_ptr{std::make_shared<Core::Resources::Mesh>()}
-    , perspective_camera_ptr{std::make_shared<Core::Resources::PerspectiveCamera>()}
-    , orthographic_camera_ptr{std::make_shared<Core::Resources::OrthographicCamera>()}
-    , frame_buffer_ptr{std::make_shared<Core::Buffer::FrameBuffer>(100, 100)}
-    , depth_buffer_ptr{std::make_shared<Core::Buffer::DepthBuffer>(100, 100)}
-    , vertex_processing_ptr{std::make_unique<Core::Pipeline::VertexProcessing>()}
-    , triangle_processing_ptr{std::make_unique<Core::Pipeline::TriangleProcessing>()}
-    , rasterizer_ptr{std::make_unique<Core::Pipeline::Rasterizer>()}
-    , fragment_processing_ptr{std::make_unique<Core::Pipeline::FragmentProcessing>()}
-    , framebuffer_operation_ptr{std::make_unique<Core::Pipeline::FrameBufferOperation>()}
+    , mesh_ptr{std::make_shared<Resources::Mesh>()}
+    , material_ptr{std::make_shared<Resources::Material>()}
+    , light_ptr{std::make_shared<Resources::Light>()}
+    , perspective_camera_ptr{std::make_shared<Resources::PerspectiveCamera>()}
+    , orthographic_camera_ptr{std::make_shared<Resources::OrthographicCamera>()}
+    , frame_buffer_ptr{std::make_shared<Buffer::FrameBuffer>(100, 100)}
+    , depth_buffer_ptr{std::make_shared<Buffer::DepthBuffer>(100, 100)}
+    , vertex_processing_ptr{std::make_unique<Pipeline::VertexProcessing>()}
+    , rasterizer_ptr{std::make_unique<Pipeline::Rasterizer>()}
+    // , fragment_processing_ptr{std::make_unique<Core::Pipeline::FragmentProcessing>()}
+    // , framebuffer_operation_ptr{std::make_unique<Core::Pipeline::FrameBufferOperation>()}
 {
 
 }
 
 void SoftwareRenderer::Init()
 {
-    Core::Primitives::Vertex v00, v01, v02;
-    Core::Primitives::Vertex v10, v11, v12;
-    v00.SetPos(10.0f, 0.0f, -10.0f, 1.0f);
-    v01.SetPos(0.0f, 10.0f, -10.0f, 1.0f);
-    v02.SetPos(-10.0f, 0.0f, -10.0f, 1.0f);
-    v10.SetPos(-5.0f, 0.0f, -15.0f, 1.0f);
-    v11.SetPos(-15.0f, 10.0f, -15.0f, 1.0f);
-    v12.SetPos(-25.0f, 0.0f, -15.0f, 1.0f);
+    Primitives::Vertex v00, v01, v02;
+    Primitives::Vertex v10, v11, v12;
+    v00.pos = Vector4(10.0f, 0.0f, -10.0f, 1.0f);
+    v01.pos = Vector4(0.0f, 10.0f, -10.0f, 1.0f);
+    v02.pos = Vector4(-10.0f, 0.0f, -10.0f, 1.0f);
+    v10.pos = Vector4(-5.0f, 0.0f, -15.0f, 1.0f);
+    v11.pos = Vector4(-15.0f, 10.0f, -15.0f, 1.0f);
+    v12.pos = Vector4(-25.0f, 0.0f, -15.0f, 1.0f);
 
-    v10.SetColor(1.0f, 1.0f, 0.0f, 1.0f);
-    v11.SetColor(1.0f, 1.0f, 0.0f, 1.0f);
-    v12.SetColor(1.0f, 1.0f, 0.0f, 1.0f);
+    v10.color = Color(1.0f, 1.0f, 0.0f, 1.0f);
+    v11.color = Color(1.0f, 1.0f, 0.0f, 1.0f);
+    v12.color = Color(1.0f, 1.0f, 0.0f, 1.0f);
 
     this->mesh_ptr->AddVertex(v00);
     this->mesh_ptr->AddVertex(v01);
@@ -58,54 +62,58 @@ void SoftwareRenderer::SetupPipeline()
     this->rasterizer_ptr->SetFrameBuffer(this->frame_buffer_ptr);
     this->rasterizer_ptr->SetDepthBuffer(this->depth_buffer_ptr);
 
-    this->framebuffer_operation_ptr->SetFrameBuffer(this->frame_buffer_ptr);
-    this->framebuffer_operation_ptr->SetDepthBuffer(this->depth_buffer_ptr);
+    // this->framebuffer_operation_ptr->SetFrameBuffer(this->frame_buffer_ptr);
+    // this->framebuffer_operation_ptr->SetDepthBuffer(this->depth_buffer_ptr);
 }
 
 GLuint SoftwareRenderer::Render()
 {
-    // Utils::GlobalTimer::Instance().Start();
     this->frame_buffer_ptr->Clear();
     this->depth_buffer_ptr->Clear();
-    // Utils::GlobalTimer::Instance().PrintElapsedTime();
 
-    // Utils::GlobalTimer::Instance().Start();
     // 1. Vertex Processing
+    //     a. Use orthographic projection
     this->vertex_processing_ptr->SetModelMatrix(this->mesh_ptr->GetModelMatrix());
-    if (this->projection_mode == 0)
+    if (this->camera_mode == CameraMode::Orthographics)
     {
         this->vertex_processing_ptr->SetViewMatrix(this->orthographic_camera_ptr->GetViewMatrix());
         this->vertex_processing_ptr->SetProjectionMatrix(this->orthographic_camera_ptr->GetProjectionMatrix());
     }
-    if (this->projection_mode == 1)
+    //     b. Use perspective projection
+    if (this->camera_mode == CameraMode::Perspective)
     {
         this->vertex_processing_ptr->SetViewMatrix(this->perspective_camera_ptr->GetViewMatrix());
         this->vertex_processing_ptr->SetProjectionMatrix(this->perspective_camera_ptr->GetProjectionMatrix());
     }
     auto vertices_screen_space = this->vertex_processing_ptr->TransformVertices(this->mesh_ptr->vertices);
-    // Utils::GlobalTimer::Instance().PrintElapsedTime();
-
-    // Utils::GlobalTimer::Instance().Start();
-    // 2. Triangle Processing
-    auto triangles = this->triangle_processing_ptr->Processing(
-        vertices_screen_space,
-        this->mesh_ptr->indices
-    );
-    // Utils::GlobalTimer::Instance().PrintElapsedTime();
 
     Utils::GlobalTimer::Instance().Start();
-    // 3. Rasterization
-    auto fragments = this->rasterizer_ptr->RasterizeTriangle(triangles);
+    // 2. Rasterization
+    //     a. rasterize vertices only 
+    if (this->rendering_mode == RenderingMode::Vertex)
+    {
+        this->rasterizer_ptr->RasterizeVertex(vertices_screen_space);
+    }
+    //     b. rasterize lineframe
+    else if (this->rendering_mode == RenderingMode::LineFrame)
+    {
+        this->rasterizer_ptr->RasterizeLineFrame(vertices_screen_space);
+    }
+    //     c, rasterize triangles
+    else if (this->rendering_mode == RenderingMode::Triangles)
+    {
+        this->rasterizer_ptr->RasterizeTriangle(vertices_screen_space, this->mesh_ptr->indices);
+    }
     Utils::GlobalTimer::Instance().PrintElapsedTime();
 
     // Utils::GlobalTimer::Instance().Start();
-    // 4. Fragment Processing
-    this->fragment_processing_ptr->ProcessFragments(fragments);
+    // 3. Fragment Processing
+    // this->fragment_processing_ptr->ProcessFragments(fragments);
     // Utils::GlobalTimer::Instance().PrintElapsedTime();
 
     // Utils::GlobalTimer::Instance().Start();
-    // 5. FrameBuffer Operation
-    this->framebuffer_operation_ptr->WriteFragment2Buffer(fragments);
+    // 4. FrameBuffer Operation
+    // this->framebuffer_operation_ptr->WriteFragment2Buffer(fragments);
     // Utils::GlobalTimer::Instance().PrintElapsedTime();
 
     // Utils::GlobalTimer::Instance().Start();
@@ -143,7 +151,7 @@ void SoftwareRenderer::HandleWindowResize(int width, int height)
 void SoftwareRenderer::HandleCameraMove(float x, float y)
 {
     // Update orthographic camera
-    if (this->projection_mode == 0)
+    if (this->camera_mode == CameraMode::Orthographics)
     {   
         this->orthographic_camera_ptr->pos.x += x / 50;
         this->orthographic_camera_ptr->pos.y += y / 50;
@@ -159,7 +167,7 @@ void SoftwareRenderer::HandleCameraMove(float x, float y)
 void SoftwareRenderer::HandleCameraMove(float z)
 {
     // Update orthographic camera
-    if (this->projection_mode == 0)
+    if (this->camera_mode == CameraMode::Orthographics)
     {   
         this->orthographic_camera_ptr->pos.z += z;
     }
@@ -178,22 +186,22 @@ void SoftwareRenderer::HandleMeshRotation(float x, float y)
 
 void SoftwareRenderer::ReloadMesh()
 {
-    this->mesh_ptr = std::make_shared<Core::Resources::Mesh>();
+    this->mesh_ptr = std::make_shared<Resources::Mesh>();
 
     if (this->model_selection == Model::TWO_TRIANGLES)
     {
-        Core::Primitives::Vertex v00, v01, v02;
-        Core::Primitives::Vertex v10, v11, v12;
-        v00.SetPos(10.0f, 0.0f, -10.0f, 1.0f);
-        v01.SetPos(0.0f, 10.0f, -10.0f, 1.0f);
-        v02.SetPos(-10.0f, 0.0f, -10.0f, 1.0f);
-        v10.SetPos(-5.0f, 0.0f, -15.0f, 1.0f);
-        v11.SetPos(-15.0f, 10.0f, -15.0f, 1.0f);
-        v12.SetPos(-25.0f, 0.0f, -15.0f, 1.0f);
+        Primitives::Vertex v00, v01, v02;
+        Primitives::Vertex v10, v11, v12;
+        v00.pos = Vector4(10.0f, 0.0f, -10.0f, 1.0f);
+        v01.pos = Vector4(0.0f, 10.0f, -10.0f, 1.0f);
+        v02.pos = Vector4(-10.0f, 0.0f, -10.0f, 1.0f);
+        v10.pos = Vector4(-5.0f, 0.0f, -15.0f, 1.0f);
+        v11.pos = Vector4(-15.0f, 10.0f, -15.0f, 1.0f);
+        v12.pos = Vector4(-25.0f, 0.0f, -15.0f, 1.0f);
     
-        v10.SetColor(1.0f, 1.0f, 0.0f, 1.0f);
-        v11.SetColor(1.0f, 1.0f, 0.0f, 1.0f);
-        v12.SetColor(1.0f, 1.0f, 0.0f, 1.0f);
+        v10.color = Color(1.0f, 1.0f, 0.0f, 1.0f);
+        v11.color = Color(1.0f, 1.0f, 0.0f, 1.0f);
+        v12.color = Color(1.0f, 1.0f, 0.0f, 1.0f);
     
         this->mesh_ptr->AddVertex(v00);
         this->mesh_ptr->AddVertex(v01);
@@ -207,16 +215,16 @@ void SoftwareRenderer::ReloadMesh()
 
     if (this->model_selection == Model::CUBE)
     {
-        Core::Loader::ParseOBJFile("../asset/cube/cube.obj", this->mesh_ptr);
+        Loader::ParseOBJFile("../asset/cube/cube.obj", this->mesh_ptr);
     }
 
     if (this->model_selection == Model::STANDFORD_BUNNY)
     {
-        Core::Loader::ParseOBJFile("../asset/stanford_bunny/bunny.obj", this->mesh_ptr);
+        Loader::ParseOBJFile("../asset/stanford_bunny/bunny.obj", this->mesh_ptr);
     }
 }
 
-void SoftwareRenderer::ResetMeshPos()
+void SoftwareRenderer::ResetMesh()
 {
     this->mesh_ptr->translation.x = 0.0f;
     this->mesh_ptr->translation.y = 0.0f;
@@ -241,10 +249,10 @@ void SoftwareRenderer::ResetCamera()
     this->orthographic_camera_ptr->up.x = 0.0f;
     this->orthographic_camera_ptr->up.y = 1.0f;
     this->orthographic_camera_ptr->up.z = 0.0f;
-    this->orthographic_camera_ptr->left = -100.0f;
-    this->orthographic_camera_ptr->right = 100.0f;
-    this->orthographic_camera_ptr->bottom = -100.0f;
-    this->orthographic_camera_ptr->top = 100.0f;
+    this->orthographic_camera_ptr->left = -30.0f;
+    this->orthographic_camera_ptr->right = 30.0f;
+    this->orthographic_camera_ptr->bottom = -30.0f;
+    this->orthographic_camera_ptr->top = 30.0f;
     this->orthographic_camera_ptr->near_clip = 0.1f;
     this->orthographic_camera_ptr->far_clip = 100.0f;
 
@@ -265,19 +273,29 @@ void SoftwareRenderer::ResetCamera()
 
 }
 
-std::shared_ptr<Core::Resources::PerspectiveCamera> SoftwareRenderer::GetPerspectiveCamera() const
+std::shared_ptr<Resources::PerspectiveCamera> SoftwareRenderer::GetPerspectiveCamera() const
 {
     return this->perspective_camera_ptr;
 }
 
-std::shared_ptr<Core::Resources::OrthographicCamera> SoftwareRenderer::GetOrthographicCamera() const
+std::shared_ptr<Resources::OrthographicCamera> SoftwareRenderer::GetOrthographicCamera() const
 {
     return this->orthographic_camera_ptr;
 }
 
-std::shared_ptr<Core::Resources::Mesh> SoftwareRenderer::GetMesh() const
+std::shared_ptr<Resources::Mesh> SoftwareRenderer::GetMesh() const
 {
     return this->mesh_ptr;
+}
+
+std::shared_ptr<Resources::Light> SoftwareRenderer::GetLight() const
+{
+    return this->light_ptr;
+}
+
+std::shared_ptr<Resources::Material> SoftwareRenderer::GetMaterial() const
+{
+    return this->material_ptr;
 }
 
 void SoftwareRenderer::CreateTexture(int width, int height)

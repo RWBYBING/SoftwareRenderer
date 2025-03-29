@@ -16,23 +16,24 @@ if (PROJECT_BINARY_DIR STREQUAL PROJECT_SOURCE_DIR)
 	message(WARNING "The binary directory of CMake cannot be the same as source directory!")
 endif()
 
-# Default Build Type
+# Default build type
 if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
 message("CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
-# Build Type Specific Flags
+# public compiling options
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+add_definitions(-Wall -Wextra -Wpedantic)
+
+# specific compiling options
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -g -std=c++17")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -mavx2 -march=native -ffast-math -DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=native -msse4.1 -mavx2 -ffast-math")
     
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fopt-info-vec-missed -fopt-info-vec-optimized")
-    
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -Wextra -Wpedantic -std=c++17")
-    
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_RELEASE}")
+    add_definitions(-DNDEBUG)
 endif()
 
 # Windows _DNOMINMAX Problem Fix
@@ -51,11 +52,18 @@ if (NOT MSVC)
 endif()
 
 find_package(TBB CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
 
 if(TBB_FOUND)
     message(STATUS "TBB found: ${TBB_VERSION}")
 else()
     message(FATAL_ERROR "TBB not found")
+endif()
+
+if(glm_FOUND)
+    message(STATUS "GLM found: ${glm_VERSION}")
+else()
+    message(FATAL_ERROR "GLM not found")
 endif()
 
 # Include Directories
@@ -74,14 +82,7 @@ set(GUI_SOURCES
 	src/gui/window.cpp
 	src/utils/timer.cpp
 	src/core/loader/obj_loader.cpp
-	src/core/math/vector.cpp
-	src/core/math/matrix.cpp
-	src/core/primitives/vertex.cpp
-	src/core/primitives/fragment.cpp
-	src/core/primitives/triangle.cpp
-	src/core/resources/camera.cpp
-	src/core/resources/mesh.cpp
-	src/core/resources/material.cpp
+	src/core/basic/resources.cpp
 	src/core/buffer/framebuffer.cpp
 	src/core/buffer/depthbuffer.cpp
 	src/core/pipeline/vertex_processing.cpp
@@ -159,4 +160,4 @@ endforeach()
 # Executable
 add_executable(${PROGRAM_NAME} ${SOURCES} src/main.cpp)
 
-target_link_libraries(${PROGRAM_NAME} PUBLIC gl3w imgui TBB::tbb)
+target_link_libraries(${PROGRAM_NAME} PUBLIC gl3w imgui TBB::tbb glm::glm)

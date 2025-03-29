@@ -1,8 +1,9 @@
 #include <core/buffer/depthbuffer.h>
 
 #include <iostream>
+#include <cstring>
 
-using namespace Core::Buffer;
+using namespace Buffer;
 
 DepthBuffer::DepthBuffer(int width, int height)
     : width{width}

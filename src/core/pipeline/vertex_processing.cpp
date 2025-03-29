@@ -1,11 +1,15 @@
 #include <core/pipeline/vertex_processing.h>
 
-using namespace Core::Pipeline;
+#include <iostream>
+
+#include <glm/ext/matrix_transform.hpp> 
+
+using namespace Pipeline;
 
 VertexProcessing::VertexProcessing()
-    : model_matrix{Core::Math::Matrix4x4::GetIdentity()}
-    , view_matrix{Core::Math::Matrix4x4::GetIdentity()}
-    , projection_matrix{Core::Math::Matrix4x4::GetIdentity()}
+    : model_matrix{glm::identity<glm::mat4>()}
+    , view_matrix{glm::identity<glm::mat4>()}
+    , projection_matrix{glm::identity<glm::mat4>()}
     , frame_buffer{nullptr}
 {
 
@@ -13,36 +17,38 @@ VertexProcessing::VertexProcessing()
 
 VertexProcessing::~VertexProcessing() = default;
 
-void VertexProcessing::SetModelMatrix(const Core::Math::Matrix4x4& mat)
+void VertexProcessing::SetModelMatrix(const Matrix4x4& mat)
 {
     this->model_matrix = mat;
 }
 
-void VertexProcessing::SetViewMatrix(const Core::Math::Matrix4x4& mat)
+void VertexProcessing::SetViewMatrix(const Matrix4x4& mat)
 {
     this->view_matrix = mat;
 }
 
-void VertexProcessing::SetProjectionMatrix(const Core::Math::Matrix4x4& mat)
+void VertexProcessing::SetProjectionMatrix(const Matrix4x4& mat)
 {
     this->projection_matrix = mat;
 }
 
-void VertexProcessing::SetFrameBuffer(std::shared_ptr<Core::Buffer::FrameBuffer> buffer)
+void VertexProcessing::SetFrameBuffer(std::shared_ptr<Buffer::FrameBuffer> buffer)
 {
     this->frame_buffer = buffer;
 }
 
-void VertexProcessing::NDC(Core::Primitives::Vertex& vertex) const 
+void VertexProcessing::NDC(Primitives::Vertex& vertex) const 
 {
     float reciprocalW = 1.0f / vertex.pos.w;
     vertex.pos.x *= reciprocalW;
     vertex.pos.y *= reciprocalW;
     vertex.pos.z *= reciprocalW;
     vertex.pos.w = 1.0f;
+
+    // std::cout << vertex.pos.x << ", " << vertex.pos.y << ", " << vertex.pos.z << ", " << vertex.pos.w  << std::endl;
 }
 
-void VertexProcessing::ViewportTransformation(Core::Primitives::Vertex& vertex) const
+void VertexProcessing::ViewportTransformation(Primitives::Vertex& vertex) const
 {
     int screen_width = this->frame_buffer->GetWidth();
     int screen_height = this->frame_buffer->GetHeight();
@@ -52,10 +58,10 @@ void VertexProcessing::ViewportTransformation(Core::Primitives::Vertex& vertex) 
     vertex.pos.z = vertex.pos.z;   // (depth_near = 1, depth_far = -1)
 }
 
-std::vector<Core::Primitives::Vertex> VertexProcessing::TransformVertices(
-    const std::vector<Core::Primitives::Vertex>& vertices) const 
+std::vector<Primitives::Vertex> VertexProcessing::TransformVertices(
+    const std::vector<Primitives::Vertex>& vertices) const 
 {
-    std::vector<Core::Primitives::Vertex> result = vertices;
+    std::vector<Primitives::Vertex> result = vertices;
 
     const auto mvp = projection_matrix * (view_matrix * model_matrix);
 
