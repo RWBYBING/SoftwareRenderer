@@ -320,11 +320,6 @@ void GLFWWindowManager::UpdateController()
             }
         }
 
-        if (ImGui::CollapsingHeader("Rasterization Settings"))
-        {   
-
-        }
-
         if (ImGui::CollapsingHeader("Camera Settings"))
         {
             // Projection mode
@@ -473,6 +468,17 @@ void GLFWWindowManager::UpdateController()
             {
                 this->renderer->ResetCamera();
             }
+        }
+
+        if (ImGui::CollapsingHeader("Rasterization Settings"))
+        {   
+            // Choose Render mode
+            auto& rendering_mode = this->renderer->rendering_mode;
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Rendering mode: ");   ImGui::SameLine(0.3f * window_size.x);
+            ImGui::RadioButton("Vertex Only", (int*)&rendering_mode, 0);    ImGui::SameLine();
+            ImGui::RadioButton("Lineframe", (int*)&rendering_mode, 1);      ImGui::SameLine();
+            ImGui::RadioButton("Triangles", (int*)&rendering_mode, 2);
         }
 
         if (ImGui::CollapsingHeader("Light Settings"))

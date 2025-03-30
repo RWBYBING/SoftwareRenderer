@@ -75,53 +75,91 @@ void Rasterizer::RasterizeTriangle(const std::vector<Primitives::Vertex>& vertic
             }
         }
     );
-
-    // size_t total_pixels = 0;
-    // for (auto& triangle : triangles)
-    // {
-    //     Vector2 screen_pos[3] = {
-    //         Vector2{triangle.v0.pos.x, triangle.v0.pos.y},
-    //         Vector2{triangle.v1.pos.x, triangle.v1.pos.y},
-    //         Vector2{triangle.v2.pos.x, triangle.v2.pos.y},
-    //     };
-        
-    //     int min_x, max_x, min_y, max_y;
-    //     this->CalculateBoundingBox(triangle, min_x, max_x, min_y, max_y);
-    //     total_pixels += (max_x - min_x) * (max_y - min_y);
-    //     // std::cout << min_x << ", " << max_x << ", " << min_y << ", " << max_y << std::endl;
-
-    //     for (int y = min_y; y < max_y; ++y)
-    //     {
-    //         for (int x = min_x; x <= max_x; ++x)
-    //         {
-    //             // Vector2 P(x + 0.5f, y + 0.5f);
-    //             // float alpha, beta, gamma;
-    //             // if (this->BarycentricCoordinates(P, screen_pos[0], screen_pos[1], screen_pos[2], alpha, beta, gamma)) {
-    //                 // fragments.emplace_back(
-    //                     // this->InterpolateFragment(triangle, alpha, beta, gamma, x, y);
-    //                 // );
-    //             // }
-    //         }
-    //     }
-    // }
-    // std::cout << "Total Pixels to Process: " << total_pixels << std::endl;
 }
 
-void Rasterizer::RasterizeLineFrame(const std::vector<Primitives::Vertex>& vertices)
+void Rasterizer::RasterizeLineFrame(const std::vector<Primitives::Vertex>& vertices, const std::vector<uint32_t>& indices)
 {
+    // assemble triangles
+    auto triangles = this->TriangleAssembly(vertices, indices);
 
+    for (auto triangle : triangles)
+    {
+        this->BresenhamLine(triangle.v0.pos.x, triangle.v0.pos.y, triangle.v1.pos.x, triangle.v1.pos.y);
+        this->BresenhamLine(triangle.v1.pos.x, triangle.v1.pos.y, triangle.v2.pos.x, triangle.v2.pos.y);
+        this->BresenhamLine(triangle.v2.pos.x, triangle.v2.pos.y, triangle.v0.pos.x, triangle.v0.pos.y);
+    }
 }
 
 void Rasterizer::RasterizeVertex(const std::vector<Primitives::Vertex>& vertices)
 {
     for (auto vertex : vertices)
     {
-        
+        auto fragment = this->ConstructFragment(vertex);
+
+        this->WriteFragment2Buffer(fragment);
     }
 }
 
+Primitives::Fragment Rasterizer::ConstructFragment(const Primitives::Vertex vertex)
+{
+    Primitives::Fragment fragment;
 
+    fragment.x = vertex.pos.x;
+    fragment.y = vertex.pos.y;
+    fragment.color = vertex.color;
+    fragment.depth = vertex.pos.z;
 
+    return fragment;
+}
+
+void Rasterizer::BresenhamLine(int x0, int y0, int x1, int y1)
+{
+    // 1. check if the slope > 1
+    bool steep = abs(y1 - y0) > abs(x1 - x0);
+
+    // 2. exchange x and y for making the slope <= 1
+    if (steep)
+    {
+        std::swap(x0, y0);
+        std::swap(x1, y1);
+    }
+    // 3. making sure the line is being drew from left to right
+    if (x0 > x1) {
+        std::swap(x0, x1);
+        std::swap(y0, y1);
+    }
+
+    int dx = x1 - x0;
+    int dy = abs(y1 - y0);
+    int err = dx / 2; // initial error
+    int ystep = (y0 < y1) ? 1 : -1;
+    int y = y0;
+
+    for (int x = x0; x <= x1; x++) {
+        if (steep) {
+            Primitives::Fragment fragment;
+
+            fragment.x = y;
+            fragment.y = x;
+            fragment.color = Color(1.0f, 1.0f, 1.0f, 1.0f);
+
+            this->WriteFragment2Buffer(fragment);
+        } else {
+            Primitives::Fragment fragment;
+
+            fragment.x = x;
+            fragment.y = y;
+            fragment.color = Color(1.0f, 1.0f, 1.0f, 1.0f);
+
+            this->WriteFragment2Buffer(fragment);
+        }
+        err -= dy;
+        if (err < 0) {
+            y += ystep;
+            err += dx;
+        }
+    }
+}
 
 
 

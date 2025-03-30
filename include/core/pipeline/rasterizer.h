@@ -26,7 +26,7 @@ namespace Pipeline
 
         // Rasterization processing
         void RasterizeTriangle(const std::vector<Primitives::Vertex>& vertices, const std::vector<uint32_t>& indices);
-        void RasterizeLineFrame(const std::vector<Primitives::Vertex>& vertices);
+        void RasterizeLineFrame(const std::vector<Primitives::Vertex>& vertices, const std::vector<uint32_t>& indices);
         void RasterizeVertex(const std::vector<Primitives::Vertex>& vertices);
 
     private:
@@ -35,15 +35,20 @@ namespace Pipeline
     // vertices rasterization
     private:
         // Construct a single fragment for a vertex
-        
+        Primitives::Fragment ConstructFragment(const Primitives::Vertex vertex);
 
     // lineframe rasterization
     private:
+        // Bresenham‘s Line Algorithm
+        void BresenhamLine(int x0, int y0, int x1, int y1);
 
     // triangle rasterization
     private:
         // triangle assembly
         std::vector<Primitives::Triangle> TriangleAssembly(const std::vector<Primitives::Vertex>& vertices, const std::vector<uint32_t>& indices) const;
+        // Backface culling
+        
+        
         // calculate the bounding box
         void CalculateBoundingBox(const Primitives::Triangle& tri, int& min_x, int& max_x, int& min_y, int& max_y) const;
         // // calculate the barycentric coordinates (for interpolating)
@@ -69,3 +74,4 @@ namespace Pipeline
 }
 
 #endif // CORE_PIPELINE_RASTERIXER_H
+

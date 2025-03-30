@@ -87,7 +87,7 @@ GLuint SoftwareRenderer::Render()
     }
     auto vertices_screen_space = this->vertex_processing_ptr->TransformVertices(this->mesh_ptr->vertices);
 
-    Utils::GlobalTimer::Instance().Start();
+    // Utils::GlobalTimer::Instance().Start();
     // 2. Rasterization
     //     a. rasterize vertices only 
     if (this->rendering_mode == RenderingMode::Vertex)
@@ -97,14 +97,14 @@ GLuint SoftwareRenderer::Render()
     //     b. rasterize lineframe
     else if (this->rendering_mode == RenderingMode::LineFrame)
     {
-        this->rasterizer_ptr->RasterizeLineFrame(vertices_screen_space);
+        this->rasterizer_ptr->RasterizeLineFrame(vertices_screen_space, this->mesh_ptr->indices);
     }
     //     c, rasterize triangles
     else if (this->rendering_mode == RenderingMode::Triangles)
     {
         this->rasterizer_ptr->RasterizeTriangle(vertices_screen_space, this->mesh_ptr->indices);
     }
-    Utils::GlobalTimer::Instance().PrintElapsedTime();
+    // Utils::GlobalTimer::Instance().PrintElapsedTime();
 
     // Utils::GlobalTimer::Instance().Start();
     // 3. Fragment Processing
@@ -242,7 +242,7 @@ void SoftwareRenderer::ResetCamera()
     // reset orthographic camera
     this->orthographic_camera_ptr->pos.x = 0.0f;
     this->orthographic_camera_ptr->pos.y = 0.0f;
-    this->orthographic_camera_ptr->pos.z = 0.0f;
+    this->orthographic_camera_ptr->pos.z = 20.0f;
     this->orthographic_camera_ptr->look_at.x = 0.0f;
     this->orthographic_camera_ptr->look_at.y = 0.0f;
     this->orthographic_camera_ptr->look_at.z = -1.0f;
@@ -259,7 +259,7 @@ void SoftwareRenderer::ResetCamera()
     // reset perspective camera
     this->perspective_camera_ptr->pos.x = 0.0f;
     this->perspective_camera_ptr->pos.y = 0.0f;
-    this->perspective_camera_ptr->pos.z = 0.0f;
+    this->perspective_camera_ptr->pos.z = 20.0f;
     this->perspective_camera_ptr->look_at.x = 0.0f;
     this->perspective_camera_ptr->look_at.y = 0.0f;
     this->perspective_camera_ptr->look_at.z = -1.0f;

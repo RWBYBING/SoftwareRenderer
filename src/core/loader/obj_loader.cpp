@@ -1,5 +1,6 @@
 #include <core/loader/obj_loader.h>
 
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <vector>

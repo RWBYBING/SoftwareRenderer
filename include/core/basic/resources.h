@@ -43,7 +43,7 @@ namespace Resources
     struct OrthographicCamera
     {
     public:
-        Vector3 pos{0.0f, 0.0f, 0.0f};
+        Vector3 pos{0.0f, 0.0f, 20.0f};
         Vector3 look_at{0.0f, 0.0f, -1.0f};
         Vector3 up{0.0f, 1.0f, 0.0f};
 
@@ -61,7 +61,7 @@ namespace Resources
     struct PerspectiveCamera
     {
     public:
-        Vector3 pos{0.0f, 0.0f, 0.0f};
+        Vector3 pos{0.0f, 0.0f, 20.0f};
         Vector3 look_at{0.0f, 0.0f, -1.0f};
         Vector3 up{0.0f, 1.0f, 0.0f};
 
