@@ -24,10 +24,22 @@ namespace Pipeline
         void SetFrameBuffer(std::shared_ptr<Buffer::FrameBuffer> buffer);
 
         // Transform Vertices
-        std::vector<Primitives::Vertex> TransformVertices(const std::vector<Primitives::Vertex>& vertices) const;
+        std::vector<Primitives::Triangle> TransformVertices(
+            const std::vector<Primitives::Vertex>& vertices,
+            const std::vector<uint32_t>& indices,
+            ShadingMode shading_mode
+        ) const;
 
     private:
+        // triangle assembly
+        std::vector<Primitives::Triangle> TriangleAssembly(const std::vector<Primitives::Vertex>& vertices, const std::vector<uint32_t>& indices) const;
+        // Backface culling
+        bool IsBackface(const Primitives::Triangle& triangle) const;
+        // Frustum clipping
+        bool IsInsideViewFrustum(const Primitives::Vertex& vertex) const;
+        // NDC transformation
         void NDC(Primitives::Vertex& vertex) const;
+        // Map to screen space
         void ViewportTransformation(Primitives::Vertex& vertex) const;
 
     private:

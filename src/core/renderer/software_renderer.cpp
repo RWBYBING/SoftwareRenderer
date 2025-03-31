@@ -34,12 +34,12 @@ void SoftwareRenderer::Init()
 {
     Primitives::Vertex v00, v01, v02;
     Primitives::Vertex v10, v11, v12;
-    v00.pos = Vector4(10.0f, 0.0f, -10.0f, 1.0f);
-    v01.pos = Vector4(0.0f, 10.0f, -10.0f, 1.0f);
-    v02.pos = Vector4(-10.0f, 0.0f, -10.0f, 1.0f);
-    v10.pos = Vector4(-5.0f, 0.0f, -15.0f, 1.0f);
-    v11.pos = Vector4(-15.0f, 10.0f, -15.0f, 1.0f);
-    v12.pos = Vector4(-25.0f, 0.0f, -15.0f, 1.0f);
+    v00.pos = Vector4(10.0f, 0.0f, 0.0f, 1.0f);
+    v01.pos = Vector4(0.0f, 10.0f, 0.0f, 1.0f);
+    v02.pos = Vector4(-10.0f, 0.0f, 0.0f, 1.0f);
+    v10.pos = Vector4(-5.0f, 0.0f, -5.0f, 1.0f);
+    v11.pos = Vector4(-15.0f, 10.0f, -5.0f, 1.0f);
+    v12.pos = Vector4(-25.0f, 0.0f, -5.0f, 1.0f);
 
     v10.color = Color(1.0f, 1.0f, 0.0f, 1.0f);
     v11.color = Color(1.0f, 1.0f, 0.0f, 1.0f);
@@ -71,6 +71,7 @@ GLuint SoftwareRenderer::Render()
     this->frame_buffer_ptr->Clear();
     this->depth_buffer_ptr->Clear();
 
+    // Utils::GlobalTimer::Instance().Start();
     // 1. Vertex Processing
     //     a. Use orthographic projection
     this->vertex_processing_ptr->SetModelMatrix(this->mesh_ptr->GetModelMatrix());
@@ -85,24 +86,29 @@ GLuint SoftwareRenderer::Render()
         this->vertex_processing_ptr->SetViewMatrix(this->perspective_camera_ptr->GetViewMatrix());
         this->vertex_processing_ptr->SetProjectionMatrix(this->perspective_camera_ptr->GetProjectionMatrix());
     }
-    auto vertices_screen_space = this->vertex_processing_ptr->TransformVertices(this->mesh_ptr->vertices);
+    auto triangles = this->vertex_processing_ptr->TransformVertices(
+        this->mesh_ptr->vertices,
+        this->mesh_ptr->indices,
+        this->shading_mode
+    );
+    // Utils::GlobalTimer::Instance().PrintElapsedTime();
 
     // Utils::GlobalTimer::Instance().Start();
     // 2. Rasterization
     //     a. rasterize vertices only 
     if (this->rendering_mode == RenderingMode::Vertex)
     {
-        this->rasterizer_ptr->RasterizeVertex(vertices_screen_space);
+        this->rasterizer_ptr->RasterizeVertex(triangles);
     }
     //     b. rasterize lineframe
     else if (this->rendering_mode == RenderingMode::LineFrame)
     {
-        this->rasterizer_ptr->RasterizeLineFrame(vertices_screen_space, this->mesh_ptr->indices);
+        this->rasterizer_ptr->RasterizeLineFrame(triangles);
     }
     //     c, rasterize triangles
     else if (this->rendering_mode == RenderingMode::Triangles)
     {
-        this->rasterizer_ptr->RasterizeTriangle(vertices_screen_space, this->mesh_ptr->indices);
+        this->rasterizer_ptr->RasterizeTriangle(triangles);
     }
     // Utils::GlobalTimer::Instance().PrintElapsedTime();
 
@@ -220,7 +226,7 @@ void SoftwareRenderer::ReloadMesh()
 
     if (this->model_selection == Model::STANDFORD_BUNNY)
     {
-        Loader::ParseOBJFile("../asset/stanford_bunny/bunny.obj", this->mesh_ptr);
+        Loader::ParseOBJFile("../asset/stanford_bunny/bunny.obj", this->mesh_ptr, 100);
     }
 }
 

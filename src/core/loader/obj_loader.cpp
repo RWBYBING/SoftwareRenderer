@@ -8,7 +8,7 @@
 
 using namespace Loader;
 
-void Loader::ParseOBJFile(const std::string& file_path, std::shared_ptr<Resources::Mesh> mesh)
+void Loader::ParseOBJFile(const std::string& file_path, std::shared_ptr<Resources::Mesh> mesh, int scale)
 {
     std::vector<Vector3> temp_positions;
     std::vector<uint32_t> temp_indices;
@@ -35,7 +35,7 @@ void Loader::ParseOBJFile(const std::string& file_path, std::shared_ptr<Resource
             float x, y, z;
             iss >> x >> y >> z;
             Primitives::Vertex vertex;
-            vertex.pos = Vector4(x, y, z, 1.0f);
+            vertex.pos = Vector4(x * scale, y * scale, z * scale, 1.0f);
             mesh->AddVertex(vertex);
         }
 

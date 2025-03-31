@@ -8,7 +8,7 @@
 
 namespace Loader
 {
-    void ParseOBJFile(const std::string& file_path, std::shared_ptr<Resources::Mesh> mesh);                                // Parse the .obj file and get the Mesh
+    void ParseOBJFile(const std::string& file_path, std::shared_ptr<Resources::Mesh> mesh, int scale = 1);                                // Parse the .obj file and get the Mesh
     // static std::map<std::string, Core::Resources::Material> ParseMTLFile(const std::string& file_path);     // Parse the .mtl file and get the materials
 }
 

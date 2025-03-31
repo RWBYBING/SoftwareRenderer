@@ -29,11 +29,8 @@ void Rasterizer::SetDepthBuffer(std::shared_ptr<Buffer::DepthBuffer> buffer)
     this->depth_buffer = buffer;
 }
 
-void Rasterizer::RasterizeTriangle(const std::vector<Primitives::Vertex>& vertices, const std::vector<uint32_t>& indices)
+void Rasterizer::RasterizeTriangle(const std::vector<Primitives::Triangle>& triangles)
 {
-    // assemble triangles
-    auto triangles = this->TriangleAssembly(vertices, indices);
-
     // process triangle parallelly
     tbb::parallel_for(tbb::blocked_range<size_t>(0, triangles.size()),
         [&](const tbb::blocked_range<size_t>& range) {
@@ -77,11 +74,8 @@ void Rasterizer::RasterizeTriangle(const std::vector<Primitives::Vertex>& vertic
     );
 }
 
-void Rasterizer::RasterizeLineFrame(const std::vector<Primitives::Vertex>& vertices, const std::vector<uint32_t>& indices)
+void Rasterizer::RasterizeLineFrame(const std::vector<Primitives::Triangle>& triangles)
 {
-    // assemble triangles
-    auto triangles = this->TriangleAssembly(vertices, indices);
-
     for (auto triangle : triangles)
     {
         this->BresenhamLine(triangle.v0.pos.x, triangle.v0.pos.y, triangle.v1.pos.x, triangle.v1.pos.y);
@@ -90,13 +84,17 @@ void Rasterizer::RasterizeLineFrame(const std::vector<Primitives::Vertex>& verti
     }
 }
 
-void Rasterizer::RasterizeVertex(const std::vector<Primitives::Vertex>& vertices)
+void Rasterizer::RasterizeVertex(const std::vector<Primitives::Triangle>& triangles)
 {
-    for (auto vertex : vertices)
+    for (auto triangle : triangles)
     {
-        auto fragment = this->ConstructFragment(vertex);
+        auto fragment_0 = this->ConstructFragment(triangle.v0);
+        auto fragment_1 = this->ConstructFragment(triangle.v1);
+        auto fragment_2 = this->ConstructFragment(triangle.v2);
 
-        this->WriteFragment2Buffer(fragment);
+        this->WriteFragment2Buffer(fragment_0);
+        this->WriteFragment2Buffer(fragment_1);
+        this->WriteFragment2Buffer(fragment_2);
     }
 }
 
@@ -175,21 +173,8 @@ void Rasterizer::BresenhamLine(int x0, int y0, int x1, int y1)
 
 
 
-std::vector<Primitives::Triangle> Rasterizer::TriangleAssembly(const std::vector<Primitives::Vertex>& vertices, const std::vector<uint32_t>& indices) const
-{
-    std::vector<Primitives::Triangle> triangles;
-    triangles.reserve(indices.size() / 3 + 1);
 
-    for (size_t i = 0; i < indices.size(); i += 3) {
-        Primitives::Triangle triangle;
-        triangle.v0 = vertices[indices[i]];
-        triangle.v1 = vertices[indices[i + 1]];
-        triangle.v2 = vertices[indices[i + 2]];
-        triangles.push_back(triangle);
-    }
 
-    return triangles;
-}
 
 void Rasterizer::CalculateBoundingBox(const Primitives::Triangle& tri, int& min_x, int& max_x, int& min_y, int& max_y) const
 {
