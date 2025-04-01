@@ -11,6 +11,7 @@
 #include <core/buffer/framebuffer.h>
 #include <core/buffer/depthbuffer.h>
 #include <core/basic/primitives.h>
+#include <core/basic/resources.h>
 
 namespace Pipeline
 {
@@ -20,14 +21,20 @@ namespace Pipeline
         Rasterizer();
         ~Rasterizer();
 
-        // Set Buffer
+        // Set Instances
         void SetFrameBuffer(std::shared_ptr<Buffer::FrameBuffer> buffer);
         void SetDepthBuffer(std::shared_ptr<Buffer::DepthBuffer> buffer);
+        void SetMaterial(std::shared_ptr<Resources::Material> material);
+        void SetLight(std::shared_ptr<Resources::Light> light);
 
         // Rasterization processing
-        void RasterizeTriangle(const std::vector<Primitives::Triangle>& triangles);
-        void RasterizeLineFrame(const std::vector<Primitives::Triangle>& triangles);
-        void RasterizeVertex(const std::vector<Primitives::Triangle>& triangles);
+        void Rasterize(
+            const std::vector<Primitives::Triangle>& triangles,
+            const RenderingMode rendering_mode,
+            const ShadingMode shading_mode,
+            const Shader shader,
+            const AntiAliasingMode anti_aliasing_mode
+        );
 
     private:
         void WriteFragment2Buffer(const Primitives::Fragment& fragment);
@@ -63,8 +70,10 @@ namespace Pipeline
 
 
     private:
-        std::shared_ptr<Buffer::FrameBuffer> frame_buffer;    // frame buffer
-        std::shared_ptr<Buffer::DepthBuffer> depth_buffer;    // depth buffer
+        std::shared_ptr<Buffer::FrameBuffer> frame_buffer;      // frame buffer
+        std::shared_ptr<Buffer::DepthBuffer> depth_buffer;      // depth buffer
+        std::shared_ptr<Resources::Material> material_ptr;      // material
+        std::shared_ptr<Resources::Light> light_ptr;            // light
     };
 }
 

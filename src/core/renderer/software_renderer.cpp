@@ -12,9 +12,13 @@ SoftwareRenderer::SoftwareRenderer()
     , rendering_mode{RenderingMode::Triangles}
     , camera_mode{CameraMode::Perspective}
     , shading_mode{ShadingMode::Phong}
+    , shader{Shader::Lambert}
     , anti_aliasing_mode{AntiAliasingMode::None}
+    , enable_backface_culling{false}
+    , enable_frustum_clipping{false}
     , texture_width{0}
     , texture_height{0}
+    , triangle_num{0}
     , mesh_ptr{std::make_shared<Resources::Mesh>()}
     , material_ptr{std::make_shared<Resources::Material>()}
     , light_ptr{std::make_shared<Resources::Light>()}
@@ -58,12 +62,13 @@ void SoftwareRenderer::Init()
 void SoftwareRenderer::SetupPipeline()
 {
     this->vertex_processing_ptr->SetFrameBuffer(this->frame_buffer_ptr);
+    this->vertex_processing_ptr->SetMaterial(this->material_ptr);
+    this->vertex_processing_ptr->SetLight(this->light_ptr);
 
     this->rasterizer_ptr->SetFrameBuffer(this->frame_buffer_ptr);
     this->rasterizer_ptr->SetDepthBuffer(this->depth_buffer_ptr);
-
-    // this->framebuffer_operation_ptr->SetFrameBuffer(this->frame_buffer_ptr);
-    // this->framebuffer_operation_ptr->SetDepthBuffer(this->depth_buffer_ptr);
+    this->rasterizer_ptr->SetMaterial(this->material_ptr);
+    this->rasterizer_ptr->SetLight(this->light_ptr);
 }
 
 GLuint SoftwareRenderer::Render()
@@ -89,45 +94,28 @@ GLuint SoftwareRenderer::Render()
     auto triangles = this->vertex_processing_ptr->TransformVertices(
         this->mesh_ptr->vertices,
         this->mesh_ptr->indices,
-        this->shading_mode
+        this->rendering_mode,
+        this->shading_mode,
+        this->shader,
+        this->anti_aliasing_mode
     );
+    this->triangle_num = triangles.size();
     // Utils::GlobalTimer::Instance().PrintElapsedTime();
 
     // Utils::GlobalTimer::Instance().Start();
     // 2. Rasterization
     //     a. rasterize vertices only 
-    if (this->rendering_mode == RenderingMode::Vertex)
-    {
-        this->rasterizer_ptr->RasterizeVertex(triangles);
-    }
-    //     b. rasterize lineframe
-    else if (this->rendering_mode == RenderingMode::LineFrame)
-    {
-        this->rasterizer_ptr->RasterizeLineFrame(triangles);
-    }
-    //     c, rasterize triangles
-    else if (this->rendering_mode == RenderingMode::Triangles)
-    {
-        this->rasterizer_ptr->RasterizeTriangle(triangles);
-    }
+    this->rasterizer_ptr->Rasterize(
+        triangles,
+        this->rendering_mode,
+        this->shading_mode,
+        this->shader,
+        this->anti_aliasing_mode
+    );
     // Utils::GlobalTimer::Instance().PrintElapsedTime();
 
-    // Utils::GlobalTimer::Instance().Start();
-    // 3. Fragment Processing
-    // this->fragment_processing_ptr->ProcessFragments(fragments);
-    // Utils::GlobalTimer::Instance().PrintElapsedTime();
-
-    // Utils::GlobalTimer::Instance().Start();
-    // 4. FrameBuffer Operation
-    // this->framebuffer_operation_ptr->WriteFragment2Buffer(fragments);
-    // Utils::GlobalTimer::Instance().PrintElapsedTime();
-
-    // Utils::GlobalTimer::Instance().Start();
     this->UpdateTexture();
-    // Utils::GlobalTimer::Instance().PrintElapsedTime();
 
-    // Utils::GlobalTimer::Instance().Start();
-    // Utils::GlobalTimer::Instance().PrintElapsedTime();
     return this->texture;
 }
 

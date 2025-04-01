@@ -12,6 +12,8 @@ VertexProcessing::VertexProcessing()
     , view_matrix{glm::identity<glm::mat4>()}
     , projection_matrix{glm::identity<glm::mat4>()}
     , frame_buffer{nullptr}
+    , material_ptr{nullptr}
+    , light_ptr{nullptr}
 {
 
 }
@@ -38,10 +40,23 @@ void VertexProcessing::SetFrameBuffer(std::shared_ptr<Buffer::FrameBuffer> buffe
     this->frame_buffer = buffer;
 }
 
+void VertexProcessing::SetMaterial(std::shared_ptr<Resources::Material> material)
+{
+    this->material_ptr = material;
+}
+
+void VertexProcessing::SetLight(std::shared_ptr<Resources::Light> light)
+{
+    this->light_ptr = light;
+}
+
 std::vector<Primitives::Triangle> VertexProcessing::TransformVertices(
     const std::vector<Primitives::Vertex>& vertices,
     const std::vector<uint32_t>& indices,
-    ShadingMode shading_mode
+    const RenderingMode rendering_mode,
+    const ShadingMode shading_mode,
+    const Shader shader,
+    const AntiAliasingMode anti_aliasing_mode
 ) const 
 {
     std::vector<Primitives::Vertex> temp_vertices = vertices;
@@ -60,7 +75,7 @@ std::vector<Primitives::Triangle> VertexProcessing::TransformVertices(
     for (auto& triangle : triangles)
     {
         // // TODO: Optimize the performance
-        // // calculate the normal
+        // calculate the normal
         // Vector3 edge1 = triangle.v1.pos - triangle.v0.pos;
         // Vector3 edge2 = triangle.v2.pos - triangle.v0.pos;
         // Vector3 normal = glm::normalize(glm::cross(edge1, edge2));
@@ -101,10 +116,10 @@ std::vector<Primitives::Triangle> VertexProcessing::TriangleAssembly(const std::
         triangle.v2 = vertices[indices[i + 2]];
 
         // execute backface culling
-        // if (this->IsBackface(triangle))
-        // {
-        //     continue;
-        // }
+        if (this->IsBackface(triangle))
+        {
+            continue;
+        }
 
         // execute frustum clipping
         if (

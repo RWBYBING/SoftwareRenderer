@@ -11,8 +11,6 @@
 #include <core/pipeline/vertex_processing.h>
 #include <core/pipeline/rasterizer.h>
 
-// #include <core/pipeline/framebuffer_operation.h>
-
 namespace Core
 {
     namespace Renderer
@@ -53,7 +51,10 @@ namespace Core
             RenderingMode rendering_mode;                       // 0: Vertex only, 1: Lineframe, 2: Triangles
             CameraMode camera_mode;                             // 0: Orthographic, 1: Perspective
             ShadingMode shading_mode;                           // 0: Flat shading, 1: Gourand shading, 2: Phong shading
+            Shader shader;                                      // 0: Lambert, 1: Blinn-Phong, 2: Gooch
             AntiAliasingMode anti_aliasing_mode;                // 0: None, 1: FXAA, 2: MSAA
+            bool enable_backface_culling;
+            bool enable_frustum_clipping;
 
         private:
             GLuint texture;                                     // OpenGL Texture id(only for displaying the final image)
@@ -61,6 +62,7 @@ namespace Core
         private:
             int texture_width;
             int texture_height;
+            int triangle_num;                                   // total triangles to be processed in the pipeline
 
         // Resources
         private:

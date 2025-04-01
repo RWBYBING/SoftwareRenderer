@@ -29,73 +29,94 @@ void Rasterizer::SetDepthBuffer(std::shared_ptr<Buffer::DepthBuffer> buffer)
     this->depth_buffer = buffer;
 }
 
-void Rasterizer::RasterizeTriangle(const std::vector<Primitives::Triangle>& triangles)
+void Rasterizer::SetMaterial(std::shared_ptr<Resources::Material> material)
 {
-    // process triangle parallelly
-    tbb::parallel_for(tbb::blocked_range<size_t>(0, triangles.size()),
-        [&](const tbb::blocked_range<size_t>& range) {
-            for (size_t i = range.begin(); i != range.end(); ++i) {
-                // Get screen pos for each vertex in the triangle
-                Vector2 screen_pos[3] = {
-                    Vector2{triangles[i].v0.pos.x, triangles[i].v0.pos.y},
-                    Vector2{triangles[i].v1.pos.x, triangles[i].v1.pos.y},
-                    Vector2{triangles[i].v2.pos.x, triangles[i].v2.pos.y},
-                };
+    this->material_ptr = material;
+}
+
+void Rasterizer::SetLight(std::shared_ptr<Resources::Light> light)
+{
+    this->light_ptr = light;
+}
+
+// void Rasterizer::RasterizeTriangle(const std::vector<Primitives::Triangle>& triangles)
+// {
+//     // process triangle parallelly
+//     tbb::parallel_for(tbb::blocked_range<size_t>(0, triangles.size()),
+//         [&](const tbb::blocked_range<size_t>& range) {
+//             for (size_t i = range.begin(); i != range.end(); ++i) {
+//                 // Get screen pos for each vertex in the triangle
+//                 Vector2 screen_pos[3] = {
+//                     Vector2{triangles[i].v0.pos.x, triangles[i].v0.pos.y},
+//                     Vector2{triangles[i].v1.pos.x, triangles[i].v1.pos.y},
+//                     Vector2{triangles[i].v2.pos.x, triangles[i].v2.pos.y},
+//                 };
                 
-                // calculate the bounding box
-                int min_x, max_x, min_y, max_y;
-                this->CalculateBoundingBox(triangles[i], min_x, max_x, min_y, max_y);
+//                 // calculate the bounding box
+//                 int min_x, max_x, min_y, max_y;
+//                 this->CalculateBoundingBox(triangles[i], min_x, max_x, min_y, max_y);
 
-                // iterate all the pixel in the bounding box
-                tbb::parallel_for(tbb::blocked_range2d<int>(min_y, max_y, min_x, max_x),
-                    [&](const tbb::blocked_range2d<int>& range) {
-                        for (int y = range.rows().begin(); y != range.rows().end(); ++y) {
-                            for (int x = range.cols().begin(); x != range.cols().end(); ++x) {
-                                Vector2 P(x + 0.5f, y + 0.5f);
-                                float alpha, beta, gamma;
-                                // Determine if this pixel is inside the triangle
-                                if (this->BarycentricCoordinates(P, screen_pos[0], screen_pos[1], screen_pos[2], alpha, beta, gamma))
-                                {
-                                    // construct the fragment through interpolation
-                                    auto fragment = this->InterpolateFragment(triangles[i], alpha, beta, gamma, x, y);
+//                 // iterate all the pixel in the bounding box
+//                 tbb::parallel_for(tbb::blocked_range2d<int>(min_y, max_y, min_x, max_x),
+//                     [&](const tbb::blocked_range2d<int>& range) {
+//                         for (int y = range.rows().begin(); y != range.rows().end(); ++y) {
+//                             for (int x = range.cols().begin(); x != range.cols().end(); ++x) {
+//                                 Vector2 P(x + 0.5f, y + 0.5f);
+//                                 float alpha, beta, gamma;
+//                                 // Determine if this pixel is inside the triangle
+//                                 if (this->BarycentricCoordinates(P, screen_pos[0], screen_pos[1], screen_pos[2], alpha, beta, gamma))
+//                                 {
+//                                     // construct the fragment through interpolation
+//                                     auto fragment = this->InterpolateFragment(triangles[i], alpha, beta, gamma, x, y);
 
-                                    // Z-Buffering
-                                    if (this->DepthTest(fragment.x, fragment.y, fragment.depth))
-                                    {
-                                        this->WriteFragment2Buffer(fragment);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                );
-            }
-        }
-    );
-}
+//                                     // Z-Buffering
+//                                     if (this->DepthTest(fragment.x, fragment.y, fragment.depth))
+//                                     {
+//                                         this->WriteFragment2Buffer(fragment);
+//                                     }
+//                                 }
+//                             }
+//                         }
+//                     }
+//                 );
+//             }
+//         }
+//     );
+// }
 
-void Rasterizer::RasterizeLineFrame(const std::vector<Primitives::Triangle>& triangles)
+// void Rasterizer::RasterizeLineFrame(const std::vector<Primitives::Triangle>& triangles)
+// {
+//     for (auto triangle : triangles)
+//     {
+//         this->BresenhamLine(triangle.v0.pos.x, triangle.v0.pos.y, triangle.v1.pos.x, triangle.v1.pos.y);
+//         this->BresenhamLine(triangle.v1.pos.x, triangle.v1.pos.y, triangle.v2.pos.x, triangle.v2.pos.y);
+//         this->BresenhamLine(triangle.v2.pos.x, triangle.v2.pos.y, triangle.v0.pos.x, triangle.v0.pos.y);
+//     }
+// }
+
+// void Rasterizer::RasterizeVertex(const std::vector<Primitives::Triangle>& triangles)
+// {
+//     for (auto triangle : triangles)
+//     {
+//         auto fragment_0 = this->ConstructFragment(triangle.v0);
+//         auto fragment_1 = this->ConstructFragment(triangle.v1);
+//         auto fragment_2 = this->ConstructFragment(triangle.v2);
+
+//         this->WriteFragment2Buffer(fragment_0);
+//         this->WriteFragment2Buffer(fragment_1);
+//         this->WriteFragment2Buffer(fragment_2);
+//     }
+// }
+
+void Rasterizer::Rasterize(
+    const std::vector<Primitives::Triangle>& triangles,
+    const RenderingMode rendering_mode,
+    const ShadingMode shading_mode,
+    const Shader shader,
+    const AntiAliasingMode anti_aliasing_mode
+)
 {
-    for (auto triangle : triangles)
-    {
-        this->BresenhamLine(triangle.v0.pos.x, triangle.v0.pos.y, triangle.v1.pos.x, triangle.v1.pos.y);
-        this->BresenhamLine(triangle.v1.pos.x, triangle.v1.pos.y, triangle.v2.pos.x, triangle.v2.pos.y);
-        this->BresenhamLine(triangle.v2.pos.x, triangle.v2.pos.y, triangle.v0.pos.x, triangle.v0.pos.y);
-    }
-}
 
-void Rasterizer::RasterizeVertex(const std::vector<Primitives::Triangle>& triangles)
-{
-    for (auto triangle : triangles)
-    {
-        auto fragment_0 = this->ConstructFragment(triangle.v0);
-        auto fragment_1 = this->ConstructFragment(triangle.v1);
-        auto fragment_2 = this->ConstructFragment(triangle.v2);
-
-        this->WriteFragment2Buffer(fragment_0);
-        this->WriteFragment2Buffer(fragment_1);
-        this->WriteFragment2Buffer(fragment_2);
-    }
 }
 
 Primitives::Fragment Rasterizer::ConstructFragment(const Primitives::Vertex vertex)

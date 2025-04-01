@@ -43,7 +43,7 @@ namespace Resources
     struct OrthographicCamera
     {
     public:
-        Vector3 pos{0.0f, 0.0f, 20.0f};
+        Vector3 pos{0.0f, 0.0f, 10.0f};
         Vector3 look_at{0.0f, 0.0f, -1.0f};
         Vector3 up{0.0f, 1.0f, 0.0f};
 
@@ -52,7 +52,7 @@ namespace Resources
         float bottom{-30.0f};
         float top{30.0f};
         float near_clip{0.1f};
-        float far_clip{100.0f};
+        float far_clip{30.0f};
 
         Matrix4x4 GetViewMatrix() const;
         Matrix4x4 GetProjectionMatrix() const;

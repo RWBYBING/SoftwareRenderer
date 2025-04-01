@@ -47,6 +47,13 @@ enum ShadingMode
     Phong
 };
 
+enum Shader
+{
+    Lambert,
+    Blinn_Phong,
+    Gooch
+};
+
 enum AntiAliasingMode
 {
     None,

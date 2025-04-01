@@ -86,10 +86,7 @@ set(GUI_SOURCES
 	src/core/buffer/framebuffer.cpp
 	src/core/buffer/depthbuffer.cpp
 	src/core/pipeline/vertex_processing.cpp
-	src/core/pipeline/triangle_processing.cpp
 	src/core/pipeline/rasterizer.cpp
-	src/core/pipeline/fragment_processing.cpp
-	src/core/pipeline/framebuffer_operation.cpp
 	src/core/renderer/software_renderer.cpp
 )
 
