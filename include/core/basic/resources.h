@@ -10,18 +10,18 @@ namespace Resources
 {
     struct Material
     {
-        Color diffuse_color{0.1f, 0.1f, 0.1f, 1.0f};
-        Color specular_color{0.8f, 0.8f, 0.8f, 1.0f};
+        Color diffuse_color{0.2f, 0.2f, 0.2f, 1.0f};
+        Color specular_color{1.0f, 1.0f, 1.0f, 1.0f};
         float shininess{32.0f};
     };
     
     struct Light
     {
-        Vector4 pos{0.0f, 0.0f, 0.0f, 1.0f};
-        Vector4 dir{0.0f, 0.0f, -1.0f, 0.0f};
-        Color diffuse{1.0f, 1.0f, 1.0f, 1.0f};
-        Color specular{1.0f, 1.0f, 1.0f, 1.0f};
-        Color ambient{0.1f, 0.1f, 0.1f, 1.0f};
+        Vector3 pos{0.0f, 0.0f, 0.0f};
+        Vector3 dir{0.0f, 0.0f, -1.0f};
+        Color diffuse_intensity{1.0f, 1.0f, 1.0f, 1.0f};
+        Color specular_intensity{1.0f, 1.0f, 1.0f, 1.0f};
+        Color ambient_intensity{0.1f, 0.1f, 0.1f, 1.0f};
     };
     
     struct Mesh

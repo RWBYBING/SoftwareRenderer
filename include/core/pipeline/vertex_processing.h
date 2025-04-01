@@ -25,6 +25,7 @@ namespace Pipeline
         void SetFrameBuffer(std::shared_ptr<Buffer::FrameBuffer> buffer);
         void SetMaterial(std::shared_ptr<Resources::Material> material);
         void SetLight(std::shared_ptr<Resources::Light> light);
+        void SetCamera(std::shared_ptr<Resources::PerspectiveCamera> camera);
 
         // Transform Vertices
         std::vector<Primitives::Triangle> TransformVertices(
@@ -32,13 +33,12 @@ namespace Pipeline
             const std::vector<uint32_t>& indices,
             const RenderingMode rendering_mode,
             const ShadingMode shading_mode,
-            const Shader shader,
-            const AntiAliasingMode anti_aliasing_mode
+            const AntiAliasingMode anti_aliasing_mode,
+            const bool enable_backface_culling,
+            const bool enable_frustum_clipping
         ) const;
 
     private:
-        // triangle assembly
-        std::vector<Primitives::Triangle> TriangleAssembly(const std::vector<Primitives::Vertex>& vertices, const std::vector<uint32_t>& indices) const;
         // Backface culling
         bool IsBackface(const Primitives::Triangle& triangle) const;
         // Frustum clipping
@@ -47,6 +47,14 @@ namespace Pipeline
         void NDC(Primitives::Vertex& vertex) const;
         // Map to screen space
         void ViewportTransformation(Primitives::Vertex& vertex) const;
+        // Calculate the normal of the triangle
+        void CalculateNormal(Primitives::Triangle& triangle) const;
+        // Calculate the normal of the vertex
+        
+        // Flat Shading
+        void FlatShading(Primitives::Triangle& triangle) const;
+        // Gourand Shading
+        void GourandShading(Primitives::Triangle& triangle) const;
 
     private:
         Matrix4x4 model_matrix;
@@ -54,9 +62,10 @@ namespace Pipeline
         Matrix4x4 projection_matrix;
 
     private:
-        std::shared_ptr<Buffer::FrameBuffer> frame_buffer;      // frame buffer
-        std::shared_ptr<Resources::Material> material_ptr;      // material
-        std::shared_ptr<Resources::Light> light_ptr;            // light
+        std::shared_ptr<Buffer::FrameBuffer> frame_buffer;          // frame buffer
+        std::shared_ptr<Resources::Material> material_ptr;          // material
+        std::shared_ptr<Resources::Light> light_ptr;                // light
+        std::shared_ptr<Resources::PerspectiveCamera> camera_ptr;   // camera
     };
 }
 

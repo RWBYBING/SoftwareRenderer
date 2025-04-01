@@ -51,7 +51,6 @@ namespace Core
             RenderingMode rendering_mode;                       // 0: Vertex only, 1: Lineframe, 2: Triangles
             CameraMode camera_mode;                             // 0: Orthographic, 1: Perspective
             ShadingMode shading_mode;                           // 0: Flat shading, 1: Gourand shading, 2: Phong shading
-            Shader shader;                                      // 0: Lambert, 1: Blinn-Phong, 2: Gooch
             AntiAliasingMode anti_aliasing_mode;                // 0: None, 1: FXAA, 2: MSAA
             bool enable_backface_culling;
             bool enable_frustum_clipping;
@@ -81,8 +80,6 @@ namespace Core
         private:
             std::unique_ptr<Pipeline::VertexProcessing> vertex_processing_ptr;
             std::unique_ptr<Pipeline::Rasterizer> rasterizer_ptr;
-            // std::unique_ptr<Core::Pipeline::FragmentProcessing> fragment_processing_ptr;
-            // std::unique_ptr<Core::Pipeline::FrameBufferOperation> framebuffer_operation_ptr;
         };
     }
 }

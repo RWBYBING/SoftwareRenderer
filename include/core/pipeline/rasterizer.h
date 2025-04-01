@@ -32,7 +32,6 @@ namespace Pipeline
             const std::vector<Primitives::Triangle>& triangles,
             const RenderingMode rendering_mode,
             const ShadingMode shading_mode,
-            const Shader shader,
             const AntiAliasingMode anti_aliasing_mode
         );
 

@@ -25,6 +25,7 @@ namespace Primitives
         Vertex v0;                  // Three vertex in the triangle
         Vertex v1;
         Vertex v2;
+        Vector3 normal;
     };
 }
 

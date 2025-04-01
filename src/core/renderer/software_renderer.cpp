@@ -11,11 +11,10 @@ SoftwareRenderer::SoftwareRenderer()
     : model_selection{Model::TWO_TRIANGLES}
     , rendering_mode{RenderingMode::Triangles}
     , camera_mode{CameraMode::Perspective}
-    , shading_mode{ShadingMode::Phong}
-    , shader{Shader::Lambert}
+    , shading_mode{ShadingMode::Flat}
     , anti_aliasing_mode{AntiAliasingMode::None}
-    , enable_backface_culling{false}
-    , enable_frustum_clipping{false}
+    , enable_backface_culling{true}
+    , enable_frustum_clipping{true}
     , texture_width{0}
     , texture_height{0}
     , triangle_num{0}
@@ -28,8 +27,6 @@ SoftwareRenderer::SoftwareRenderer()
     , depth_buffer_ptr{std::make_shared<Buffer::DepthBuffer>(100, 100)}
     , vertex_processing_ptr{std::make_unique<Pipeline::VertexProcessing>()}
     , rasterizer_ptr{std::make_unique<Pipeline::Rasterizer>()}
-    // , fragment_processing_ptr{std::make_unique<Core::Pipeline::FragmentProcessing>()}
-    // , framebuffer_operation_ptr{std::make_unique<Core::Pipeline::FrameBufferOperation>()}
 {
 
 }
@@ -64,6 +61,7 @@ void SoftwareRenderer::SetupPipeline()
     this->vertex_processing_ptr->SetFrameBuffer(this->frame_buffer_ptr);
     this->vertex_processing_ptr->SetMaterial(this->material_ptr);
     this->vertex_processing_ptr->SetLight(this->light_ptr);
+    this->vertex_processing_ptr->SetCamera(this->perspective_camera_ptr);
 
     this->rasterizer_ptr->SetFrameBuffer(this->frame_buffer_ptr);
     this->rasterizer_ptr->SetDepthBuffer(this->depth_buffer_ptr);
@@ -96,8 +94,9 @@ GLuint SoftwareRenderer::Render()
         this->mesh_ptr->indices,
         this->rendering_mode,
         this->shading_mode,
-        this->shader,
-        this->anti_aliasing_mode
+        this->anti_aliasing_mode,
+        this->enable_backface_culling,
+        this->enable_frustum_clipping
     );
     this->triangle_num = triangles.size();
     // Utils::GlobalTimer::Instance().PrintElapsedTime();
@@ -109,7 +108,6 @@ GLuint SoftwareRenderer::Render()
         triangles,
         this->rendering_mode,
         this->shading_mode,
-        this->shader,
         this->anti_aliasing_mode
     );
     // Utils::GlobalTimer::Instance().PrintElapsedTime();
