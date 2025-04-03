@@ -58,7 +58,7 @@ namespace Core
         private:
             GLuint texture;                                     // OpenGL Texture id(only for displaying the final image)
         
-        private:
+        public:
             int texture_width;
             int texture_height;
             int triangle_num;                                   // total triangles to be processed in the pipeline

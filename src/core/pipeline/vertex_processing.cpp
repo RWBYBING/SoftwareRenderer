@@ -199,10 +199,20 @@ std::vector<Primitives::Triangle> VertexProcessing::TransformVertices(
 
         for (auto& triangle : triangles)
         {
+            // Normalize the normal of all the vertices
+            glm::normalize(triangle.v0.normal);
+            glm::normalize(triangle.v1.normal);
+            glm::normalize(triangle.v2.normal);
+
             // Shading
             if (shading_mode == ShadingMode::Flat)
             {
                 this->FlatShading(triangle);
+            }
+
+            if (shading_mode == ShadingMode::Gourand)
+            {
+                this->GourandShading(triangle);
             }
     
             // NDC
@@ -263,6 +273,10 @@ void VertexProcessing::CalculateNormal(Primitives::Triangle& triangle) const
     Vector3 edge1 = triangle.v1.pos - triangle.v0.pos;
     Vector3 edge2 = triangle.v2.pos - triangle.v0.pos;
     triangle.normal = glm::normalize(glm::cross(edge1, edge2));
+
+    triangle.v0.normal += triangle.normal;
+    triangle.v1.normal += triangle.normal;
+    triangle.v2.normal += triangle.normal;
 }
 
 void VertexProcessing::FlatShading(Primitives::Triangle& triangle) const
@@ -284,4 +298,21 @@ void VertexProcessing::FlatShading(Primitives::Triangle& triangle) const
     triangle.v0.color = final_color;
     triangle.v1.color = final_color;
     triangle.v2.color = final_color;
+}
+
+void VertexProcessing::GourandShading(Primitives::Triangle& triangle) const
+{
+    // ambient
+    Color ambient = this->light_ptr->ambient_intensity * this->material_ptr->diffuse_color;
+
+    // diffuse
+    float diff = std::max(0.0f, glm::dot(triangle.normal, this->light_ptr->dir));
+    Color diffuse = this->light_ptr->diffuse_intensity * (material_ptr->diffuse_color * diff);
+
+    // highlight
+    Vector3 halfway_dir = glm::normalize(this->light_ptr->dir + this->camera_ptr->look_at);
+    float spec = std::pow(std::max(0.0f, glm::dot(triangle.normal, halfway_dir)), material_ptr->shininess);
+    Color specular = this->light_ptr->specular_intensity * (this->material_ptr->specular_color * spec);
+
+    Color final_color = ambient + diffuse + specular;
 }

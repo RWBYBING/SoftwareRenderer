@@ -17,11 +17,10 @@ namespace Resources
     
     struct Light
     {
-        Vector3 pos{0.0f, 0.0f, 0.0f};
         Vector3 dir{0.0f, 0.0f, -1.0f};
         Color diffuse_intensity{1.0f, 1.0f, 1.0f, 1.0f};
         Color specular_intensity{1.0f, 1.0f, 1.0f, 1.0f};
-        Color ambient_intensity{0.1f, 0.1f, 0.1f, 1.0f};
+        Color ambient_intensity{0.3f, 0.3f, 0.3f, 1.0f};
     };
     
     struct Mesh

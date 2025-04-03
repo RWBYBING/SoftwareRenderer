@@ -254,6 +254,8 @@ void GLFWWindowManager::UpdateController()
         auto window_size = ImGui::GetContentRegionAvail();
 
         ImGui::Text("Frame Rate: %f", ImGui::GetIO().Framerate);
+        ImGui::Text("Resolution: %d x %d", this->renderer->GetTextureWidth(), this->renderer->GetTextureHeight());
+        ImGui::Text("Triangle nums: %d", this->renderer->triangle_num);
 
         ImGui::AlignTextToFramePadding();
         ImGui::Text("Renderer: ");  ImGui::SameLine();
@@ -470,7 +472,7 @@ void GLFWWindowManager::UpdateController()
             }
         }
 
-        if (ImGui::CollapsingHeader("Rasterization Settings"))
+        if (ImGui::CollapsingHeader("Render Settings"))
         {   
             // Choose Render mode
             auto& rendering_mode = this->renderer->rendering_mode;
@@ -479,21 +481,23 @@ void GLFWWindowManager::UpdateController()
             ImGui::RadioButton("Vertex Only", (int*)&rendering_mode, 0);    ImGui::SameLine();
             ImGui::RadioButton("Lineframe", (int*)&rendering_mode, 1);      ImGui::SameLine();
             ImGui::RadioButton("Triangles", (int*)&rendering_mode, 2);
+
+            // backface culling
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Backface culling: ");  ImGui::SameLine(0.3f * window_size.x);
+            ImGui::Checkbox("##backface", &this->renderer->enable_backface_culling);
+
+            // frustum clipping
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Frustum clipping: ");  ImGui::SameLine(0.3f * window_size.x);
+            ImGui::Checkbox("##Frustum_clipping: ", &this->renderer->enable_frustum_clipping);
         }
 
+        auto& projection_mode = this->renderer->camera_mode;
+        ImGui::BeginDisabled(projection_mode == CameraMode::Orthographics);
         if (ImGui::CollapsingHeader("Light Settings"))
         {
             auto light = this->renderer->GetLight();
-
-            // Pos
-            ImGui::AlignTextToFramePadding();
-            ImGui::Text("Pos: ");   ImGui::SameLine(0.3f * window_size.x);
-            ImGui::SetNextItemWidth(0.2f * window_size.x);
-            ImGui::InputFloat("x##light_pos", &light->pos.x); ImGui::SameLine();
-            ImGui::SetNextItemWidth(0.2f * window_size.x);
-            ImGui::InputFloat("y##light_pos", &light->pos.y); ImGui::SameLine();
-            ImGui::SetNextItemWidth(0.2f * window_size.x);
-            ImGui::InputFloat("z##light_pos", &light->pos.z);
 
             // Dir
             ImGui::AlignTextToFramePadding();
@@ -505,24 +509,90 @@ void GLFWWindowManager::UpdateController()
             ImGui::SetNextItemWidth(0.2f * window_size.x);
             ImGui::InputFloat("z##light_dir", &light->dir.z);
 
+            // Ambient Intensity
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Ambient Intensity: ");   ImGui::SameLine(0.3f * window_size.x);
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("r##ambient_intensity", &light->ambient_intensity.r); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("g##ambient_intensity", &light->ambient_intensity.g); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("b##ambient_intensity", &light->ambient_intensity.b);
+
+            // Diffuse Intensity
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Diffuse Intensity: ");   ImGui::SameLine(0.3f * window_size.x);
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("r##diffuse_intensity", &light->diffuse_intensity.r); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("g##diffuse_intensity", &light->diffuse_intensity.g); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("b##diffuse_intensity", &light->diffuse_intensity.b);
+
+            // Specular Intensity
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Specular Intensity: ");   ImGui::SameLine(0.3f * window_size.x);
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("r##specular_intensity", &light->specular_intensity.r); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("g##specular_intensity", &light->specular_intensity.g); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("b##specular_intensity", &light->specular_intensity.b);
         }
 
         if (ImGui::CollapsingHeader("Material Settings"))
         {
             auto material = this->renderer->GetMaterial();
 
+            // Diffuse Color
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Diffuse Color: ");   ImGui::SameLine(0.3f * window_size.x);
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("r##diffuse_color", &material->diffuse_color.r); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("g##diffuse_color", &material->diffuse_color.g); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("b##diffuse_color", &material->diffuse_color.b);
+
+            // Specular Color
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Specular Color: ");   ImGui::SameLine(0.3f * window_size.x);
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("r##specular_color", &material->specular_color.r); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("g##specular_color", &material->specular_color.g); ImGui::SameLine();
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("b##specular_color", &material->specular_color.b);
+
+            // Shininess
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Shininess: "); ImGui::SameLine(0.3f * window_size.x);
+            ImGui::SetNextItemWidth(0.2f * window_size.x);
+            ImGui::InputFloat("##shininess", &material->shininess);
         }
 
         if (ImGui::CollapsingHeader("Shading Settings"))
         {
             // shading mode
-
+            auto& shading_mode = this->renderer->shading_mode;ImGui::SameLine(0.3f * window_size.x);
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Shading method: ");   ImGui::SameLine(0.3f * window_size.x);
+            ImGui::RadioButton("Flat", (int*)&shading_mode, 0);    ImGui::SameLine();
+            ImGui::RadioButton("Gourand", (int*)&shading_mode, 1);      ImGui::SameLine();
+            ImGui::RadioButton("Phong", (int*)&shading_mode, 2);
         }
 
-        if (ImGui::CollapsingHeader("More features"))
+        if (ImGui::CollapsingHeader("Anti-aliasing"))
         {   
-
+            // Anti-aliasing mode
+            auto& anti_aliasing_mode = this->renderer->anti_aliasing_mode;
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Anti-aliasing Mode: ");    ImGui::SameLine(0.3f * window_size.x);
+            ImGui::RadioButton("None", (int*)&anti_aliasing_mode, 0);   ImGui::SameLine();
+            ImGui::RadioButton("MSAA", (int*)&anti_aliasing_mode, 1);   ImGui::SameLine();
+            ImGui::RadioButton("FXAA", (int*)&anti_aliasing_mode, 2);   
         }
+        ImGui::EndDisabled();
     }
     ImGui::End();
 }
@@ -565,9 +635,9 @@ void GLFWWindowManager::UpdateFramebuffer()
         int texture_width = this->renderer->GetTextureWidth();
         int texture_height = this->renderer->GetTextureHeight();
 
-        if (current_width / 3 != texture_width || current_height / 3 != texture_height)
+        if (current_width / 2 != texture_width || current_height / 2 != texture_height)
         {
-            this->renderer->HandleWindowResize(current_width / 3, current_height / 3);
+            this->renderer->HandleWindowResize(current_width / 2, current_height / 2);
             // std::cout << "Window Resized: " << current_width << ", " << current_height << std::endl;
         }
 

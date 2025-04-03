@@ -47,10 +47,8 @@ namespace Pipeline
         void NDC(Primitives::Vertex& vertex) const;
         // Map to screen space
         void ViewportTransformation(Primitives::Vertex& vertex) const;
-        // Calculate the normal of the triangle
+        // Calculate the normal of the triangle and vertices
         void CalculateNormal(Primitives::Triangle& triangle) const;
-        // Calculate the normal of the vertex
-        
         // Flat Shading
         void FlatShading(Primitives::Triangle& triangle) const;
         // Gourand Shading

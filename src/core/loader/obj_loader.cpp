@@ -9,10 +9,7 @@
 using namespace Loader;
 
 void Loader::ParseOBJFile(const std::string& file_path, std::shared_ptr<Resources::Mesh> mesh, int scale)
-{
-    std::vector<Vector3> temp_positions;
-    std::vector<uint32_t> temp_indices;
-    
+{   
     std::ifstream file(file_path);
     if (!file.is_open()) {
         throw std::runtime_error("Failed to open OBJ file: " + file_path);
