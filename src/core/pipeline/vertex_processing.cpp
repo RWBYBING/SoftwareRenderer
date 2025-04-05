@@ -116,9 +116,9 @@ std::vector<Primitives::Triangle> VertexProcessing::TransformVertices(
             triangle.v0 = temp_vertices[indices[i]];
             triangle.v1 = temp_vertices[indices[i + 1]];
             triangle.v2 = temp_vertices[indices[i + 2]];
-
+    
             // calculate the normal
-            this->CalculateNormal(triangle);
+            this->CalculateTriangleNormal(triangle);
     
             // execute backface culling
             if (enable_backface_culling)
@@ -163,14 +163,17 @@ std::vector<Primitives::Triangle> VertexProcessing::TransformVertices(
     // Prepare the all the vertex data for triangles
     else if (rendering_mode == RenderingMode::Triangles)
     {
-        for (size_t i = 0; i < indices.size(); i += 3) {
+        this->CalculateVerticesNormal(temp_vertices, indices);
+
+        for (size_t i = 0; i < indices.size(); i += 3)
+        {
             Primitives::Triangle triangle;
             triangle.v0 = temp_vertices[indices[i]];
             triangle.v1 = temp_vertices[indices[i + 1]];
             triangle.v2 = temp_vertices[indices[i + 2]];
     
             // calculate the normal
-            this->CalculateNormal(triangle);
+            this->CalculateTriangleNormal(triangle);
 
             // execute backface culling
             if (enable_backface_culling)
@@ -199,11 +202,6 @@ std::vector<Primitives::Triangle> VertexProcessing::TransformVertices(
 
         for (auto& triangle : triangles)
         {
-            // Normalize the normal of all the vertices
-            glm::normalize(triangle.v0.normal);
-            glm::normalize(triangle.v1.normal);
-            glm::normalize(triangle.v2.normal);
-
             // Shading
             if (shading_mode == ShadingMode::Flat)
             {
@@ -212,9 +210,11 @@ std::vector<Primitives::Triangle> VertexProcessing::TransformVertices(
 
             if (shading_mode == ShadingMode::Gourand)
             {
-                this->GourandShading(triangle);
+                this->GourandShading(triangle.v0);
+                this->GourandShading(triangle.v1);
+                this->GourandShading(triangle.v2);
             }
-    
+
             // NDC
             this->NDC(triangle.v0);
             this->NDC(triangle.v1);
@@ -262,34 +262,57 @@ void VertexProcessing::ViewportTransformation(Primitives::Vertex& vertex) const
     int screen_width = this->frame_buffer->GetWidth();
     int screen_height = this->frame_buffer->GetHeight();
 
-    vertex.pos.x = (1.0f - vertex.pos.x) * 0.5f * screen_width;
+    vertex.pos.x = (vertex.pos.x + 1.0f) * 0.5f * screen_width;
     vertex.pos.y = (1.0f - vertex.pos.y) * 0.5f * screen_height;
     vertex.pos.z = vertex.pos.z;   // (depth_near = 1, depth_far = -1)
 }
 
-void VertexProcessing::CalculateNormal(Primitives::Triangle& triangle) const
+void VertexProcessing::CalculateTriangleNormal(Primitives::Triangle& triangle) const
 {
     // calculate the normal
     Vector3 edge1 = triangle.v1.pos - triangle.v0.pos;
     Vector3 edge2 = triangle.v2.pos - triangle.v0.pos;
     triangle.normal = glm::normalize(glm::cross(edge1, edge2));
+}
 
-    triangle.v0.normal += triangle.normal;
-    triangle.v1.normal += triangle.normal;
-    triangle.v2.normal += triangle.normal;
+void VertexProcessing::CalculateVerticesNormal(std::vector<Primitives::Vertex>& vertices, const std::vector<uint32_t>& indices) const
+{
+    for (size_t i = 0; i < indices.size(); i += 3)
+    {
+        auto v0 = &vertices[indices[i]];
+        auto v1 = &vertices[indices[i + 1]];
+        auto v2 = &vertices[indices[i + 2]];
+
+        Vector3 edge1 = v1->pos - v0->pos;
+        Vector3 edge2 = v2->pos - v0->pos;
+        auto triangle_normal = glm::normalize(glm::cross(edge1, edge2));
+        
+        v0->normal += triangle_normal;
+        v1->normal += triangle_normal;
+        v2->normal += triangle_normal;
+    }
+
+    for (size_t i = 0; i < vertices.size(); ++i)
+    {
+        // Normalize the normal of all the vertices
+        vertices[i].normal = glm::normalize(vertices[i].normal);
+    }
 }
 
 void VertexProcessing::FlatShading(Primitives::Triangle& triangle) const
 {
+    Vector3 view_dir = -glm::normalize(this->camera_ptr->look_at);
+    Vector3 light_dir = -glm::normalize(this->light_ptr->dir);
+
     // ambient
     Color ambient = this->light_ptr->ambient_intensity * this->material_ptr->diffuse_color;
 
     // diffuse
-    float diff = std::max(0.0f, glm::dot(triangle.normal, this->light_ptr->dir));
+    float diff = std::max(0.0f, glm::dot(triangle.normal, light_dir));
     Color diffuse = this->light_ptr->diffuse_intensity * (material_ptr->diffuse_color * diff);
 
     // highlight
-    Vector3 halfway_dir = glm::normalize(this->light_ptr->dir + this->camera_ptr->look_at);
+    Vector3 halfway_dir = glm::normalize(light_dir + view_dir);
     float spec = std::pow(std::max(0.0f, glm::dot(triangle.normal, halfway_dir)), material_ptr->shininess);
     Color specular = this->light_ptr->specular_intensity * (this->material_ptr->specular_color * spec);
 
@@ -300,19 +323,22 @@ void VertexProcessing::FlatShading(Primitives::Triangle& triangle) const
     triangle.v2.color = final_color;
 }
 
-void VertexProcessing::GourandShading(Primitives::Triangle& triangle) const
+void VertexProcessing::GourandShading(Primitives::Vertex& vertex) const
 {
+    Vector3 view_dir = -glm::normalize(this->camera_ptr->look_at);
+    Vector3 light_dir = -glm::normalize(this->light_ptr->dir);
+
     // ambient
     Color ambient = this->light_ptr->ambient_intensity * this->material_ptr->diffuse_color;
 
     // diffuse
-    float diff = std::max(0.0f, glm::dot(triangle.normal, this->light_ptr->dir));
+    float diff = std::max(0.0f, glm::dot(vertex.normal, light_dir));
     Color diffuse = this->light_ptr->diffuse_intensity * (material_ptr->diffuse_color * diff);
 
     // highlight
-    Vector3 halfway_dir = glm::normalize(this->light_ptr->dir + this->camera_ptr->look_at);
-    float spec = std::pow(std::max(0.0f, glm::dot(triangle.normal, halfway_dir)), material_ptr->shininess);
+    Vector3 halfway_dir = glm::normalize(light_dir + view_dir);
+    float spec = std::pow(std::max(0.0f, glm::dot(vertex.normal, halfway_dir)), material_ptr->shininess);
     Color specular = this->light_ptr->specular_intensity * (this->material_ptr->specular_color * spec);
 
-    Color final_color = ambient + diffuse + specular;
+    vertex.color = ambient + diffuse + specular;
 }

@@ -6,6 +6,8 @@
 #include <vector>
 #include <algorithm>
 
+#include <core/basic/primitives.h>
+
 using namespace Loader;
 
 void Loader::ParseOBJFile(const std::string& file_path, std::shared_ptr<Resources::Mesh> mesh, int scale)

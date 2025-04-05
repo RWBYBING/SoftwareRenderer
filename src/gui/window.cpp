@@ -574,7 +574,7 @@ void GLFWWindowManager::UpdateController()
         if (ImGui::CollapsingHeader("Shading Settings"))
         {
             // shading mode
-            auto& shading_mode = this->renderer->shading_mode;ImGui::SameLine(0.3f * window_size.x);
+            auto& shading_mode = this->renderer->shading_mode;
             ImGui::AlignTextToFramePadding();
             ImGui::Text("Shading method: ");   ImGui::SameLine(0.3f * window_size.x);
             ImGui::RadioButton("Flat", (int*)&shading_mode, 0);    ImGui::SameLine();

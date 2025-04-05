@@ -26,6 +26,7 @@ namespace Pipeline
         void SetDepthBuffer(std::shared_ptr<Buffer::DepthBuffer> buffer);
         void SetMaterial(std::shared_ptr<Resources::Material> material);
         void SetLight(std::shared_ptr<Resources::Light> light);
+        void SetCamera(std::shared_ptr<Resources::PerspectiveCamera> camera);
 
         // Rasterization processing
         void Rasterize(
@@ -64,6 +65,8 @@ namespace Pipeline
         ) const;
         // Interpolate
         Primitives::Fragment InterpolateFragment(const Primitives::Triangle& tri, float alpha, float beta, float gamma, int x, int y) const;
+        // Phong shading
+        void PhongShading(Primitives::Fragment& frag) const;
         // Depth Test
         bool DepthTest(int x, int y, float depth) const;
 
@@ -73,6 +76,7 @@ namespace Pipeline
         std::shared_ptr<Buffer::DepthBuffer> depth_buffer;      // depth buffer
         std::shared_ptr<Resources::Material> material_ptr;      // material
         std::shared_ptr<Resources::Light> light_ptr;            // light
+        std::shared_ptr<Resources::PerspectiveCamera> camera_ptr;   // camera
     };
 }
 

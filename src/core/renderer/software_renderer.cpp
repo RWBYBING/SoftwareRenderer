@@ -13,8 +13,8 @@ SoftwareRenderer::SoftwareRenderer()
     , camera_mode{CameraMode::Perspective}
     , shading_mode{ShadingMode::Flat}
     , anti_aliasing_mode{AntiAliasingMode::None}
-    , enable_backface_culling{true}
-    , enable_frustum_clipping{true}
+    , enable_backface_culling{false}
+    , enable_frustum_clipping{false}
     , texture_width{0}
     , texture_height{0}
     , triangle_num{0}
@@ -67,6 +67,7 @@ void SoftwareRenderer::SetupPipeline()
     this->rasterizer_ptr->SetDepthBuffer(this->depth_buffer_ptr);
     this->rasterizer_ptr->SetMaterial(this->material_ptr);
     this->rasterizer_ptr->SetLight(this->light_ptr);
+    this->rasterizer_ptr->SetCamera(this->perspective_camera_ptr);
 }
 
 GLuint SoftwareRenderer::Render()

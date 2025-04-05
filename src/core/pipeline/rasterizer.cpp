@@ -13,6 +13,9 @@ inline float cross2D(const Vector2& a, const Vector2& b) {
 Rasterizer::Rasterizer()
     : frame_buffer{nullptr}
     , depth_buffer{nullptr}
+    , material_ptr{nullptr}
+    , light_ptr{nullptr}
+    , camera_ptr{nullptr}
 {
 
 }
@@ -37,6 +40,11 @@ void Rasterizer::SetMaterial(std::shared_ptr<Resources::Material> material)
 void Rasterizer::SetLight(std::shared_ptr<Resources::Light> light)
 {
     this->light_ptr = light;
+}
+
+void Rasterizer::SetCamera(std::shared_ptr<Resources::PerspectiveCamera> camera)
+{
+    this->camera_ptr = camera;
 }
 
 void Rasterizer::Rasterize(
@@ -99,6 +107,12 @@ void Rasterizer::Rasterize(
                                     {
                                         // construct the fragment through interpolation
                                         auto fragment = this->InterpolateFragment(triangles[i], alpha, beta, gamma, x, y);
+
+                                        // Phong shading
+                                        if (shading_mode == ShadingMode::Phong)
+                                        {
+                                            this->PhongShading(fragment);
+                                        }
 
                                         // Z-Buffering
                                         if (this->DepthTest(fragment.x, fragment.y, fragment.depth))
@@ -231,7 +245,35 @@ Primitives::Fragment Rasterizer::InterpolateFragment(const Primitives::Triangle&
                    + tri.v1.color * beta
                    + tri.v2.color * gamma;
 
+    // normal interpolation
+    fragment.normal = tri.v0.normal * alpha
+                    + tri.v1.normal * beta
+                    + tri.v2.normal * gamma;
+
     return fragment;
+}
+
+void Rasterizer::PhongShading(Primitives::Fragment& frag) const
+{
+    Vector3 view_dir = -glm::normalize(this->camera_ptr->look_at);
+    Vector3 light_dir = -glm::normalize(this->light_ptr->dir);
+
+    // Normalize the normal
+    frag.normal = glm::normalize(frag.normal);
+
+    // ambient
+    Color ambient = this->light_ptr->ambient_intensity * this->material_ptr->diffuse_color;
+
+    // diffuse
+    float diff = std::max(0.0f, glm::dot(frag.normal, light_dir));
+    Color diffuse = this->light_ptr->diffuse_intensity * (material_ptr->diffuse_color * diff);
+
+    // highlight
+    Vector3 halfway_dir = glm::normalize(light_dir + view_dir);
+    float spec = std::pow(std::max(0.0f, glm::dot(frag.normal, halfway_dir)), material_ptr->shininess);
+    Color specular = this->light_ptr->specular_intensity * (this->material_ptr->specular_color * spec);
+
+    frag.color = ambient + diffuse + specular;
 }
 
 void Rasterizer::WriteFragment2Buffer(const Primitives::Fragment& fragment)

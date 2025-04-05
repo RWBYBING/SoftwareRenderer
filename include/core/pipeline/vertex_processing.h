@@ -48,11 +48,12 @@ namespace Pipeline
         // Map to screen space
         void ViewportTransformation(Primitives::Vertex& vertex) const;
         // Calculate the normal of the triangle and vertices
-        void CalculateNormal(Primitives::Triangle& triangle) const;
+        void CalculateTriangleNormal(Primitives::Triangle& triangle) const;
+        void CalculateVerticesNormal(std::vector<Primitives::Vertex>& vertices, const std::vector<uint32_t>& indices) const;
         // Flat Shading
         void FlatShading(Primitives::Triangle& triangle) const;
         // Gourand Shading
-        void GourandShading(Primitives::Triangle& triangle) const;
+        void GourandShading(Primitives::Vertex& vertex) const;
 
     private:
         Matrix4x4 model_matrix;

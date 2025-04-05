@@ -79,9 +79,9 @@ Matrix4x4 OrthographicCamera::GetProjectionMatrix() const
 Matrix4x4 PerspectiveCamera::GetViewMatrix() const 
 {
     // Calculate the forward, right and up vectors
-    Vector3 F = glm::normalize(look_at);                    // Forward
-    Vector3 U = glm::normalize(up);                         // Up
-    Vector3 R = glm::normalize(glm::cross(U, F));           // Right = Up × Forward
+    Vector3 F = glm::normalize(look_at);                    // Forward (-Z)
+    Vector3 U = glm::normalize(up);                         // Up (+Y)
+    Vector3 R = glm::normalize(glm::cross(F, U));           // Right = Up × Forward (+X)
 
     // build the rotation matrix
     Matrix4x4 view_rotation = Matrix4x4(1.0f);
