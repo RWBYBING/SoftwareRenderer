@@ -14,8 +14,8 @@ namespace Buffer
         FrameBuffer() = delete;
         ~FrameBuffer();
 
-        Vector4 GetPixel(int x, int y) const;                           // Get pixel
-        void SetPixel(int x, int y, const Vector4& color);              // Set pixel
+        Color GetPixel(int x, int y) const;                             // Get pixel
+        void SetPixel(int x, int y, const Color& color);                // Set pixel
         void Clear();                                                   // Clear buffer
         
         int GetWidth() const;                                           // Get buffer height
@@ -24,6 +24,13 @@ namespace Buffer
         void SetHeight(int height);                                     // Set buffer height
         void ResizeBuffer();                                            // Resize the buffer
         float* GetBuffer();                                             // Get the raw data
+
+        // FXAA
+        void ApplyFXAA(float edgeThreshold = 0.166f, float edgeThresholdMin = 0.0833f);
+
+    private:
+        // Calculate Luma
+        float CalculateLuma(const Color& color) const;
 
     private:
         int width;

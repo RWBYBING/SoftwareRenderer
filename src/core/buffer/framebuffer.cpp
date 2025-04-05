@@ -14,11 +14,11 @@ FrameBuffer::FrameBuffer(int width, int height)
 
 FrameBuffer::~FrameBuffer() = default;
 
-Vector4 FrameBuffer::GetPixel(int x, int y) const
+Color FrameBuffer::GetPixel(int x, int y) const
 {
     if (x >= 0 && x < this->width && y >= 0 && y < this->height) 
     {
-        Vector4 result;
+        Color result;
         result.x = this->data.at((y * width + x) * 4);
         result.y = this->data.at((y * width + x) * 4 + 1);
         result.z = this->data.at((y * width + x) * 4 + 2);
@@ -26,10 +26,10 @@ Vector4 FrameBuffer::GetPixel(int x, int y) const
 
         return result;
     }
-    return Vector4{0.0f, 0.0f, 0.0f, 1.0f};
+    return Color{0.0f, 0.0f, 0.0f, 1.0f};
 }
 
-void FrameBuffer::SetPixel(int x, int y, const Vector4& color)
+void FrameBuffer::SetPixel(int x, int y, const Color& color)
 {
     if (x >= 0 && x < this->width && y >= 0 && y < this->height)
     {
@@ -76,4 +76,57 @@ void FrameBuffer::ResizeBuffer()
 float* FrameBuffer::GetBuffer()
 {
     return this->data.data();
+}
+
+void FrameBuffer::ApplyFXAA(float edgeThreshold, float edgeThresholdMin)
+{
+    std::vector<float> tempData(data.size());
+
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            // Current Pixel and the adjacent 8 pixels
+            Vector4 colorCenter = GetPixel(x, y);
+            Vector4 colorNW = GetPixel(x - 1, y + 1);
+            Vector4 colorNE = GetPixel(x + 1, y + 1);
+            Vector4 colorSW = GetPixel(x - 1, y - 1);
+            Vector4 colorSE = GetPixel(x + 1, y - 1);
+
+            // Calculate luma
+            float lumaCenter = CalculateLuma(colorCenter);
+            float lumaNW = CalculateLuma(colorNW);
+            float lumaNE = CalculateLuma(colorNE);
+            float lumaSW = CalculateLuma(colorSW);
+            float lumaSE = CalculateLuma(colorSE);
+
+            // Edge detection
+            float lumaMin = std::min(lumaCenter, std::min(std::min(lumaNW, lumaNE), std::min(lumaSW, lumaSE)));
+            float lumaMax = std::max(lumaCenter, std::max(std::max(lumaNW, lumaNE), std::max(lumaSW, lumaSE)));
+            float lumaRange = lumaMax - lumaMin;
+
+            // determine if to execute FXAA or not
+            if (lumaRange < std::max(edgeThresholdMin, lumaMax * edgeThreshold)) {
+                tempData[(y * width + x) * 4 + 0] = colorCenter.x;
+                tempData[(y * width + x) * 4 + 1] = colorCenter.y;
+                tempData[(y * width + x) * 4 + 2] = colorCenter.z;
+                tempData[(y * width + x) * 4 + 3] = colorCenter.w;
+                continue;
+            }
+
+            // Blend adjacent color
+            Vector4 blendedColor = (colorCenter + colorNW + colorNE + colorSW + colorSE) / 5.0f;
+            
+            // save data to the temp
+            tempData[(y * width + x) * 4 + 0] = blendedColor.x;
+            tempData[(y * width + x) * 4 + 1] = blendedColor.y;
+            tempData[(y * width + x) * 4 + 2] = blendedColor.z;
+            tempData[(y * width + x) * 4 + 3] = blendedColor.w;
+        }
+    }
+
+    data = std::move(tempData);
+}
+
+float FrameBuffer::CalculateLuma(const Color& color) const
+{
+    return 0.299f * color.x + 0.587f * color.y + 0.114f * color.z;
 }

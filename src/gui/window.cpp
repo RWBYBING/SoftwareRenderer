@@ -589,7 +589,7 @@ void GLFWWindowManager::UpdateController()
             ImGui::AlignTextToFramePadding();
             ImGui::Text("Anti-aliasing Mode: ");    ImGui::SameLine(0.3f * window_size.x);
             ImGui::RadioButton("None", (int*)&anti_aliasing_mode, 0);   ImGui::SameLine();
-            ImGui::RadioButton("MSAA", (int*)&anti_aliasing_mode, 1);   ImGui::SameLine();
+            ImGui::RadioButton("MSAA(2x2)", (int*)&anti_aliasing_mode, 1);   ImGui::SameLine();
             ImGui::RadioButton("FXAA", (int*)&anti_aliasing_mode, 2);   
         }
         ImGui::EndDisabled();

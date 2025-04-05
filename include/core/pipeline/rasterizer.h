@@ -37,6 +37,7 @@ namespace Pipeline
         );
 
     private:
+        // Buffer operation
         void WriteFragment2Buffer(const Primitives::Fragment& fragment);
 
     // vertices rasterization
@@ -69,6 +70,10 @@ namespace Pipeline
         void PhongShading(Primitives::Fragment& frag) const;
         // Depth Test
         bool DepthTest(int x, int y, float depth) const;
+        // MSAA
+        void ApplyMSAA();
+        Vector4 ResolveMSAAColor(int x, int y) const;       // Blend sub-sample colors
+        bool IsEdgePixel(int x, int y) const;               // Detect geometric edges
 
 
     private:
@@ -77,6 +82,8 @@ namespace Pipeline
         std::shared_ptr<Resources::Material> material_ptr;      // material
         std::shared_ptr<Resources::Light> light_ptr;            // light
         std::shared_ptr<Resources::PerspectiveCamera> camera_ptr;   // camera
+
+        std::vector<Vector2> msaa_sample_offsets;  // Sub-pixel offsets
     };
 }
 
