@@ -1,5 +1,9 @@
 #include <core/buffer/framebuffer.h>
 
+#include <tbb/parallel_for.h>
+#include <tbb/concurrent_vector.h>
+#include <tbb/blocked_range2d.h>
+
 #include <cassert>
 #include <cstring>
 
@@ -82,46 +86,51 @@ void FrameBuffer::ApplyFXAA(float edgeThreshold, float edgeThresholdMin)
 {
     std::vector<float> tempData(data.size());
 
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            // Current Pixel and the adjacent 8 pixels
-            Vector4 colorCenter = GetPixel(x, y);
-            Vector4 colorNW = GetPixel(x - 1, y + 1);
-            Vector4 colorNE = GetPixel(x + 1, y + 1);
-            Vector4 colorSW = GetPixel(x - 1, y - 1);
-            Vector4 colorSE = GetPixel(x + 1, y - 1);
-
-            // Calculate luma
-            float lumaCenter = CalculateLuma(colorCenter);
-            float lumaNW = CalculateLuma(colorNW);
-            float lumaNE = CalculateLuma(colorNE);
-            float lumaSW = CalculateLuma(colorSW);
-            float lumaSE = CalculateLuma(colorSE);
-
-            // Edge detection
-            float lumaMin = std::min(lumaCenter, std::min(std::min(lumaNW, lumaNE), std::min(lumaSW, lumaSE)));
-            float lumaMax = std::max(lumaCenter, std::max(std::max(lumaNW, lumaNE), std::max(lumaSW, lumaSE)));
-            float lumaRange = lumaMax - lumaMin;
-
-            // determine if to execute FXAA or not
-            if (lumaRange < std::max(edgeThresholdMin, lumaMax * edgeThreshold)) {
-                tempData[(y * width + x) * 4 + 0] = colorCenter.x;
-                tempData[(y * width + x) * 4 + 1] = colorCenter.y;
-                tempData[(y * width + x) * 4 + 2] = colorCenter.z;
-                tempData[(y * width + x) * 4 + 3] = colorCenter.w;
-                continue;
+    tbb::parallel_for(tbb::blocked_range2d<int>(0, height, 0, width),
+        [&](const tbb::blocked_range2d<int>& range) {
+            for (int y = range.rows().begin(); y < range.rows().end(); ++y) {
+                for (int x = range.cols().begin(); x < range.cols().end(); ++x) {
+                    // Current Pixel and the adjacent 8 pixels
+                    Vector4 colorCenter = GetPixel(x, y);
+                    Vector4 colorNW = GetPixel(x - 1, y + 1);
+                    Vector4 colorNE = GetPixel(x + 1, y + 1);
+                    Vector4 colorSW = GetPixel(x - 1, y - 1);
+                    Vector4 colorSE = GetPixel(x + 1, y - 1);
+        
+                    // Calculate luma
+                    float lumaCenter = CalculateLuma(colorCenter);
+                    float lumaNW = CalculateLuma(colorNW);
+                    float lumaNE = CalculateLuma(colorNE);
+                    float lumaSW = CalculateLuma(colorSW);
+                    float lumaSE = CalculateLuma(colorSE);
+        
+                    // Edge detection
+                    float lumaMin = std::min(lumaCenter, std::min(std::min(lumaNW, lumaNE), std::min(lumaSW, lumaSE)));
+                    float lumaMax = std::max(lumaCenter, std::max(std::max(lumaNW, lumaNE), std::max(lumaSW, lumaSE)));
+                    float lumaRange = lumaMax - lumaMin;
+        
+                    // determine if to execute FXAA or not
+                    if (lumaRange < std::max(edgeThresholdMin, lumaMax * edgeThreshold)) {
+                        tempData[(y * width + x) * 4 + 0] = colorCenter.x;
+                        tempData[(y * width + x) * 4 + 1] = colorCenter.y;
+                        tempData[(y * width + x) * 4 + 2] = colorCenter.z;
+                        tempData[(y * width + x) * 4 + 3] = colorCenter.w;
+                        continue;
+                    }
+        
+                    // Blend adjacent color
+                    Vector4 blendedColor = (colorCenter + colorNW + colorNE + colorSW + colorSE) / 5.0f;
+                    
+                    // save data to the temp
+                    tempData[(y * width + x) * 4 + 0] = blendedColor.x;
+                    tempData[(y * width + x) * 4 + 1] = blendedColor.y;
+                    tempData[(y * width + x) * 4 + 2] = blendedColor.z;
+                    tempData[(y * width + x) * 4 + 3] = blendedColor.w;
+                }
             }
-
-            // Blend adjacent color
-            Vector4 blendedColor = (colorCenter + colorNW + colorNE + colorSW + colorSE) / 5.0f;
-            
-            // save data to the temp
-            tempData[(y * width + x) * 4 + 0] = blendedColor.x;
-            tempData[(y * width + x) * 4 + 1] = blendedColor.y;
-            tempData[(y * width + x) * 4 + 2] = blendedColor.z;
-            tempData[(y * width + x) * 4 + 3] = blendedColor.w;
         }
-    }
+    );
+
 
     data = std::move(tempData);
 }
