@@ -66,6 +66,7 @@ namespace Pipeline
         ) const;
         // Interpolate
         Primitives::Fragment InterpolateFragment(const Primitives::Triangle& tri, float alpha, float beta, float gamma, int x, int y) const;
+        float InterpolateDepth(const Primitives::Triangle& tri, float alpha, float beta, float gamma) const;
         // Phong shading
         void PhongShading(Primitives::Fragment& frag) const;
         // Depth Test

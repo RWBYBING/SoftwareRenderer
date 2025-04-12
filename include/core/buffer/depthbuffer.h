@@ -2,6 +2,7 @@
 #define CORE_BUFFER_DEPTHBUFFER_H
 
 #include <vector>
+#include <array>
 
 namespace Buffer
 {
@@ -22,10 +23,16 @@ namespace Buffer
         void SetHeight(int height);                                     // Set buffer height
         void ResizeBuffer();                                            // Resize the buffer memory
 
+        // MSAA related funcs
+        void SetSample(int x, int y, int sampleIdx, float depth);       // Set the depth of the sub-sample of a pixel
+        int GetCoverage(int x, int y, float currentDepth) const;        // Get the coverage of the current pixel
+        void ClearSample(float default_depth = -1.0f);                  // Clear the sample buffer
+
     private:
         int width;
         int height;
-        std::vector<float> data;                                       // store the value of depth
+        std::vector<float> data;                                        // store the value of depth
+        std::vector<std::array<float, 4>> samples;                      // store the depth for MSAA Anti-aliasing
     };
 }
 

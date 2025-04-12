@@ -318,6 +318,11 @@ void VertexProcessing::FlatShading(Primitives::Triangle& triangle) const
 
     Color final_color = ambient + diffuse + specular;
 
+    final_color.r = glm::clamp(final_color.r, 0.0f, 1.0f);
+    final_color.g = glm::clamp(final_color.g, 0.0f, 1.0f);
+    final_color.b = glm::clamp(final_color.b, 0.0f, 1.0f);
+    final_color.a = 1.0f;
+
     triangle.v0.color = final_color;
     triangle.v1.color = final_color;
     triangle.v2.color = final_color;
@@ -340,5 +345,12 @@ void VertexProcessing::GourandShading(Primitives::Vertex& vertex) const
     float spec = std::pow(std::max(0.0f, glm::dot(vertex.normal, halfway_dir)), material_ptr->shininess);
     Color specular = this->light_ptr->specular_intensity * (this->material_ptr->specular_color * spec);
 
-    vertex.color = ambient + diffuse + specular;
+    Color final_color = ambient + diffuse + specular;
+
+    final_color.r = glm::clamp(final_color.r, 0.0f, 1.0f);
+    final_color.g = glm::clamp(final_color.g, 0.0f, 1.0f);
+    final_color.b = glm::clamp(final_color.b, 0.0f, 1.0f);
+    final_color.a = 1.0f;
+
+    vertex.color = final_color;
 }

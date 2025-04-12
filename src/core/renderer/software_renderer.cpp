@@ -74,6 +74,10 @@ GLuint SoftwareRenderer::Render()
 {
     this->frame_buffer_ptr->Clear();
     this->depth_buffer_ptr->Clear();
+    if (this->anti_aliasing_mode == AntiAliasingMode::MSAA_NO_BLACK_EDGE)
+    {
+        this->depth_buffer_ptr->ClearSample();
+    }
 
     // Utils::GlobalTimer::Instance().Start();
     // 1. Vertex Processing

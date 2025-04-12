@@ -50,7 +50,8 @@ enum ShadingMode
 enum AntiAliasingMode
 {
     None,
-    MSAA,
+    MSAA_WITH_BLACK_EDGE,
+    MSAA_NO_BLACK_EDGE,
     FXAA
 };
 

@@ -103,40 +103,38 @@ void Rasterizer::Rasterize(
                         this->CalculateBoundingBox(triangles[i], min_x, max_x, min_y, max_y);
 
                         // iterate all the pixel in the bounding box
-                        tbb::parallel_for(tbb::blocked_range2d<int>(min_y, max_y, min_x, max_x),
-                            [&](const tbb::blocked_range2d<int>& range) {
-                                for (int y = range.rows().begin(); y != range.rows().end(); ++y) {
-                                    for (int x = range.cols().begin(); x != range.cols().end(); ++x) {
-                                        Vector2 P(x + 0.5f, y + 0.5f);
-                                        float alpha, beta, gamma;
-                                        // Determine if this pixel is inside the triangle
-                                        if (this->BarycentricCoordinates(P, screen_pos[0], screen_pos[1], screen_pos[2], alpha, beta, gamma))
-                                        {
-                                            // construct the fragment through interpolation
-                                            auto fragment = this->InterpolateFragment(triangles[i], alpha, beta, gamma, x, y);
+                        for (int y = min_y; y < max_y; ++y)
+                        {
+                            for (int x = min_x; x < max_x; ++x)
+                            {
+                                Vector2 P(x + 0.5f, y + 0.5f);
+                                float alpha, beta, gamma;
+                                // Determine if this pixel is inside the triangle
+                                if (this->BarycentricCoordinates(P, screen_pos[0], screen_pos[1], screen_pos[2], alpha, beta, gamma))
+                                {
+                                    // construct the fragment through interpolation
+                                    auto fragment = this->InterpolateFragment(triangles[i], alpha, beta, gamma, x, y);
 
-                                            // Phong shading
-                                            if (shading_mode == ShadingMode::Phong)
-                                            {
-                                                this->PhongShading(fragment);
-                                            }
+                                    // Phong shading
+                                    if (shading_mode == ShadingMode::Phong)
+                                    {
+                                        this->PhongShading(fragment);
+                                    }
 
-                                            // Z-Buffering
-                                            if (this->DepthTest(fragment.x, fragment.y, fragment.depth))
-                                            {
-                                                this->WriteFragment2Buffer(fragment);
-                                            }
-                                        }
+                                    // Z-Buffering
+                                    if (this->DepthTest(fragment.x, fragment.y, fragment.depth))
+                                    {
+                                        this->WriteFragment2Buffer(fragment);
                                     }
                                 }
                             }
-                        );
+                        }
                     }
                 }
             );
         }
 
-        else if (anti_aliasing_mode == AntiAliasingMode::MSAA)
+        else if (anti_aliasing_mode == AntiAliasingMode::MSAA_WITH_BLACK_EDGE)
         {
             // process triangle parallelly
             tbb::parallel_for(tbb::blocked_range<size_t>(0, triangles.size()),
@@ -153,46 +151,119 @@ void Rasterizer::Rasterize(
                         int min_x, max_x, min_y, max_y;
                         this->CalculateBoundingBox(triangles[i], min_x, max_x, min_y, max_y);
 
-                        // iterate all the pixel in the bounding box
-                        tbb::parallel_for(tbb::blocked_range2d<int>(min_y, max_y, min_x, max_x),
-                            [&](const tbb::blocked_range2d<int>& range) {
-                                for (int y = range.rows().begin(); y != range.rows().end(); ++y) {
-                                    for (int x = range.cols().begin(); x != range.cols().end(); ++x) {
-                                        int num = 0;
-                                        float alpha, beta, gamma;
-                                        for (int k = 0; k < 4; ++k)
-                                        {
-                                            Vector2 P(x + msaa_sample_offsets[k].x, y + msaa_sample_offsets[k].y);
-                                            if (this->BarycentricCoordinates(P, screen_pos[0], screen_pos[1], screen_pos[2], alpha, beta, gamma))
-                                            {
-                                                num++;
-                                            }
-                                        }
+                        for (int y = min_y; y < max_y; ++y)
+                        {
+                            for (int x = min_x; x < max_x; ++x)
+                            {
+                                int num = 0;
+                                float alpha, beta, gamma;
+                                for (int k = 0; k < 4; ++k)
+                                {
+                                    Vector2 P(x + msaa_sample_offsets[k].x, y + msaa_sample_offsets[k].y);
+                                    if (this->BarycentricCoordinates(P, screen_pos[0], screen_pos[1], screen_pos[2], alpha, beta, gamma))
+                                    {
+                                        num++;
+                                    }
+                                }
 
-                                        if (num > 0)
-                                        {
-                                            // construct the fragment through interpolation
-                                            auto fragment = this->InterpolateFragment(triangles[i], alpha, beta, gamma, x, y);
-                            
-                                            // Phong shading
-                                            if (shading_mode == ShadingMode::Phong)
-                                            {
-                                                this->PhongShading(fragment);
-                                            }
-                            
-                                            // Z-Buffering
-                                            if (this->DepthTest(fragment.x, fragment.y, fragment.depth))
-                                            {
-                                                fragment.color.x *= (num / 4);
-                                                fragment.color.y *= (num / 4);
-                                                fragment.color.z *= (num / 4);
-                                                this->WriteFragment2Buffer(fragment);
-                                            }
-                                        }
+                                if (num > 0)
+                                {
+                                    // construct the fragment through interpolation
+                                    auto fragment = this->InterpolateFragment(triangles[i], alpha, beta, gamma, x, y);
+
+                                    // Phong shading
+                                    if (shading_mode == ShadingMode::Phong)
+                                    {
+                                        this->PhongShading(fragment);
+                                    }
+                    
+                                    // Z-Buffering
+                                    if (this->DepthTest(fragment.x, fragment.y, fragment.depth))
+                                    {
+                                        fragment.color.x = fragment.color.x * num * 0.25;
+                                        fragment.color.y = fragment.color.y * num * 0.25;
+                                        fragment.color.z = fragment.color.z * num * 0.25;
+                                        this->WriteFragment2Buffer(fragment);
                                     }
                                 }
                             }
-                        );
+                        }
+                    }
+                }
+            );
+        }
+
+        else if (anti_aliasing_mode == AntiAliasingMode::MSAA_NO_BLACK_EDGE)
+        {
+            // process triangle parallelly
+            tbb::parallel_for(tbb::blocked_range<size_t>(0, triangles.size()),
+                [&](const tbb::blocked_range<size_t>& range) {
+                    for (size_t i = range.begin(); i != range.end(); ++i) {
+                        // Get screen pos for each vertex in the triangle
+                        Vector2 screen_pos[3] = {
+                            Vector2{triangles[i].v0.pos.x, triangles[i].v0.pos.y},
+                            Vector2{triangles[i].v1.pos.x, triangles[i].v1.pos.y},
+                            Vector2{triangles[i].v2.pos.x, triangles[i].v2.pos.y},
+                        };
+                        
+                        // calculate the bounding box
+                        int min_x, max_x, min_y, max_y;
+                        this->CalculateBoundingBox(triangles[i], min_x, max_x, min_y, max_y);
+
+                        // Pass 1
+                        for (int y = min_y; y < max_y; ++y)
+                        {
+                            for (int x = min_x; x < max_x; ++x)
+                            {
+                                float alpha, beta, gamma;
+                                for (int k = 0; k < 4; ++k)
+                                {
+                                    Vector2 P(x + msaa_sample_offsets[k].x, y + msaa_sample_offsets[k].y);
+                                    if (this->BarycentricCoordinates(P, screen_pos[0], screen_pos[1], screen_pos[2], alpha, beta, gamma))
+                                    {
+                                        // construct the fragment through interpolation
+                                        auto fragment = this->InterpolateFragment(triangles[i], alpha, beta, gamma, x, y);
+                                        // float depth = this->InterpolateDepth(triangles[i], alpha, beta, gamma);
+                                        this->depth_buffer->SetSample(x, y, k, fragment.depth);
+                                    }
+                                }
+
+                                
+                            }
+                        }
+
+                        // // Pass 2
+                        // for (int y = min_y; y < max_y; ++y)
+                        // {
+                        //     for (int x = min_x; x < max_x; ++x)
+                        //     {
+                        //         float alpha, beta, gamma;
+                        //         Vector2 P(x + 0.5, y + 0.5);
+                        //         if (this->BarycentricCoordinates(P, screen_pos[0], screen_pos[1], screen_pos[2], alpha, beta, gamma))
+                        //         {
+                        //             // construct the fragment through interpolation
+                        //             auto fragment = this->InterpolateFragment(triangles[i], alpha, beta, gamma, x, y);
+                                    
+                        //             int num = this->depth_buffer->GetCoverage(x, y, fragment.depth);
+
+                        //             if (num > 0)
+                        //             {
+                        //                 // Phong shading
+                        //                 if (shading_mode == ShadingMode::Phong)
+                        //                 {
+                        //                     this->PhongShading(fragment);
+                        //                 }
+
+                        //                 Color background_color = this->frame_buffer->GetPixel(x, y);
+                        //                 fragment.color = fragment.color * (num / 4.0f) + background_color * (1.0f - num / 4.0f);
+                        //                 // fragment.color.x = fragment.color.x * num * 0.25;
+                        //                 // fragment.color.y = fragment.color.y * num * 0.25;
+                        //                 // fragment.color.z = fragment.color.z * num * 0.25;
+                        //                 this->WriteFragment2Buffer(fragment);
+                        //             }
+                        //         }
+                        //     }
+                        // }
                     }
                 }
             );
@@ -217,34 +288,32 @@ void Rasterizer::Rasterize(
                         this->CalculateBoundingBox(triangles[i], min_x, max_x, min_y, max_y);
 
                         // iterate all the pixel in the bounding box
-                        tbb::parallel_for(tbb::blocked_range2d<int>(min_y, max_y, min_x, max_x),
-                            [&](const tbb::blocked_range2d<int>& range) {
-                                for (int y = range.rows().begin(); y != range.rows().end(); ++y) {
-                                    for (int x = range.cols().begin(); x != range.cols().end(); ++x) {
-                                        Vector2 P(x + 0.5f, y + 0.5f);
-                                        float alpha, beta, gamma;
-                                        // Determine if this pixel is inside the triangle
-                                        if (this->BarycentricCoordinates(P, screen_pos[0], screen_pos[1], screen_pos[2], alpha, beta, gamma))
-                                        {
-                                            // construct the fragment through interpolation
-                                            auto fragment = this->InterpolateFragment(triangles[i], alpha, beta, gamma, x, y);
+                        for (int y = min_y; y < max_y; ++y)
+                        {
+                            for (int x = min_x; x < max_x; ++x)
+                            {
+                                Vector2 P(x + 0.5f, y + 0.5f);
+                                float alpha, beta, gamma;
+                                // Determine if this pixel is inside the triangle
+                                if (this->BarycentricCoordinates(P, screen_pos[0], screen_pos[1], screen_pos[2], alpha, beta, gamma))
+                                {
+                                    // construct the fragment through interpolation
+                                    auto fragment = this->InterpolateFragment(triangles[i], alpha, beta, gamma, x, y);
 
-                                            // Phong shading
-                                            if (shading_mode == ShadingMode::Phong)
-                                            {
-                                                this->PhongShading(fragment);
-                                            }
+                                    // Phong shading
+                                    if (shading_mode == ShadingMode::Phong)
+                                    {
+                                        this->PhongShading(fragment);
+                                    }
 
-                                            // Z-Buffering
-                                            if (this->DepthTest(fragment.x, fragment.y, fragment.depth))
-                                            {
-                                                this->WriteFragment2Buffer(fragment);
-                                            }
-                                        }
+                                    // Z-Buffering
+                                    if (this->DepthTest(fragment.x, fragment.y, fragment.depth))
+                                    {
+                                        this->WriteFragment2Buffer(fragment);
                                     }
                                 }
                             }
-                        );
+                        }
                     }
                 }
             );
@@ -377,6 +446,11 @@ Primitives::Fragment Rasterizer::InterpolateFragment(const Primitives::Triangle&
     return fragment;
 }
 
+float Rasterizer::InterpolateDepth(const Primitives::Triangle& tri, float alpha, float beta, float gamma) const
+{
+    return alpha * tri.v0.pos.z + beta * tri.v1.pos.z + gamma * tri.v2.pos.z;
+}
+
 void Rasterizer::PhongShading(Primitives::Fragment& frag) const
 {
     Vector3 view_dir = -glm::normalize(this->camera_ptr->look_at);
@@ -397,7 +471,14 @@ void Rasterizer::PhongShading(Primitives::Fragment& frag) const
     float spec = std::pow(std::max(0.0f, glm::dot(frag.normal, halfway_dir)), material_ptr->shininess);
     Color specular = this->light_ptr->specular_intensity * (this->material_ptr->specular_color * spec);
 
-    frag.color = ambient + diffuse + specular;
+    Color final_color = ambient + diffuse + specular;
+
+    final_color.r = glm::clamp(final_color.r, 0.0f, 1.0f);
+    final_color.g = glm::clamp(final_color.g, 0.0f, 1.0f);
+    final_color.b = glm::clamp(final_color.b, 0.0f, 1.0f);
+    final_color.a = 1.0f;
+
+    frag.color = final_color;
 }
 
 void Rasterizer::WriteFragment2Buffer(const Primitives::Fragment& fragment)

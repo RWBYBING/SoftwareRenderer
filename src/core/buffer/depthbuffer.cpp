@@ -10,6 +10,7 @@ DepthBuffer::DepthBuffer(int width, int height)
     , height{height}
 {
     this->data.resize(width * height, -1.0f);
+    this->samples.resize(width * height, {-1.0f, -1.0f, -1.0f, -1.0f});
 }
 
 DepthBuffer::~DepthBuffer() = default;
@@ -20,7 +21,7 @@ float DepthBuffer::GetDepth(int x, int y) const
     {
         return this->data[y * this->width + x];
     }
-    return 1.0;
+    return -1.0;
 }
 
 void DepthBuffer::SetDepth(int x, int y, float depth)
@@ -34,6 +35,15 @@ void DepthBuffer::SetDepth(int x, int y, float depth)
 void DepthBuffer::Clear(float default_depth)
 {
     std::fill(this->data.begin(), this->data.end(), default_depth);
+}
+
+void DepthBuffer::ClearSample(float default_depth)
+{
+    std::fill(
+        this->samples.begin(),
+        this->samples.end(),
+        std::array<float, 4>{default_depth, default_depth, default_depth, default_depth}
+    );
 }
 
 int DepthBuffer::GetWidth() const
@@ -58,5 +68,25 @@ void DepthBuffer::SetHeight(int height)
 
 void DepthBuffer::ResizeBuffer()
 {
-    this->data.resize(this->width * this->height, -1.0f);
+    this->data.resize(width * height, -1.0f);
+    this->samples.resize(width * height, {-1.0f, -1.0f, -1.0f, -1.0f});
+}
+
+void DepthBuffer::SetSample(int x, int y, int sampleIdx, float depth)
+{
+
+    this->samples[y * this->width + x][sampleIdx] = depth;
+}
+
+int DepthBuffer::GetCoverage(int x, int y, float currentDepth) const
+{
+    int count = 0;
+    for (int k = 0; k < 4; ++k) {
+        if (currentDepth <= samples[y * width + x][k]) 
+        {
+            count++;
+        }
+    }
+
+    return count;
 }
