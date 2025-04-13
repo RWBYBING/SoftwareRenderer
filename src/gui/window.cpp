@@ -279,6 +279,15 @@ void GLFWWindowManager::UpdateController()
             this->renderer->ReloadMesh();
         }
 
+        static bool display_mode = false;
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("Display mode: ");  ImGui::SameLine();
+        ImGui::Checkbox("##display", &display_mode);
+        if (display_mode)
+        {
+            this->renderer->HandleMeshRotation(0.2, 0);
+        }
+
         ImGui::Text("Rendering Parameters: ");
 
         if (ImGui::CollapsingHeader("Model Settings"))

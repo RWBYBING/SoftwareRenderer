@@ -7,3 +7,4 @@ Yet I firmly believe that implementing such a rendering pipeline from scratch re
 
 Here are the actual rendering results from this software:
 
+<img src="doc/intro.gif" alt="Intro GIF" width="50%" height="50%" />
