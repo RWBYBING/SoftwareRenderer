@@ -6,5 +6,3 @@ I’m excited to introduce this software rasterizer (I haven’t decided on a na
 Yet I firmly believe that implementing such a rendering pipeline from scratch remains absolutely essential—what I consider a rite of passage for every computer graphics practitioner. Through this process, we materialize every mathematical concept in rendering through self-developed code, which profoundly deepens our understanding of the entire rasterization pipeline and establishes an unshakable foundation.
 
 Here are the actual rendering results from this software:
-
-<video src="doc/intro.webm" controls width="100%"></video>
