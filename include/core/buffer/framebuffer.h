@@ -2,6 +2,7 @@
 #define CORE_BUFFER_FRAMEBUFFER_H
 
 #include <vector>
+#include <memory>
 
 #include <core/basic/primitives.h>
 
@@ -28,6 +29,11 @@ namespace Buffer
         // FXAA
         void ApplyFXAA(float edgeThreshold = 0.166f, float edgeThresholdMin = 0.0833f);
 
+        // MSAA
+        void SetSample(int x, int y, int sampleIdx, Color color);       // Set the color of the sub-sample of a pixel
+        Color GetSample(int x, int y, int sampleIdx);                   // Get the color of the sub-sample of a pixel
+        void ClearSample();                                             // Clear the sample buffer
+
     private:
         // Calculate Luma
         float CalculateLuma(const Color& color) const;
@@ -36,6 +42,7 @@ namespace Buffer
         int width;
         int height;
         std::vector<float> data;
+        std::vector<std::array<Color, 4>> samples;                     
     };
 }
 

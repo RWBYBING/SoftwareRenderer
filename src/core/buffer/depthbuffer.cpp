@@ -74,19 +74,23 @@ void DepthBuffer::ResizeBuffer()
 
 void DepthBuffer::SetSample(int x, int y, int sampleIdx, float depth)
 {
-
     this->samples[y * this->width + x][sampleIdx] = depth;
 }
 
-int DepthBuffer::GetCoverage(int x, int y, float currentDepth) const
+float DepthBuffer::GetSample(int x, int y, int sampleIdx)
 {
-    int count = 0;
-    for (int k = 0; k < 4; ++k) {
-        if (currentDepth <= samples[y * width + x][k]) 
-        {
-            count++;
-        }
-    }
-
-    return count;
+    return this->samples[y * this->width + x][sampleIdx];
 }
+
+// int DepthBuffer::GetCoverage(int x, int y, float currentDepth) const
+// {
+//     int count = 0;
+//     for (int k = 0; k < 4; ++k) {
+//         if (currentDepth <= samples[y * width + x][k]) 
+//         {
+//             count++;
+//         }
+//     }
+
+//     return count;
+// }

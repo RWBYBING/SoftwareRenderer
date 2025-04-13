@@ -39,6 +39,7 @@ namespace Pipeline
     private:
         // Buffer operation
         void WriteFragment2Buffer(const Primitives::Fragment& fragment);
+        void WriteColor2Buffer(int x, int y, const Color color);
 
     // vertices rasterization
     private:
@@ -71,11 +72,7 @@ namespace Pipeline
         void PhongShading(Primitives::Fragment& frag) const;
         // Depth Test
         bool DepthTest(int x, int y, float depth) const;
-        // MSAA
-        void ApplyMSAA();
-        Vector4 ResolveMSAAColor(int x, int y) const;       // Blend sub-sample colors
-        bool IsEdgePixel(int x, int y) const;               // Detect geometric edges
-
+        bool DepthTest(float sample_depth, float current_depth) const;
 
     private:
         std::shared_ptr<Buffer::FrameBuffer> frame_buffer;      // frame buffer

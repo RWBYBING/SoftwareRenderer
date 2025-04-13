@@ -14,6 +14,15 @@ FrameBuffer::FrameBuffer(int width, int height)
     , height{height}
 {
     this->data.resize(this->width * this->height * 4, 0.0f);
+    this->samples.resize(
+        this->width * this->height,
+        {
+            Color{0.0f, 0.0f, 0.0f, 1.0f},
+            Color{0.0f, 0.0f, 0.0f, 1.0f},
+            Color{0.0f, 0.0f, 0.0f, 1.0f},
+            Color{0.0f, 0.0f, 0.0f, 1.0f}
+        }
+    );
 }
 
 FrameBuffer::~FrameBuffer() = default;
@@ -50,6 +59,20 @@ void FrameBuffer::Clear()
     memset(data.data(), 0, data.size() * sizeof(float));
 }
 
+void FrameBuffer::ClearSample()
+{
+    std::fill(
+        this->samples.begin(),
+        this->samples.end(),
+        std::array<Color, 4>{
+            Color{0.0f, 0.0f, 0.0f, 1.0f},
+            Color{0.0f, 0.0f, 0.0f, 1.0f},
+            Color{0.0f, 0.0f, 0.0f, 1.0f},
+            Color{0.0f, 0.0f, 0.0f, 1.0f}
+        }
+    );
+}
+
 int FrameBuffer::GetWidth() const
 {
     return this->width;
@@ -75,6 +98,15 @@ void FrameBuffer::SetHeight(int height)
 void FrameBuffer::ResizeBuffer()
 {
     this->data.resize(this->width * this->height * 4, 0.0f);
+    this->samples.resize(
+        this->width * this->height,
+        {
+            Color{0.0f, 0.0f, 0.0f, 1.0f},
+            Color{0.0f, 0.0f, 0.0f, 1.0f},
+            Color{0.0f, 0.0f, 0.0f, 1.0f},
+            Color{0.0f, 0.0f, 0.0f, 1.0f}
+        }
+    );
 }
 
 float* FrameBuffer::GetBuffer()
@@ -131,11 +163,20 @@ void FrameBuffer::ApplyFXAA(float edgeThreshold, float edgeThresholdMin)
         }
     );
 
-
     data = std::move(tempData);
 }
 
 float FrameBuffer::CalculateLuma(const Color& color) const
 {
     return 0.299f * color.x + 0.587f * color.y + 0.114f * color.z;
+}
+
+void FrameBuffer::SetSample(int x, int y, int sampleIdx, Color color)
+{
+    this->samples[y * this->width + x][sampleIdx] = color;
+}
+
+Color FrameBuffer::GetSample(int x, int y, int sampleIdx)
+{
+    return this->samples[y * this->width + x][sampleIdx];
 }

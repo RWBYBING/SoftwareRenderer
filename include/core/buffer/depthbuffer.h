@@ -25,7 +25,7 @@ namespace Buffer
 
         // MSAA related funcs
         void SetSample(int x, int y, int sampleIdx, float depth);       // Set the depth of the sub-sample of a pixel
-        int GetCoverage(int x, int y, float currentDepth) const;        // Get the coverage of the current pixel
+        float GetSample(int x, int y, int sampleIdx);                   // Get the depth of the sub-sample of a pixel
         void ClearSample(float default_depth = -1.0f);                  // Clear the sample buffer
 
     private:

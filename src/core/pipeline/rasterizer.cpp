@@ -115,15 +115,15 @@ void Rasterizer::Rasterize(
                                     // construct the fragment through interpolation
                                     auto fragment = this->InterpolateFragment(triangles[i], alpha, beta, gamma, x, y);
 
-                                    // Phong shading
-                                    if (shading_mode == ShadingMode::Phong)
-                                    {
-                                        this->PhongShading(fragment);
-                                    }
-
                                     // Z-Buffering
                                     if (this->DepthTest(fragment.x, fragment.y, fragment.depth))
                                     {
+                                        // Phong shading
+                                        if (shading_mode == ShadingMode::Phong)
+                                        {
+                                            this->PhongShading(fragment);
+                                        }
+
                                         this->WriteFragment2Buffer(fragment);
                                     }
                                 }
@@ -170,16 +170,16 @@ void Rasterizer::Rasterize(
                                 {
                                     // construct the fragment through interpolation
                                     auto fragment = this->InterpolateFragment(triangles[i], alpha, beta, gamma, x, y);
-
-                                    // Phong shading
-                                    if (shading_mode == ShadingMode::Phong)
-                                    {
-                                        this->PhongShading(fragment);
-                                    }
                     
                                     // Z-Buffering
                                     if (this->DepthTest(fragment.x, fragment.y, fragment.depth))
                                     {
+                                        // Phong shading
+                                        if (shading_mode == ShadingMode::Phong)
+                                        {
+                                            this->PhongShading(fragment);
+                                        }
+
                                         fragment.color.x = fragment.color.x * num * 0.25;
                                         fragment.color.y = fragment.color.y * num * 0.25;
                                         fragment.color.z = fragment.color.z * num * 0.25;
@@ -210,25 +210,60 @@ void Rasterizer::Rasterize(
                         int min_x, max_x, min_y, max_y;
                         this->CalculateBoundingBox(triangles[i], min_x, max_x, min_y, max_y);
 
-                        // Pass 1
                         for (int y = min_y; y < max_y; ++y)
                         {
                             for (int x = min_x; x < max_x; ++x)
                             {
                                 float alpha, beta, gamma;
+                                bool _pass_depth_test = false;          // set this boolean value to true if there is one or more sample passed the depth test
+
+                                // iterate all the samples in the pixel (in this case, it's 2x2)
                                 for (int k = 0; k < 4; ++k)
                                 {
                                     Vector2 P(x + msaa_sample_offsets[k].x, y + msaa_sample_offsets[k].y);
                                     if (this->BarycentricCoordinates(P, screen_pos[0], screen_pos[1], screen_pos[2], alpha, beta, gamma))
                                     {
-                                        // construct the fragment through interpolation
                                         auto fragment = this->InterpolateFragment(triangles[i], alpha, beta, gamma, x, y);
-                                        // float depth = this->InterpolateDepth(triangles[i], alpha, beta, gamma);
-                                        this->depth_buffer->SetSample(x, y, k, fragment.depth);
+
+                                        if (this->DepthTest(fragment.depth, this->depth_buffer->GetSample(x, y, k)))
+                                        {
+                                            // Phong shading
+                                            if (shading_mode == ShadingMode::Phong)
+                                            {
+                                                this->PhongShading(fragment);
+                                            }
+                                            // when a sample pass the depth test, write its depth and color
+                                            _pass_depth_test = true;
+                                            this->depth_buffer->SetSample(x, y, k, fragment.depth);
+                                            this->frame_buffer->SetSample(x, y, k, fragment.color);
+                                        }
                                     }
                                 }
 
-                                
+                                // if there is one or more sample passed the depth test, this sample should contribute to the shading
+                                if (_pass_depth_test)
+                                {
+                                    // construct the fragment through interpolation
+                                    auto fragment = this->InterpolateFragment(triangles[i], alpha, beta, gamma, x, y);
+
+                                    Color color;
+                                    color.x = this->frame_buffer->GetSample(x, y, 0).x * 0.25
+                                            + this->frame_buffer->GetSample(x, y, 1).x * 0.25
+                                            + this->frame_buffer->GetSample(x, y, 2).x * 0.25
+                                            + this->frame_buffer->GetSample(x, y, 3).x * 0.25;
+                                    color.y = this->frame_buffer->GetSample(x, y, 0).y * 0.25
+                                            + this->frame_buffer->GetSample(x, y, 1).y * 0.25
+                                            + this->frame_buffer->GetSample(x, y, 2).y * 0.25
+                                            + this->frame_buffer->GetSample(x, y, 3).y * 0.25;
+                                    color.z = this->frame_buffer->GetSample(x, y, 0).z * 0.25
+                                            + this->frame_buffer->GetSample(x, y, 1).z * 0.25
+                                            + this->frame_buffer->GetSample(x, y, 2).z * 0.25
+                                            + this->frame_buffer->GetSample(x, y, 3).z * 0.25;
+
+                                    color.w = 1.0f;
+
+                                    this->WriteColor2Buffer(x, y, color);
+                                }
                             }
                         }
 
@@ -300,15 +335,15 @@ void Rasterizer::Rasterize(
                                     // construct the fragment through interpolation
                                     auto fragment = this->InterpolateFragment(triangles[i], alpha, beta, gamma, x, y);
 
-                                    // Phong shading
-                                    if (shading_mode == ShadingMode::Phong)
-                                    {
-                                        this->PhongShading(fragment);
-                                    }
-
                                     // Z-Buffering
                                     if (this->DepthTest(fragment.x, fragment.y, fragment.depth))
                                     {
+                                        // Phong shading
+                                        if (shading_mode == ShadingMode::Phong)
+                                        {
+                                            this->PhongShading(fragment);
+                                        }
+
                                         this->WriteFragment2Buffer(fragment);
                                     }
                                 }
@@ -486,6 +521,11 @@ void Rasterizer::WriteFragment2Buffer(const Primitives::Fragment& fragment)
     this->frame_buffer->SetPixel(fragment.x, fragment.y, fragment.color);
 }
 
+void Rasterizer::WriteColor2Buffer(int x, int y, const Color color)
+{
+    this->frame_buffer->SetPixel(x, y, color);
+}
+
 bool Rasterizer::DepthTest(int x, int y, float depth) const
 {
     float current_depth = this->depth_buffer->GetDepth(x, y);
@@ -497,4 +537,9 @@ bool Rasterizer::DepthTest(int x, int y, float depth) const
     }
 
     return false;
+}
+
+bool Rasterizer::DepthTest(float sample_depth, float current_depth) const
+{
+    return (sample_depth > current_depth && sample_depth < 1.0f);
 }

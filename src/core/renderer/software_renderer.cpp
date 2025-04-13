@@ -77,6 +77,7 @@ GLuint SoftwareRenderer::Render()
     if (this->anti_aliasing_mode == AntiAliasingMode::MSAA_NO_BLACK_EDGE)
     {
         this->depth_buffer_ptr->ClearSample();
+        this->frame_buffer_ptr->ClearSample();
     }
 
     // Utils::GlobalTimer::Instance().Start();
