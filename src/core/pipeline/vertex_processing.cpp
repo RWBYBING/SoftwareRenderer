@@ -233,7 +233,7 @@ std::vector<Primitives::Triangle> VertexProcessing::TransformVertices(
 bool VertexProcessing::IsBackface(const Primitives::Triangle& triangle) const
 {
     // determine if the normal is back to the camera
-    Vector3 viewDir = -glm::normalize(triangle.v0.pos);
+    Vector3 viewDir = glm::normalize(triangle.v0.pos);
 
     return glm::dot(triangle.normal, viewDir) < 0;
 }
