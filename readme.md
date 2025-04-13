@@ -7,4 +7,4 @@ Yet I firmly believe that implementing such a rendering pipeline from scratch re
 
 Here are the actual rendering results from this software:
 
-<video src="doc/intro.webm.webm" controls width="100%"></video>
+<video src="doc/intro.webm" controls width="100%"></video>
