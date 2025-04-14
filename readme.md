@@ -8,10 +8,10 @@ Yet I firmly believe that implementing such a rendering pipeline from scratch re
 
 
 ## ThirdParty
-**GLFW:** For establishing the window and displaying final result.
-**Dear ImGui:** For designing the control panel for tuning the parameters of rendering options.
-**GLM:** For the Math computations (also for enable the SIMD).
-**TBB:** For enabling the parallel computing.
++ **GLFW:** For establishing the window and displaying final result.
++ **Dear ImGui:** For designing the control panel for tuning the parameters of rendering options.
++ **GLM:** For the Math computations (also for enable the SIMD).
++ **TBB:** For enabling the parallel computing.
 
 ## Features
 Below is all the graphics features which are implemented in this project:
