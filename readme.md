@@ -7,14 +7,14 @@ Yet I firmly believe that implementing such a rendering pipeline from scratch re
 
 Here are some actual rendering results from this software:
 
-Gepmetry mode:
-[geometry.webm](https://github.com/user-attachments/assets/4d415572-7bde-47f1-9cfb-f44d9ada932a)
+### Geometry Mode
+<video src="https://github.com/user-attachments/assets/4d415572-7bde-47f1-9cfb-f44d9ada932a" controls muted loop width="100%"></video>
 
-Shading:
-[shading.webm](https://github.com/user-attachments/assets/1a8ee2c2-5f8c-42e0-8b02-a045236386b6)
+### Shading
+<video src="https://github.com/user-attachments/assets/1a8ee2c2-5f8c-42e0-8b02-a045236386b6" controls muted loop width="100%"></video>
 
-Anti-Aliasing:
-[anti-aliasing.webm](https://github.com/user-attachments/assets/23e883f5-e552-4869-a16e-97da9a545d75)
+### Anti-Aliasing
+<video src="https://github.com/user-attachments/assets/23e883f5-e552-4869-a16e-97da9a545d75" controls muted loop width="100%"></video>
 
 ## ThirdParty
 + **GLFW:** For establishing the window and displaying final result.
